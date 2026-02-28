@@ -4,7 +4,7 @@
 #   Initialisation   #
 #--------------------#
 
-CURRENT_USERNAME='frostphoenix'
+CURRENT_USERNAME='fantasy'
 
 RESET=$(tput sgr0)
 WHITE=$(tput setaf 7)
@@ -52,19 +52,14 @@ fi
 clear
 
 echo -E "$CYAN
-      _____              _   ____  _                      _        
-     |  ___| __ ___  ___| |_|  _ \| |__   ___   ___ _ __ (_)_  __  
-     | |_ | '__/ _ \/ __| __| |_) | '_ \ / _ \ / _ \ '_ \| \ \/ /  
-     |  _|| | | (_) \__ \ |_|  __/| | | | (_) |  __/ | | | |>  <   
-     |_|  |_|  \___/|___/\__|_|   |_| |_|\___/ \___|_| |_|_/_/\_\  
-     _   _ _       ___        ___           _        _ _           
-    | \ | (_)_  __/ _ \ ___  |_ _|_ __  ___| |_ __ _| | | ___ _ __ 
+     _   _ _       ___        ___           _        _ _
+    | \ | (_)_  __/ _ \ ___  |_ _|_ __  ___| |_ __ _| | | ___ _ __
     |  \| | \ \/ / | | / __|  | || '_ \/ __| __/ _' | | |/ _ \ '__|
-    | |\  | |>  <| |_| \__ \  | || | | \__ \ || (_| | | |  __/ |   
-    |_| \_|_/_/\_\\\\___/|___/ |___|_| |_|___/\__\__,_|_|_|\___|_| 
+    | |\  | |>  <| |_| \__ \  | || | | \__ \ || (_| | | |  __/ |
+    |_| \_|_/_/\_\\\\___/|___/ |___|_| |_|___/\__\__,_|_|_|\___|_|
 
 
-       ${BLUE} ─── https://github.com/Frost-Phoenix/nixos-config ─── ${RESET}
+       ${BLUE} ─── https://github.com/Haroun-Trabelsi/nixos-config ─── ${RESET}
 "
 
 #------------------#
@@ -93,9 +88,10 @@ done
 #-----------------#
 
 while true; do
-    HOST=$(whiptail --radiolist "Choose a host:" 11 48 3 \
+    HOST=$(whiptail --radiolist "Choose a host:" 13 48 4 \
         "desktop" "Desktop configuration" ON \
         "laptop" "Laptop configuration" OFF \
+        "p14s" "ThinkPad P14s configuration" OFF \
         "vm" "Virtual machine configuration" OFF \
         --title "Host" 3>&1 1>&2 2>&3)
 
@@ -145,7 +141,7 @@ fi
 #---------------------#
 
 echo -e "${INFO}Changing username to ${GREEN}$username${RESET}"
-find ./hosts ./modules flake.nix -type f -exec sed -i -e "s/${CURRENT_USERNAME}/${username}/g" {} +
+sed -i "s/username = \"${CURRENT_USERNAME}\"/username = \"${username}\"/" flake.nix
 
 #------------------------------#
 #   Apply pkgs configuration   #
@@ -155,14 +151,6 @@ if [[ $DISABLE_ASEPRITE = "Yes" ]]; then
     echo -e "${INFO}Disabling Aseprite"
     sed -i '3s/  /  # /' modules/home/aseprite/aseprite.nix
 fi
-
-#----------------------#
-#   Clear git config   #
-#----------------------#
-
-echo -e "${INFO}Clearing git config"
-sed -i 's/"Frost-Phoenix"/""/g' modules/home/git.nix
-sed -i 's/"67cyril6767@gmail.com"/""/g' modules/home/git.nix
 
 #------------------------------#
 #   Prepare the environement   #

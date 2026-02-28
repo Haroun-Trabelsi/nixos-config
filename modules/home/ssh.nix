@@ -29,6 +29,15 @@
         identityFile = "~/.ssh/id_github";
         identitiesOnly = true;
       };
+
+      github-work = {
+        host = "github-work";
+        hostname = "ssh.github.com";
+        user = "git";
+        port = 443;
+        identityFile = "~/.ssh/id_github_work";
+        identitiesOnly = true;
+      };
     };
   };
 

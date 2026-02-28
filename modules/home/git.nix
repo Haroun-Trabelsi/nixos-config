@@ -5,8 +5,8 @@
 
     settings = {
       user = {
-        name = "";
-        email = "";
+        name = "Haroun Trabelsi";
+        email = "fantasycrit20@gmail.com";
       };
 
       init.defaultBranch = "main";
@@ -20,11 +20,24 @@
           "gh:"
           "https://github.com/"
         ];
-        "git@github.com:frost-phoenix/".insteadOf = "fp:";
+        "git@github.com:Haroun-Trabelsi/".insteadOf = "fp:";
+        "git@github-work:".insteadOf = "wk:";
       };
 
       core.excludesFile = "/home/${username}/.config/git/.gitignore";
     };
+
+    includes = [
+      {
+        condition = "gitdir:~/work/";
+        contents = {
+          user = {
+            name = "Haroun-MJ";
+            email = "haroun@meetjourney.ai";
+          };
+        };
+      }
+    ];
   };
 
   programs.delta = {
