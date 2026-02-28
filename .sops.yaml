@@ -1,0 +1,10 @@
+# Replace the placeholder below with your actual age public key.
+# Generate one with: nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
+# The public key is printed to stdout during generation.
+keys:
+  - &user age1REPLACE_WITH_YOUR_AGE_PUBLIC_KEY
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age:
+          - *user

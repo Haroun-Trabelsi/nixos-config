@@ -18,5 +18,6 @@
     ./wayland.nix
     ./virtualization.nix
     ./qmk.nix
+    ./sops.nix
   ];
 }

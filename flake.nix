@@ -1,5 +1,5 @@
 {
-  description = "FrostPhoenix's nixos configuration";
+  description = "Haroun's nixos configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -28,6 +28,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     superfile.url = "github:yorukot/superfile";
+
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -75,6 +85,14 @@
             inherit self inputs username;
           };
         };
+        iso = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [ ./hosts/iso ];
+          specialArgs = { inherit self inputs; };
+        };
       };
+
+      packages.${system}.iso =
+        self.nixosConfigurations.iso.config.system.build.isoImage;
     };
 }
