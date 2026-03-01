@@ -21,6 +21,7 @@
     ./nemo.nix # file manager
     ./nvim.nix # neovim editor
     ./obsidian.nix
+    ./caelestia.nix
     ./thorium.nix
     ./p10k/p10k.nix
     ./packages # other packages

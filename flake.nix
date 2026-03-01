@@ -18,6 +18,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     maple-mono = {
       url = "github:subframe7536/maple-font/variable";
       flake = false;
@@ -92,7 +97,6 @@
         };
       };
 
-      packages.${system}.iso =
-        self.nixosConfigurations.iso.config.system.build.isoImage;
+      packages.${system}.iso = self.nixosConfigurations.iso.config.system.build.isoImage;
     };
 }
