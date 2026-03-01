@@ -5,7 +5,6 @@
     ./audacious/audacious.nix # music player
     ./bat.nix # better cat command
     ./btop.nix # resouces monitor
-    ./cava.nix # audio visualizer
     ./discord.nix # discord
     ./fastfetch/fastfetch.nix # fetch tool
     ./fzf.nix # fuzzy finder
@@ -23,11 +22,9 @@
     ./caelestia.nix
     ./thorium.nix
     ./code.nix
-
     ./p10k/p10k.nix
     ./packages # other packages
     ./pomo/pomo.nix # TUI Pomodoro timer
-    ./retroarch.nix
     ./rofi/rofi.nix # launcher
     ./../../scripts/scripts.nix # personal scripts
     ./ssh.nix # ssh config
