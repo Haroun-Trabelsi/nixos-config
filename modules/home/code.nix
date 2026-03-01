@@ -1,7 +1,10 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    # webcord
     claude-code
+    nodejs_24
+    docker
+    docker-compose
+    poetry
   ];
 }

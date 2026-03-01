@@ -21,7 +21,7 @@
           "https://github.com/"
         ];
         "git@github.com:Haroun-Trabelsi/".insteadOf = "fp:";
-        "git@github-work:".insteadOf = "wk:";
+        "git@github-work:haroun-mj-ai/".insteadOf = "wk:";
       };
 
       core.excludesFile = "/home/${username}/.config/git/.gitignore";

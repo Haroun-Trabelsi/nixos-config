@@ -22,6 +22,8 @@
     ./obsidian.nix
     ./caelestia.nix
     ./thorium.nix
+    ./code.nix
+
     ./p10k/p10k.nix
     ./packages # other packages
     ./pomo/pomo.nix # TUI Pomodoro timer
@@ -29,7 +31,6 @@
     ./rofi/rofi.nix # launcher
     ./../../scripts/scripts.nix # personal scripts
     ./ssh.nix # ssh config
-    ./claude.nix
     ./spicetify.nix # spotify client
     ./superfile/superfile.nix # terminal file manager
     ./swaylock.nix # lock screen
