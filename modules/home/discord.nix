@@ -1,7 +1,4 @@
 { pkgs, ... }:
 {
-  home.packages = with pkgs; [
-    # webcord
-    vesktop
-  ];
+  home.packages = with pkgs; [ vesktop ];
 }

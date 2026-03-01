@@ -14,7 +14,7 @@
         {
           path = "${../../../wallpapers/otherWallpaper/gruvbox/forest_road.jpg}";
 
-          color = "rgba(29, 32, 33, 255)";
+          color = "rgba(30, 30, 46, 255)";
           blur_passes = 2;
           vibrancy_darkness = 0.0;
         }
@@ -27,8 +27,8 @@
 
           rounding = 0;
           border_size = 2;
-          color = "rgba(102, 92, 84, 0.33)";
-          border_color = "rgba(168, 153, 132, 0.95)";
+          color = "rgba(49, 50, 68, 0.33)";
+          border_color = "rgba(108, 112, 134, 0.95)";
 
           position = "0, 270";
           halign = "center";
@@ -45,7 +45,7 @@
           font_family = "Maple Mono Bold";
 
           shadow_passes = 3;
-          color = "rgba(235, 219, 178, 0.9)";
+          color = "rgba(205, 214, 244, 0.9)";
 
           position = "0, -150";
           halign = "center";
@@ -59,7 +59,7 @@
           font_family = "Maple Mono";
 
           shadow_passes = 3;
-          color = "rgba(235, 219, 178, 0.9)";
+          color = "rgba(205, 214, 244, 0.9)";
 
           position = "0, -350";
           halign = "center";
@@ -67,12 +67,12 @@
         }
         # Username
         {
-          text = "  $USER";
+          text = "  $USER";
 
           font_size = 15;
           font_family = "Maple Mono Bold";
 
-          color = "rgba(235, 219, 178, 1)";
+          color = "rgba(205, 214, 244, 1)";
 
           position = "0, 284";
           halign = "center";
@@ -88,19 +88,19 @@
 
           dots_spacing = 0.4;
 
-          font_color = "rgba(235, 219, 178, 0.9)";
+          font_color = "rgba(205, 214, 244, 0.9)";
           font_family = "Maple Mono Bold";
 
-          outer_color = "rgba(168, 153, 132, 0.95)";
-          inner_color = "rgba(102, 92, 84, 0.33)";
-          check_color = "rgba(152, 151, 26, 0.95)";
-          fail_color = "rgba(204, 36, 29, 0.95)";
-          capslock_color = "rgba(215, 153, 33, 0.95)";
-          bothlock_color = "rgba(215, 153, 33, 0.95)";
+          outer_color = "rgba(108, 112, 134, 0.95)";
+          inner_color = "rgba(49, 50, 68, 0.33)";
+          check_color = "rgba(166, 227, 161, 0.95)";
+          fail_color = "rgba(243, 139, 168, 0.95)";
+          capslock_color = "rgba(249, 226, 175, 0.95)";
+          bothlock_color = "rgba(249, 226, 175, 0.95)";
 
           hide_input = false;
           fade_on_empty = false;
-          placeholder_text = ''<i><span foreground="##fbf1c7">Enter Password</span></i>'';
+          placeholder_text = ''<i><span foreground="##cdd6f4">Enter Password</span></i>'';
 
           position = "0, 200";
           halign = "center";

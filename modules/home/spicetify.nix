@@ -8,7 +8,8 @@ in
 
   programs.spicetify = {
     enable = true;
-    theme = spicetifyPkgs.themes.text;
+    theme = spicetifyPkgs.themes.catppuccin;
+    colorScheme = "mocha";
 
     enabledExtensions = with spicetifyPkgs.extensions; [
       keyboardShortcut
