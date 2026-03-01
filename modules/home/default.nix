@@ -1,7 +1,6 @@
 { ... }:
 {
   imports = [
-    ./aseprite/aseprite.nix # pixel art editor
     ./audacious/audacious.nix # music player
     ./bat.nix # better cat command
     ./btop.nix # resouces monitor
@@ -9,7 +8,6 @@
     ./discord.nix # discord
     ./fastfetch/fastfetch.nix # fetch tool
     ./fzf.nix # fuzzy finder
-    ./gaming.nix # packages related to gaming
     ./ghostty/ghostty.nix # terminal
     ./git.nix # version control
     ./gnome.nix # gnome apps

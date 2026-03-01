@@ -28,9 +28,28 @@
       };
     };
     bar = {
+
+      clock = {
+        showIcon = false;
+      };
+      status = {
+        showAudio = false;
+        showBattery = true;
+        showBluetooth = false;
+        showKbLayout = false;
+        showLockStatus = false;
+        showMicrophone = false;
+        showNetwork = false;
+      };
+      tray = {
+        background = false;
+        compact = true;
+        iconSubs = [ ];
+        recolour = false;
+      };
       border = {
-        rounding = 25;
-        thickness = 10;
+        rounding = 0;
+        thickness = 0;
       };
       workspaces = {
         activeIndicator = true;
