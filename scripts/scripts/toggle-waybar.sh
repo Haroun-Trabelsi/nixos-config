@@ -3,7 +3,7 @@
 SERVICE=".waybar-wrapped"
 
 if pgrep -x "$SERVICE" > /dev/null; then
-    pkill -9 waybar
+    pkill -9 caelestia-shell
 else
-    runbg waybar
+    runbg caelestia-shell
 fi

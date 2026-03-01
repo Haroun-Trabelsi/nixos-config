@@ -7,11 +7,11 @@
 
     "hyprlock"
 
-    "nm-applet &"
+    "nm-applet --indicator &"
     "poweralertd &"
     "wl-clip-persist --clipboard both &"
     "wl-paste --watch cliphist store &"
-    "waybar &"
+    "caelestia-shell &"
     "swaync &"
     "udiskie --automount --notify --smart-tray &"
     "hyprctl setcursor Bibata-Modern-Ice 24 &"

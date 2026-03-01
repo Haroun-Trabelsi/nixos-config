@@ -37,7 +37,6 @@
     ./swayosd.nix # brightness / volume wiget
     ./swaync/swaync.nix # notification deamon
     ./vscodium # vscode fork
-    ./waybar # status bar
     ./waypaper.nix
     ./xdg-mimes.nix # xdg config
     ./zsh # shell

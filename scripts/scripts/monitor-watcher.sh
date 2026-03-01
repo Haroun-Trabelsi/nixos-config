@@ -11,7 +11,7 @@ restart-apps() {
 
     # restart waybar
     pkill .waybar-wrapped 2> /dev/null
-    waybar &
+    caelestia-shell &
 
     # restart swayosd (crashes on monitor change)
     pkill .swayosd-server 2> /dev/null
