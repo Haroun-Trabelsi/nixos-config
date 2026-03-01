@@ -27,5 +27,28 @@
         layers = 0.4;
       };
     };
+    bar = {
+      border = {
+        rounding = 25;
+        thickness = 10;
+      };
+      workspaces = {
+        activeIndicator = true;
+        activeLabel = "";
+        activeTrail = false;
+        label = "";
+        occupiedBg = false;
+        occupiedLabel = "";
+        perMonitorWorkspaces = true;
+        showWindows = true;
+        shown = 5;
+        specialWorkspaceIcons = [
+          {
+            icon = "sports_esports";
+            name = "steam";
+          }
+        ];
+      };
+    };
   };
 }
