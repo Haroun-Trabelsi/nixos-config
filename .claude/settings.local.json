@@ -5,7 +5,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:nix.catppuccin.com)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(nix flake show:*)"
     ]
   }
 }

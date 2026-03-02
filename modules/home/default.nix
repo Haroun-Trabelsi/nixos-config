@@ -2,6 +2,7 @@
 {
   imports = [
     inputs.catppuccin.homeModules.catppuccin
+    inputs.caelestia-shell.homeManagerModules.default
     ./audacious/audacious.nix # music player
     ./bat.nix # better cat command
     ./btop.nix # resouces monitor

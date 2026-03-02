@@ -11,7 +11,6 @@
     ./pipewire.nix
     ./program.nix
     ./security.nix
-    ./caelestia.nix
     ./services.nix
     ./system.nix
     ./flatpak.nix
