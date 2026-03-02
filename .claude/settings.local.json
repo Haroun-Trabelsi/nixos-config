@@ -4,7 +4,8 @@
       "Bash(claude /usage)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:nix.catppuccin.com)"
+      "WebFetch(domain:nix.catppuccin.com)",
+      "Bash(ls:*)"
     ]
   }
 }

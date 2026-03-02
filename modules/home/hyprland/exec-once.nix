@@ -17,8 +17,8 @@
     "hyprctl setcursor Bibata-Modern-Ice 24 &"
     "init-wallpaper &"
 
-    # only start monitor watching screen on laptop
-    "${if (host == "p14s" || host == "laptop") then "monitor-watcher &" else ""}"
+    # start monitor watcher on real hardware (not VM)
+    "${if (host != "vm") then "monitor-watcher &" else ""}"
 
     "ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false"
     "[workspace 1 silent] zen-beta"

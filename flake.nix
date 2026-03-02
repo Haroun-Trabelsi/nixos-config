@@ -68,14 +68,6 @@
             inherit self inputs username;
           };
         };
-        laptop = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [ ./hosts/laptop ];
-          specialArgs = {
-            host = "laptop";
-            inherit self inputs username;
-          };
-        };
         p14s = nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [ ./hosts/p14s ];

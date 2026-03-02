@@ -16,11 +16,7 @@
       color.ui = true;
 
       url = {
-        "git@github.com:".insteadOf = [
-          "gh:"
-          "https://github.com/"
-        ];
-        "git@github.com:Haroun-Trabelsi/".insteadOf = "fp:";
+        "git@github.com:Haroun-Trabelsi/".insteadOf = "ht:";
         "git@github-work:haroun-mj-ai/".insteadOf = "wk:";
       };
 

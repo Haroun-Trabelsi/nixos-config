@@ -88,9 +88,8 @@ done
 #-----------------#
 
 while true; do
-    HOST=$(whiptail --radiolist "Choose a host:" 13 48 4 \
+    HOST=$(whiptail --radiolist "Choose a host:" 12 48 3 \
         "desktop" "Desktop configuration" ON \
-        "laptop" "Laptop configuration" OFF \
         "p14s" "ThinkPad P14s configuration" OFF \
         "vm" "Virtual machine configuration" OFF \
         --title "Host" 3>&1 1>&2 2>&3)

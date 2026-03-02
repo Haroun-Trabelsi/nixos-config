@@ -29,11 +29,13 @@
     };
     backupFileExtension = "hm-backup";
   };
-
+  virtualisation.docker.enable = true;
   users.users.${username} = {
     isNormalUser = true;
     description = "${username}";
     extraGroups = [
+      "docker"
+      "i2c"
       "networkmanager"
       "wheel"
     ];

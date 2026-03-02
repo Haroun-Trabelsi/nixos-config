@@ -23,7 +23,7 @@ fi
 gum confirm "Use '$USERNAME' as username?" || exit 1
 
 # Select host
-HOST=$(gum choose --header "Select host configuration:" "desktop" "laptop" "p14s")
+HOST=$(gum choose --header "Select host configuration:" "desktop" "p14s")
 gum confirm "Use '$HOST' configuration?" || exit 1
 
 # Show disk layout
