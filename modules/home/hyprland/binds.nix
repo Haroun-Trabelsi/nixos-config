@@ -33,6 +33,7 @@
       "ALT, E, exec, hyprctl dispatch exec '[float; size 1111 700] nemo'"
       "$mod SHIFT, B, exec, toggle-waybar"
       "$mod, C ,exec, codium "
+      "$mod, G ,exec, github-desktop "
       "$mod, W,exec, wallpaper-picker"
       "$mod SHIFT, W,exec, hyprctl dispatch exec '[float; size 925 615] waypaper'"
       "$mod, N, exec, swaync-client -t -sw"
