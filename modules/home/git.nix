@@ -1,6 +1,5 @@
 { pkgs, username, ... }:
 {
-  home.packages = with pkgs; [ github-desktop ];
   programs.git = {
     enable = true;
 
@@ -52,6 +51,7 @@
   home.packages = with pkgs; [
     gh
     serie
+    github-desktop
     diffnav
   ];
 
