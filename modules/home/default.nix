@@ -21,7 +21,6 @@
     ./obsidian.nix
     ./caelestia.nix
     ./thorium.nix
-    ./code.nix
     ./p10k/p10k.nix
     ./packages # other packages
     ./pomo/pomo.nix # TUI Pomodoro timer

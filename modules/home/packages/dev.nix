@@ -18,6 +18,11 @@
     valgrind
     llvmPackages_20.clang-tools
 
+    claude-code
+    nodejs_24
+    docker
+    docker-compose
+    poetry
     ## Python
     python3
     python312Packages.ipython

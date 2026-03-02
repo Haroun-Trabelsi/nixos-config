@@ -11,7 +11,6 @@
     "poweralertd &"
     "wl-clip-persist --clipboard both &"
     "wl-paste --watch cliphist store &"
-    "caelestia-shell &"
     "swaync &"
     "udiskie --automount --notify --smart-tray &"
     "hyprctl setcursor Bibata-Modern-Ice 24 &"
