@@ -1,5 +1,6 @@
 { pkgs, username, ... }:
 {
+  home.packages = with pkgs; [ github-desktop ];
   programs.git = {
     enable = true;
 
