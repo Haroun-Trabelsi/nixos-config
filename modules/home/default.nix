@@ -23,6 +23,7 @@
     ./caelestia.nix
     ./thorium.nix
     ./p10k/p10k.nix
+    ./slack.nix
     ./packages # other packages
     ./pomo/pomo.nix # TUI Pomodoro timer
     ./rofi/rofi.nix # launcher

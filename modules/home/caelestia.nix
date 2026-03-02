@@ -60,7 +60,7 @@
       };
       bar = {
         clock = {
-          showIcon = true;
+          showIcon = false;
         };
         dragThreshold = 20;
         entries = [
@@ -125,11 +125,11 @@
         };
         workspaces = {
           activeIndicator = true;
-          activeLabel = "";
+          activeLabel = "";
           activeTrail = false;
-          label = "";
+          label = "";
           occupiedBg = false;
-          occupiedLabel = "";
+          occupiedLabel = "";
           perMonitorWorkspaces = true;
           showWindows = true;
           shown = 5;
@@ -142,8 +142,8 @@
         };
       };
       border = {
-        rounding = 25;
-        thickness = 10;
+        rounding = 5;
+        thickness = 5;
       };
       dashboard = {
         dragThreshold = 50;

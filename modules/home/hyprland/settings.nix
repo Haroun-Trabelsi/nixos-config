@@ -4,7 +4,7 @@
     "$mod" = "SUPER";
 
     input = {
-      kb_options = "grp:alt_caps_toggle";
+      kb_options = "grp:alt_caps_toggle,caps:capslock";
       kb_layout = "fr";
       repeat_delay = 300;
       numlock_by_default = true;
@@ -25,8 +25,8 @@
     general = {
       layout = "dwindle";
 
-      gaps_in = 6;
-      gaps_out = 12;
+      gaps_in = 3;
+      gaps_out = 5;
       border_size = 2;
 
       "col.active_border" = "rgb(cba6f7) rgb(f38ba8) 45deg";
