@@ -13,7 +13,7 @@
     "wl-paste --watch cliphist store &"
     "swaync &"
     "udiskie --automount --notify --smart-tray &"
-    "hyprctl setcursor Bibata-Modern-Ice 24 &"
+    "hyprctl setcursor Nordzy-catppuccin-macchiato-dark 24 &"
     "init-wallpaper &"
 
     # start monitor watcher on real hardware (not VM)

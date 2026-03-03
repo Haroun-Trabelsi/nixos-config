@@ -22,10 +22,10 @@
         };
         font = {
           family = {
-            clock = "Rubik";
+            clock = "Monocraft";
             material = "Material Symbols Rounded";
-            mono = "CaskaydiaCove NF";
-            sans = "Rubik";
+            mono = "Monocraft";
+            sans = "Monocraft";
           };
           size = {
             scale = 1;

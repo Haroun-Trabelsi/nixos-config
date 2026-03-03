@@ -11,8 +11,8 @@
 
     ## C / C++
     gcc
-    gdb
-    gef
+    stdenv.cc.cc.lib
+    glib
     cmake
     gnumake
     valgrind
@@ -23,8 +23,10 @@
     docker
     docker-compose
     poetry
+    mongodb-compass
     ## Python
     python3
     python312Packages.ipython
+
   ];
 }

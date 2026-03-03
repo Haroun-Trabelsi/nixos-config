@@ -21,7 +21,7 @@
       effect-vignette = "0.75:0.75";
       effect-pixelate = 5;
 
-      font = "Maple Mono";
+      font = "Monocraft";
     };
   };
 }

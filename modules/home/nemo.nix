@@ -3,6 +3,7 @@
   home.packages = with pkgs; [
     nemo-with-extensions
     nemo-fileroller
+    nwg-look
   ];
 
   dconf.settings = {

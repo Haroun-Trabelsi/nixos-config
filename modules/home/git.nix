@@ -16,8 +16,7 @@
       color.ui = true;
 
       url = {
-        "git@github.com:Haroun-Trabelsi/".insteadOf = "ht:";
-        "git@github-work:haroun-mj-ai/".insteadOf = "wk:";
+        "git@github.com:haroun-mj-ai/".insteadOf = "wk:";
       };
 
       core.excludesFile = "/home/${username}/.config/git/.gitignore";

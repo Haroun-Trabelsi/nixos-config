@@ -29,7 +29,7 @@
       gaps_out = 5;
       border_size = 2;
 
-      "col.active_border" = "rgb(cba6f7) rgb(f38ba8) 45deg";
+      "col.active_border" = "rgb(c6a0f6) rgb(ed8796) 45deg";
       "col.inactive_border" = "0x00000000";
     };
 

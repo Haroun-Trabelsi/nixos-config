@@ -7,15 +7,9 @@
     settings = {
       ##### Font #####
       font-family = [
-        "Maple Mono"
-        # "DejaVu Sans"
+        "Monocraft"
       ];
       font-size = if (host == "p14s") then 20 else 16;
-      font-feature = [
-        "calt"
-        "cv66"
-        "ss05"
-      ];
 
       ##### Theme #####
       background-opacity = 0.5;

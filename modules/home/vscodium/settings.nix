@@ -5,12 +5,12 @@
       "update.mode" = "none";
       "extensions.autoUpdate" = false; # This stuff fixes vscode freaking out when theres an update
       "window.titleBarStyle" = "custom"; # needed otherwise vscode crashes, see https://github.com/NixOS/nixpkgs/issues/246509
-      "workbench.colorTheme" = "Catppuccin Mocha";
+      "workbench.colorTheme" = "Catppuccin Macchiato";
       "window.menuBarVisibility" = "toggle";
-      "editor.fontFamily" = "'Maple Mono', 'SymbolsNerdFont', 'monospace', monospace";
-      "terminal.integrated.fontFamily" = "'Maple Mono', 'SymbolsNerdFont'";
+      "editor.fontFamily" = "'Monocraft', 'SymbolsNerdFont', monospace";
+      "terminal.integrated.fontFamily" = "'Monocraft', 'SymbolsNerdFont'";
       "editor.fontSize" = 18;
-      "workbench.iconTheme" = "catppuccin-mocha";
+      "workbench.iconTheme" = "catppuccin-macchiato";
       "material-icon-theme.folders.theme" = "classic";
       "vsicons.dontShowNewVersionMessage" = true;
       "explorer.confirmDragAndDrop" = false;

@@ -4,16 +4,9 @@
     enable = true;
 
     font = {
-      name = "Maple Mono";
+      name = "Monocraft";
       size = 14;
     };
-
-    extraConfig = ''
-      font_features MapleMono-Regular +ss01 +ss02 +ss04
-      font_features MapleMono-Bold +ss01 +ss02 +ss04
-      font_features MapleMono-Italic +ss01 +ss02 +ss04
-      font_features MapleMono-Light +ss01 +ss02 +ss04
-    '';
 
     settings = {
       confirm_os_window_close = 0;
@@ -29,10 +22,10 @@
       inactive_tab_font_style = "normal";
       tab_bar_style = "powerline";
       tab_powerline_style = "angled";
-      active_tab_foreground = "#cdd6f4";
-      active_tab_background = "#45475a";
-      inactive_tab_foreground = "#cdd6f4";
-      inactive_tab_background = "#313244";
+      active_tab_foreground = "#cad3f5";
+      active_tab_background = "#494d64";
+      inactive_tab_foreground = "#cad3f5";
+      inactive_tab_background = "#363a4f";
     };
 
     keybindings = {

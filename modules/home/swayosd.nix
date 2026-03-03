@@ -44,7 +44,7 @@
         padding: 0px 10px;
         border-radius: 25px;
         border: 10px;
-        background: alpha(#282828, 0.99);
+        background: alpha(#24273a, 0.99);
     }
 
     #container {
@@ -52,7 +52,7 @@
     }
 
     image, label {
-        color: #FBF1C7;
+        color: #cad3f5;
     }
 
     progressbar:disabled,
@@ -76,7 +76,7 @@
         min-height: inherit;
         border-radius: inherit;
         border: none;
-        background: #FBF1C7;
+        background: #cad3f5;
     }
   '';
 }

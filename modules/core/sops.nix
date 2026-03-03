@@ -1,4 +1,9 @@
-{ inputs, username, lib, ... }:
+{
+  inputs,
+  username,
+  lib,
+  ...
+}:
 let
   secretsPath = ../../secrets/secrets.yaml;
   hasSecrets = builtins.pathExists secretsPath;
@@ -13,11 +18,6 @@ in
 
       secrets = {
         "ssh_id_github" = {
-          owner = username;
-          mode = "0600";
-          path = "/home/${username}/.ssh/id_github";
-        };
-        "ssh_id_github_work" = {
           owner = username;
           mode = "0600";
           path = "/home/${username}/.ssh/id_github_work";

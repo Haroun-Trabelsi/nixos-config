@@ -9,7 +9,7 @@ in
   programs.spicetify = {
     enable = true;
     theme = spicetifyPkgs.themes.catppuccin;
-    colorScheme = "mocha";
+    colorScheme = "macchiato";
 
     enabledExtensions = with spicetifyPkgs.extensions; [
       keyboardShortcut

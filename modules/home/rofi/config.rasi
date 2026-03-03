@@ -2,9 +2,9 @@ configuration{
     modi: "run,drun,window";
     lines: 5;
     cycle: false;
-    font: "Maple Mono Bold 16";
+    font: "Monocraft 16";
     show-icons: true;
-    icon-theme: "Papirus-dark";
+    icon-theme: "pixelitos-dark";
     terminal: "ghostty";
     drun-display-format: "{icon} {name}";
     location: 0;

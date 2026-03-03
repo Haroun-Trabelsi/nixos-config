@@ -8,18 +8,18 @@ tabbar tabbox {
     margin: 0;
     padding: 0;
     min-height: 30px;
-    background-color: #1e1e2e;
+    background-color: #24273a;
 }
 
 tabbar tabbox tab {
     margin: 0;
     padding: 0;
-    color: #cdd6f4;
+    color: #cad3f5;
 }
 
 tabbar tabbox tab:selected {
-    background-color: #313244;
-    color: #cdd6f4;
+    background-color: #363a4f;
+    color: #cad3f5;
 }
 
 tabbar tabbox tab label {
