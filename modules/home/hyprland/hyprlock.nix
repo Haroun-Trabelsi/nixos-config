@@ -42,7 +42,7 @@
           text = ''cmd[update:1000] echo "$(date +'%k:%M')"'';
 
           font_size = 115;
-          font_family = "Monocraft";
+          font_family = "JetBrains Mono";
 
           shadow_passes = 3;
           color = "rgba(202, 211, 245, 0.9)";
@@ -56,7 +56,7 @@
           text = ''cmd[update:1000] echo "- $(date +'%A, %B %d') -" '';
 
           font_size = 18;
-          font_family = "Monocraft";
+          font_family = "JetBrains Mono";
 
           shadow_passes = 3;
           color = "rgba(202, 211, 245, 0.9)";
@@ -70,7 +70,7 @@
           text = "  $USER";
 
           font_size = 15;
-          font_family = "Monocraft";
+          font_family = "JetBrains Mono";
 
           color = "rgba(202, 211, 245, 1)";
 
@@ -89,7 +89,7 @@
           dots_spacing = 0.4;
 
           font_color = "rgba(202, 211, 245, 0.9)";
-          font_family = "Monocraft";
+          font_family = "JetBrains Mono";
 
           outer_color = "rgba(110, 115, 141, 0.95)";
           inner_color = "rgba(54, 58, 79, 0.33)";

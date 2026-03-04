@@ -2,7 +2,7 @@
 
 configuration {
     show-icons: false;
-    font: "Monocraft 26";
+    font: "JetBrains Mono 26";
 }
 
 window {

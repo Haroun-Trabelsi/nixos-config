@@ -1,4 +1,9 @@
-{ lib, pkgs, host, ... }:
+{
+  lib,
+  pkgs,
+  host,
+  ...
+}:
 {
   home.pointerCursor = {
     name = "Nordzy-catppuccin-macchiato-dark";
@@ -18,17 +23,17 @@
     noto-fonts-color-emoji
     fantasque-sans-mono
     maple-mono-custom
-    monocraft
+    jetbrains-mono
   ];
 
   gtk = {
     enable = true;
     iconTheme = {
-      name = "pixelitos-dark";
-      package = pkgs.pixelitos;
+      name = lib.mkForce "pixelitos-dark";
+      package = lib.mkForce pkgs.pixelitos;
     };
     font = {
-      name = "Monocraft";
+      name = "Jetbrains Mono";
       size = if (host == "p14s") then 14 else 12;
     };
     gtk3 = {

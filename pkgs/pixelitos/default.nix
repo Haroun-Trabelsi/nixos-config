@@ -11,7 +11,7 @@ stdenvNoCC.mkDerivation {
     owner = "ItsZariep";
     repo = "pixelitos-icon-theme";
     tag = "20260219";
-    hash = "sha256-1az5sccbryraaml6pj141dr31v6rl73bxv6fnb6v4584xfdg5g32";
+    hash = "sha256-YrzymusEFbLNss7svsah2ewwcgskyGtoVSr7vBjT5as=";
   };
 
   dontBuild = true;

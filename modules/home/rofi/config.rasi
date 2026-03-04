@@ -2,7 +2,7 @@ configuration{
     modi: "run,drun,window";
     lines: 5;
     cycle: false;
-    font: "Monocraft 16";
+    font: "JetBrains Mono 16";
     show-icons: true;
     icon-theme: "pixelitos-dark";
     terminal: "ghostty";

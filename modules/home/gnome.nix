@@ -11,7 +11,7 @@
 
   dconf.settings = {
     "org/gnome/TextEditor" = {
-      custom-font = "Monocraft 15";
+      custom-font = "JetBrains Mono 15";
       highlight-current-line = true;
       indent-style = "space";
       restore-session = false;
