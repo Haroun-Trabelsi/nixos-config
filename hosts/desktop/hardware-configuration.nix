@@ -39,6 +39,18 @@
       "dmask=0077"
     ];
   };
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-uuid/703C3F103C3ED0B8";
+    fsType = "ntfs3";
+    options = [
+      "rw"
+      "uid=1000"
+      "gid=100"
+      "nofail"
+      "x-systemd.automount"
+      "x-systemd.device-timeout=2s"
+    ];
+  };
 
   swapDevices = [
     { device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9"; }

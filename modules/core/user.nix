@@ -25,6 +25,9 @@
       home.username = "${username}";
       home.homeDirectory = "/home/${username}";
       home.stateVersion = "26.05";
+      home.sessionVariables = {
+        LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
+      };
       programs.home-manager.enable = true;
     };
     backupFileExtension = "hm-backup";

@@ -9,11 +9,23 @@
     ./../../modules/core
   ];
 
+  # NVIDIA
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = false;
+    open = false; # GTX 1660 SUPER (Turing) - use proprietary driver
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
   environment.systemPackages = with pkgs; [
     acpi
     brightnessctl
     cpupower-gui
     powertop
+    nvtopPackages.nvidia
   ];
 
   services = {

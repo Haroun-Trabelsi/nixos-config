@@ -124,6 +124,7 @@
       DISABLE_AUTO_UPDATE=true
       DISABLE_MAGIC_FUNCTIONS=true
       export "MICRO_TRUECOLOR=1"
+      export PATH="$PATH:$HOME/.local/bin"
 
       setopt sharehistory
       setopt hist_ignore_space

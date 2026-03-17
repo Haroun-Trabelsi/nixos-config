@@ -22,7 +22,7 @@
       };
 
       github-work = {
-        host = "git@github.com";
+        host = "github-work";
         hostname = "ssh.github.com";
         user = "git";
         port = 443;
