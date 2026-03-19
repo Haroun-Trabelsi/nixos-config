@@ -21,8 +21,8 @@
       "$mod, Space, exec, toggle-float"
       "$mod SHIFT, D, exec, toggle-rofi rofi -show drun"
       "$mod, D, exec, toggle-discord"
-      "$mod, S, exec, hyprctl activeworkspace -j | jq -e '.id == 5' >/dev/null && hyprctl dispatch workspace previous || hyprctl dispatch workspace 5"
-      "$mod SHIFT, S, exec, hyprctl dispatch exec '[workspace 5 silent] SoundWireServer'"
+      "$mod, S, exec, toggle-spotify"
+      "$mod SHIFT, S, exec, screenshot --copy"
       "$mod, Escape, exec, swaylock"
       "ALT, Escape, exec, hyprlock"
       "$mod SHIFT, Escape, exec, power-menu"
@@ -39,6 +39,12 @@
       "$mod, N, exec, swaync-client -t -sw"
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"
       "$mod, equal, exec, woomer"
+      "$mod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+      "$mod, R, exec, pkill wf-recorder && notify-send 'Recording Stopped' || { mkdir -p ~/Videos/Recordings; wf-recorder -g \"$(slurp)\" -f ~/Videos/Recordings/rec_$(date +%s).mp4 & notify-send 'Recording Started' 'SUPER+R to stop'; }"
+      "$mod, Tab, workspace, previous"
+      "$mod, A, pin,"
+      "$mod, Z, movetoworkspacesilent, special:scratch"
+      "$mod SHIFT, Z, togglespecialworkspace, scratch"
       # "$mod SHIFT, W, exec, vm-start"
 
       # screenshot
