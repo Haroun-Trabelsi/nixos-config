@@ -34,7 +34,6 @@
       libXrandr
       libxcb
       mesa
-      mesa.drivers
       libgbm
       expat
       libxkbcommon

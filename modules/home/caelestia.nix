@@ -132,7 +132,7 @@
           occupiedLabel = "";
           perMonitorWorkspaces = true;
           showWindows = true;
-          shown = 5;
+          shown = 4;
           specialWorkspaceIcons = [
             {
               icon = "sports_esports";
@@ -143,7 +143,7 @@
       };
       border = {
         rounding = 5;
-        thickness = 5;
+        thickness = 2;
       };
       dashboard = {
         dragThreshold = 50;
@@ -360,11 +360,9 @@
         recolourLogo = false;
       };
       notifs = {
-        actionOnClick = false;
-        clearThreshold = 0.3;
-        defaultExpireTimeout = 5000;
-        expandThreshold = 20;
-        expire = false;
+        actionOnClick = true;
+        defaultExpireTimeout = 3000;
+        expire = true;
       };
       osd = {
         enableBrightness = true;

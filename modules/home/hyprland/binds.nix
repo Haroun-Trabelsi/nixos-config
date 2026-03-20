@@ -40,7 +40,6 @@
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"
       "$mod, equal, exec, woomer"
       "$mod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-      "$mod, R, exec, pkill wf-recorder && notify-send 'Recording Stopped' || { mkdir -p ~/Videos/Recordings; wf-recorder -g \"$(slurp)\" -f ~/Videos/Recordings/rec_$(date +%s).mp4 & notify-send 'Recording Started' 'SUPER+R to stop'; }"
       "$mod, Tab, workspace, previous"
       "$mod, A, pin,"
       "$mod, Z, movetoworkspacesilent, special:scratch"
