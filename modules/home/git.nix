@@ -16,10 +16,20 @@
       color.ui = true;
 
       url = {
-        "git@github-work:JourneyAI-Team/".insteadOf = "wk:";
+        "git@github-work:JourneyAI-Team/".insteadOf = [
+          "wk:"
+          "git@github.com:JourneyAI-Team/"
+        ];
       };
 
       core.excludesFile = "/home/${username}/.config/git/.gitignore";
+
+      filter.lfs = {
+        clean = "git-lfs clean -- %f";
+        smudge = "git-lfs smudge -- %f";
+        process = "git-lfs filter-process";
+        required = true;
+      };
     };
 
     includes = [
@@ -51,6 +61,7 @@
     gh
     serie
     github-desktop
+    git-lfs
     diffnav
   ];
 
