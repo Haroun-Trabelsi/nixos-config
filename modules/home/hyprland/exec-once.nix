@@ -19,6 +19,9 @@
     # start monitor watcher on real hardware (not VM)
     "${if (host != "vm") then "monitor-watcher &" else ""}"
 
+    # enable keep awake on desktop (no idle/sleep)
+    "${if (host == "desktop") then "caelestia shell idleInhibitor enable" else ""}"
+
     "ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false"
     "[workspace 1 silent] zen-beta"
     "[workspace 2 silent] ghostty"

@@ -107,7 +107,7 @@
           volume = true;
           workspaces = true;
         };
-        showOnHover = true;
+        showOnHover = false;
         status = {
           showAudio = false;
           showBattery = true;

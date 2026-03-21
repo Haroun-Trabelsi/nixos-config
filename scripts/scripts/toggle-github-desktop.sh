@@ -10,6 +10,6 @@ elif hyprctl clients -j | jq -e '.[] | select(.class == "GitHub Desktop")' > /de
     # Running but not focused - focus it
     hyprctl dispatch focuswindow "class:GitHub Desktop"
 else
-    # Not running - launch (window rule sends to workspace 7)
+    # Not running - launch (window rule sends to workspace 6)
     github-desktop &
 fi

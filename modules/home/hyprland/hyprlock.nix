@@ -12,7 +12,7 @@
 
       background = [
         {
-          path = "${../../../wallpapers/otherWallpaper/gruvbox/forest_road.jpg}";
+          path = "~/Pictures/Wallpapers/others/dominik-mayer-10.jpg";
 
           color = "rgba(36, 39, 58, 255)";
           blur_passes = 2;

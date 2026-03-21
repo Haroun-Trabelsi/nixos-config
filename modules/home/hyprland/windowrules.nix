@@ -30,7 +30,7 @@
       "match:class ^(Gimp-2.10)$, workspace 4"
       "match:class ^(Aseprite)$, workspace 4"
       "match:class ^(Audacious)$, workspace 5"
-      "match:class ^(GitHub Desktop)$, workspace 7"
+      "match:class ^(GitHub Desktop)$, workspace 6"
       "match:class ^(codium)$, workspace 8"
       "match:class ^(com.obsproject.Studio)$, workspace 8"
       "match:class ^(Spotify)$, workspace 9"

@@ -2,8 +2,8 @@
 {
   wayland.windowManager.hyprland = {
     settings.monitor = [
-      "monitor = eDP-1, preferred, auto, 0.7"
-      "monitor = HDMI-A-1, 1920x1080@144, auto, 0.9"
+      "eDP-1, preferred, auto, 0.7"
+      "HDMI-A-1, 1920x1080@144, auto, 1"
       ",preferred,auto,auto"
     ];
 
