@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-SERVICE=".waybar-wrapped"
+SERVICE="noctalia-shell"
 
 if pgrep -x "$SERVICE" > /dev/null; then
-    pkill -9 caelestia-shell
+    pkill -9 noctalia-shell
 else
-    runbg caelestia-shell
+    runbg noctalia-shell
 fi

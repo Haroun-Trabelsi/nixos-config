@@ -9,9 +9,9 @@ restart-apps() {
     pkill .swww-daemon-wr 2> /dev/null
     init-wallpaper &
 
-    # restart waybar
-    pkill .waybar-wrapped 2> /dev/null
-    caelestia-shell &
+    # restart shell bar
+    pkill noctalia-shell 2> /dev/null
+    noctalia-shell &
 
     # restart swayosd (crashes on monitor change)
     pkill .swayosd-server 2> /dev/null

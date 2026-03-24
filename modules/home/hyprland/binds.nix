@@ -35,7 +35,7 @@
       "$mod, C, exec, toggle-codium"
       "$mod SHIFT, C, exec, toggle-codium-alt"
       "$mod, G, exec, toggle-github-desktop"
-      "$mod, W, exec, caelestia shell drawers toggle sidebar"
+      # "$mod, W, exec, caelestia shell drawers toggle sidebar"
       "$mod SHIFT, W,exec, hyprctl dispatch exec '[float; size 925 615] waypaper'"
       "$mod, N, exec, pavucontrol"
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"

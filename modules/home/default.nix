@@ -2,7 +2,8 @@
 {
   imports = [
     inputs.catppuccin.homeModules.catppuccin
-    inputs.caelestia-shell.homeManagerModules.default
+    # inputs.caelestia-shell.homeManagerModules.default
+    inputs.noctalia-shell.homeModules.default
     ./audacious/audacious.nix # music player
     ./bat.nix # better cat command
     ./btop.nix # resouces monitor
@@ -20,7 +21,8 @@
     ./nemo.nix # file manager
     ./nvim.nix # neovim editor
     ./obsidian.nix
-    ./caelestia.nix
+    # ./caelestia.nix
+    ./noctalia.nix
     ./thorium.nix
     ./p10k/p10k.nix
     ./slack.nix
