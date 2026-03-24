@@ -19,23 +19,24 @@
       "$mod, F, fullscreen, 0"
       "$mod SHIFT, F, fullscreen, 1"
       "$mod, Space, exec, toggle-float"
-      "$mod SHIFT, D, exec, toggle-rofi rofi -show drun"
+      "$mod SHIFT, D, exec, noctalia-shell ipc call launcher toggle"
       "$mod, D, exec, toggle-discord"
       "$mod, S, exec, toggle-spotify"
       "$mod SHIFT, S, exec, screenshot --copy"
       "$mod, Escape, exec, swaylock"
       "ALT, Escape, exec, hyprlock"
-      "$mod SHIFT, Escape, exec, power-menu"
+      "$mod SHIFT, Escape, exec, noctalia-shell ipc call sessionMenu toggle"
       "$mod, P, pseudo,"
       "$mod, X, togglesplit,"
       "$mod, T, exec, kitty"
       "$mod, E, exec, nemo"
       "ALT, E, exec, hyprctl dispatch exec '[float; size 1111 700] nemo'"
-      "$mod SHIFT, B, exec, toggle-waybar"
+      "$mod SHIFT, B, exec, noctalia-shell ipc call bar toggle"
       "$mod, C, exec, toggle-codium"
       "$mod SHIFT, C, exec, toggle-codium-alt"
       "$mod, G, exec, toggle-github-desktop"
       # "$mod, W, exec, caelestia shell drawers toggle sidebar"
+      "$mod, W, exec, noctalia-shell ipc call notifications toggleHistory"
       "$mod SHIFT, W,exec, hyprctl dispatch exec '[float; size 925 615] waypaper'"
       "$mod, N, exec, pavucontrol"
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"
@@ -139,8 +140,14 @@
       "$mod, mouse_down, workspace, e-1"
       "$mod, mouse_up, workspace, e+1"
 
-      # clipboard manager
-      "$mod, V, exec, toggle-rofi \"cliphist list | rofi -dmenu -theme-str 'window {width: 50%;} listview {columns: 1;}' | cliphist decode | wl-copy\""
+      # clipboard manager (noctalia built-in)
+      "$mod, V, exec, noctalia-shell ipc call launcher clipboard"
+
+      # noctalia shell features
+      "$mod, O, exec, noctalia-shell ipc call controlCenter toggle"
+      "$mod SHIFT, O, exec, noctalia-shell ipc call settings toggle"
+      "$mod SHIFT, N, exec, noctalia-shell ipc call nightLight toggle"
+      "$mod SHIFT, M, exec, noctalia-shell ipc call darkMode toggle"
     ];
 
     # mouse binding

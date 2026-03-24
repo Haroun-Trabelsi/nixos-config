@@ -3,11 +3,8 @@
   programs.noctalia-shell = {
     enable = true;
 
-    # systemd user service integration
-    systemd = {
-      enable = true;
-      # target = "graphical-session.target";
-    };
+    # systemd crashes before Wayland is ready — launch from hyprland exec-once instead
+    systemd.enable = false;
 
     # ── Shell settings ──────────────────────────────────────────────
     # Written to ~/.config/noctalia/settings.json
@@ -18,18 +15,18 @@
 
       # ── Bar ─────────────────────────────────────────────────────
       bar = {
-        position = "top"; # "top" | "bottom"
+        position = "bottom"; # TEST: moved from top to bottom
         # barType = "simple";
         # density = "default"; # "default" | "compact" | "spacious"
         # showCapsule = true;
         # capsuleOpacity = 1;
-        # backgroundOpacity = 0.93;
-        # marginVertical = 4;
-        # marginHorizontal = 4;
-        # frameRadius = 12;
+        backgroundOpacity = 0.7; # TEST: lowered from 0.93 to 0.7
+        marginVertical = 10; # TEST: bumped from 4 to 10
+        marginHorizontal = 10; # TEST: bumped from 4 to 10
+        frameRadius = 24; # TEST: doubled from 12 to 24
         # outerCorners = true;
         # displayMode = "always_visible"; # "always_visible" | "auto_hide"
-        # mouseWheelAction = "none"; # "none" | "workspace" | "volume" | "brightness"
+        mouseWheelAction = "workspace"; # scroll bar to switch workspaces
         # rightClickAction = "controlCenter";
         # widgets = {
         #   left = [
@@ -56,7 +53,7 @@
       # ── General ─────────────────────────────────────────────────
       general = {
         # avatarImage = "";
-        # animationSpeed = 1;
+        animationSpeed = 2; # TEST: slowed from 1 to 2
         # animationDisabled = false;
         # enableShadows = true;
         # enableBlurBehind = true;
@@ -100,12 +97,12 @@
       # ── App Launcher ────────────────────────────────────────────
       appLauncher = {
         # position = "center"; # "center" | "top" | "bottom"
-        # terminalCommand = "ghostty -e";
-        # sortByMostUsed = true;
+        terminalCommand = "ghostty -e";
+        sortByMostUsed = true;
         # viewMode = "list"; # "list" | "grid"
-        # enableClipboardHistory = false;
-        # enableSettingsSearch = true;
-        # enableWindowsSearch = true;
+        enableClipboardHistory = true;
+        enableSettingsSearch = true;
+        enableWindowsSearch = true;
       };
 
       # ── Control Center ──────────────────────────────────────────
@@ -160,24 +157,40 @@
       audio = {
         # volumeStep = 5;
         # volumeOverdrive = false;
-        # preferredPlayer = "";
+        preferredPlayer = "spotify";
         # visualizerType = "linear"; # "linear" | "circular"
       };
 
       # ── Brightness ──────────────────────────────────────────────
-      # brightness = {
-      #   brightnessStep = 5;
-      #   enableDdcSupport = false;
-      # };
+      brightness = {
+        # brightnessStep = 5;
+        enableDdcSupport = true;
+      };
 
       # ── Color Scheme ────────────────────────────────────────────
       colorSchemes = {
+        predefinedScheme = "Catppuccin";
         # useWallpaperColors = false;
-        # predefinedScheme = "Catppuccin";
         # darkMode = true;
         # schedulingMode = "off"; # "off" | "manual" | "auto"
         # generationMethod = "tonal-spot";
         # syncGsettings = true;
+      };
+
+      # ── Templates (auto-theme installed programs) ──────────────
+      templates = {
+        enableUserTheming = true;
+        activeTemplates = [
+          "ghostty" # terminal colors
+          "kitty" # terminal colors
+          "btop" # system monitor theme
+          "code" # vscodium editor theme
+          "discord" # vesktop midnight + material css
+          "spicetify" # spotify comfy theme colors
+          "hyprland" # compositor border/accent colors
+          "gtk" # gtk3 + gtk4 theming
+          "steam" # steam material theme css
+        ];
       };
 
       # ── Idle ────────────────────────────────────────────────────

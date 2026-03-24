@@ -8,6 +8,8 @@
       size = 14;
     };
 
+    extraConfig = "include themes/noctalia.conf";
+
     settings = {
       confirm_os_window_close = 0;
       background_opacity = "0.66";

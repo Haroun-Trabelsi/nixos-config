@@ -12,7 +12,6 @@
       "match:class ^(org.gnome.FileRoller)$, float on"
       "match:class ^(org.pulseaudio.pavucontrol)$, float on"
 
-      "match:class ^(rofi)$, pin on"
       "match:class ^(waypaper)$, pin on"
 
       "match:class ^(Aseprite)$, tile on"
@@ -54,7 +53,6 @@
     ];
 
     layerrule = [
-      "match:namespace rofi, dim_around on"
       "match:namespace swaync-control-center, dim_around on"
     ];
 

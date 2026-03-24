@@ -28,7 +28,7 @@
     ./slack.nix
     ./packages # other packages
     ./pomo/pomo.nix # TUI Pomodoro timer
-    ./rofi/rofi.nix # launcher
+    # ./rofi/rofi.nix # launcher (replaced by noctalia launcher)
     ./../../scripts/scripts.nix # personal scripts
     ./ssh.nix # ssh config
     ./spicetify.nix # spotify client
