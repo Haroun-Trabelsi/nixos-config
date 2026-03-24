@@ -29,7 +29,7 @@
   ];
 
   services = {
-    power-profiles-daemon.enable = true;
+    power-profiles-daemon.enable = false;
 
     upower = {
       enable = true;
@@ -39,7 +39,10 @@
       criticalPowerAction = "PowerOff";
     };
 
+    tlp.enable = true;
     tlp.settings = {
+      START_CHARGE_THRESH_BAT0 = 60;
+      STOP_CHARGE_THRESH_BAT0 = 80;
       CPU_ENERGY_PERF_POLICY_ON_AC = "power";
       CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
 

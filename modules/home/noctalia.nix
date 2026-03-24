@@ -85,13 +85,9 @@
 
       # ── Wallpaper ───────────────────────────────────────────────
       wallpaper = {
-        # enabled = true;
-        # directory = "";
-        # fillMode = "crop"; # "crop" | "contain" | "stretch" | "center"
-        # automationEnabled = false;
-        # wallpaperChangeMode = "random"; # "random" | "sequential"
-        # randomIntervalSec = 300;
-        # transitionDuration = 1500;
+        enabled = true;
+        directory = "~/Pictures/Wallpapers";
+        fillMode = "crop";
       };
 
       # ── App Launcher ────────────────────────────────────────────

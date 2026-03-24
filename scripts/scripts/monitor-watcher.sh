@@ -5,11 +5,7 @@
 restart-apps() {
     sleep 1
 
-    # restart wallpaper
-    pkill .swww-daemon-wr 2> /dev/null
-    init-wallpaper &
-
-    # restart shell bar
+    # restart shell (handles wallpaper too)
     pkill noctalia-shell 2> /dev/null
     noctalia-shell &
 

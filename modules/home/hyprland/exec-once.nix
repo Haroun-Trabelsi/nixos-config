@@ -14,7 +14,6 @@
     "swaync &"
     "udiskie --automount --notify --smart-tray &"
     "hyprctl setcursor Nordzy-catppuccin-macchiato-dark 24 &"
-    "init-wallpaper &"
     "noctalia-shell &"
 
     # start monitor watcher on real hardware (not VM)
