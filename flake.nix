@@ -28,6 +28,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hyprland.url = "github:hyprwm/Hyprland";
+
     maple-mono = {
       url = "github:subframe7536/maple-font/variable";
       flake = false;

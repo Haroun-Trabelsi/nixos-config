@@ -27,10 +27,9 @@
       "ALT, Escape, exec, hyprlock"
       "$mod SHIFT, Escape, exec, noctalia-shell ipc call sessionMenu toggle"
       "$mod, P, pseudo,"
-      "$mod, X, togglesplit,"
       "$mod, T, exec, kitty"
-      "$mod, E, exec, nemo"
-      "ALT, E, exec, hyprctl dispatch exec '[float; size 1111 700] nemo'"
+      "$mod, E, exec, dolphin"
+      "ALT, E, exec, hyprctl dispatch exec '[float; size 1111 700] dolphin'"
       "$mod SHIFT, B, exec, noctalia-shell ipc call bar toggle"
       "$mod, C, exec, toggle-codium"
       "$mod SHIFT, C, exec, toggle-codium-alt"
@@ -44,8 +43,7 @@
       "$mod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
       "$mod, Tab, workspace, previous"
       "$mod, A, pin,"
-      "$mod, Z, movetoworkspacesilent, special:scratch"
-      "$mod SHIFT, Z, togglespecialworkspace, scratch"
+      "$mod SHIFT, A, togglegroup,"
       # "$mod SHIFT, W, exec, vm-start"
 
       # screenshot

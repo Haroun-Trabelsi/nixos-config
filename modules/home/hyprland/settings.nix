@@ -9,7 +9,7 @@
       repeat_delay = 300;
       numlock_by_default = true;
 
-      follow_mouse = 0;
+      follow_mouse = 1;
       mouse_refocus = 0;
       float_switch_override_focus = 0;
 
@@ -54,7 +54,7 @@
     };
 
     decoration = {
-      rounding = 0;
+      rounding = 4;
 
       blur = {
         enabled = true;

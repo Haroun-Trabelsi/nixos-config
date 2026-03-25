@@ -6,7 +6,7 @@ let
     image = [ "imv-dir.desktop" ];
     audio = [ "mpv.desktop" ];
     video = [ "mpv.desktop" ];
-    directory = [ "nemo.desktop" ];
+    directory = [ "org.kde.dolphin.desktop" ];
     office = [ "libreoffice.desktop" ];
     pdf = [ "org.gnome.Evince.desktop" ];
     terminal = [ "ghostty.desktop" ];

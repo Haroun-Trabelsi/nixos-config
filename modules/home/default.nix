@@ -18,7 +18,8 @@
     ./kitty.nix # terminal
     ./lazygit.nix
     ./micro.nix # nano replacement
-    ./nemo.nix # file manager
+    # ./nemo.nix # file manager (replaced by dolphin)
+    ./dolphin.nix # file manager
     ./nvim.nix # neovim editor
     ./obsidian.nix
     # ./caelestia.nix
@@ -36,7 +37,7 @@
     ./swaylock.nix # lock screen
     ./swayosd.nix # brightness / volume wiget
     ./vscodium # vscode fork
-    ./waypaper.nix
+    # ./waypaper.nix # replaced by noctalia wallpaper
     ./xdg-mimes.nix # xdg config
     ./zsh # shell
   ];

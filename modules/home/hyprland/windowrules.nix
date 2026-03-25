@@ -54,6 +54,11 @@
 
     layerrule = [
       "match:namespace swaync-control-center, dim_around on"
+
+      # noctalia shell background + blur
+      "match:namespace ^(noctalia-background-.*)$, blur on"
+      "match:namespace ^(noctalia-background-.*)$, blur_popups on"
+      "match:namespace ^(noctalia-background-.*)$, ignore_alpha 0.5"
     ];
 
     # No gaps when only

@@ -29,8 +29,8 @@
   gtk = {
     enable = true;
     iconTheme = {
-      name = lib.mkForce "pixelitos-dark";
-      package = lib.mkForce pkgs.pixelitos;
+      name = lib.mkForce "Colloid-dark";
+      package = lib.mkForce pkgs.colloid-icon-theme;
     };
     font = {
       name = "Jetbrains Mono";

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   home.packages = with pkgs; [
     grimblast
@@ -18,8 +18,8 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = null;
-    portalPackage = null;
+    package = inputs.hyprland.packages.x86_64-linux.hyprland;
+    portalPackage = inputs.hyprland.packages.x86_64-linux.xdg-desktop-portal-hyprland;
     xwayland.enable = true;
     systemd.enable = true;
   };

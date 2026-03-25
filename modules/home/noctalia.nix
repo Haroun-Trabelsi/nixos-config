@@ -86,7 +86,7 @@
       # ── Wallpaper ───────────────────────────────────────────────
       wallpaper = {
         enabled = true;
-        directory = "~/Pictures/Wallpapers";
+        directory = "/home/fantasy/Pictures/Wallpapers";
         fillMode = "crop";
       };
 
