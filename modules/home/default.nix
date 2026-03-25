@@ -1,7 +1,6 @@
 { inputs, ... }:
 {
   imports = [
-    inputs.catppuccin.homeModules.catppuccin
     # inputs.caelestia-shell.homeManagerModules.default
     inputs.noctalia-shell.homeModules.default
     ./audacious/audacious.nix # music player
@@ -42,9 +41,4 @@
     ./zsh # shell
   ];
 
-  catppuccin = {
-    enable = true;
-    flavor = "macchiato";
-    accent = "mauve";
-  };
 }

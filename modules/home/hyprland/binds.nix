@@ -43,7 +43,6 @@
       "$mod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
       "$mod, Tab, workspace, previous"
       "$mod, A, pin,"
-      "$mod SHIFT, A, togglegroup,"
       # "$mod SHIFT, W, exec, vm-start"
 
       # screenshot

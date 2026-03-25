@@ -185,6 +185,8 @@
           "spicetify" # spotify comfy theme colors
           "hyprland" # compositor border/accent colors
           "gtk" # gtk3 + gtk4 theming
+          "qt" # qt5ct + qt6ct color scheme
+          "kcolorscheme" # kde color scheme (dolphin etc)
           "steam" # steam material theme css
         ];
       };

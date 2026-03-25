@@ -29,8 +29,8 @@
   gtk = {
     enable = true;
     iconTheme = {
-      name = lib.mkForce "Colloid-dark";
-      package = lib.mkForce pkgs.colloid-icon-theme;
+      name = "Colloid-dark";
+      package = pkgs.colloid-icon-theme;
     };
     font = {
       name = "Jetbrains Mono";
@@ -38,13 +38,13 @@
     };
     gtk3 = {
       extraConfig = {
-        gtk-application-prefer-dark-theme = lib.mkForce true;
+        gtk-application-prefer-dark-theme = true;
       };
     };
 
     gtk4 = {
       extraConfig = {
-        gtk-application-prefer-dark-theme = lib.mkForce true;
+        gtk-application-prefer-dark-theme = true;
       };
     };
   };

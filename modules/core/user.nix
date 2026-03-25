@@ -7,15 +7,8 @@
 }:
 {
   imports = [
-    inputs.catppuccin.nixosModules.catppuccin
     inputs.home-manager.nixosModules.home-manager
   ];
-
-  catppuccin = {
-    enable = true;
-    flavor = "macchiato";
-    accent = "mauve";
-  };
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
