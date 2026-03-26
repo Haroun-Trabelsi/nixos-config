@@ -27,4 +27,12 @@
 
     udisks2.enable = true;
   };
+
+  # disable NetworkManager-wait-online — not needed on desktops
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  # limit journal size so journal-flush is fast
+  services.journald.extraConfig = ''
+    SystemMaxUse=100M
+  '';
 }

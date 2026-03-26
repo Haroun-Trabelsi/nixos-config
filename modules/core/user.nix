@@ -26,6 +26,9 @@
     backupFileExtension = "hm-backup";
   };
   virtualisation.docker.enable = true;
+
+  # don't start docker at boot — socket activation starts it on first use
+  systemd.services.docker.wantedBy = pkgs.lib.mkForce [ ];
   users.users.${username} = {
     isNormalUser = true;
     description = "${username}";

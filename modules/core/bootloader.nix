@@ -8,7 +8,9 @@
     };
 
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [ "hid-nintendo" ];
+    # load nintendo controller support on demand, not at boot
+    extraModulePackages = [ ];
+    kernelModules = [ ];
     supportedFilesystems = [ "ntfs" ];
   };
 }
