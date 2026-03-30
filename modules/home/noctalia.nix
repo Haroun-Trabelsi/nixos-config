@@ -15,7 +15,7 @@
 
       # ── Bar ─────────────────────────────────────────────────────
       bar = {
-        position = "bottom"; # TEST: moved from top to bottom
+        position = "top"; # TEST: moved from top to bottom
         # barType = "simple";
         # density = "default"; # "default" | "compact" | "spacious"
         # showCapsule = true;
@@ -93,7 +93,7 @@
       # ── App Launcher ────────────────────────────────────────────
       appLauncher = {
         # position = "center"; # "center" | "top" | "bottom"
-        terminalCommand = "ghostty -e";
+        terminalCommand = "kitty -e";
         sortByMostUsed = true;
         # viewMode = "list"; # "list" | "grid"
         enableClipboardHistory = true;
@@ -177,7 +177,6 @@
       templates = {
         enableUserTheming = true;
         activeTemplates = [
-          "ghostty" # terminal colors
           "kitty" # terminal colors
           "btop" # system monitor theme
           "code" # vscodium editor theme

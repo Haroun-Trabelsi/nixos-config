@@ -17,49 +17,24 @@
     aoc-cli                           # Advent of Code command-line tool
     asciinema
     asciinema-agg
-    binsider
-    bitwise                           # cli tool for bit / hex manipulation
-    broot                             # tree files view
-    caligula                          # User-friendly, lightweight TUI for disk imaging
     hyperfine                         # benchmarking tool
-    pastel                            # cli to manipulate colors
     scooter                           # Interactive find and replace in the terminal
     swappy                            # snapshot editing tool
-    tdf                               # cli pdf viewer
     tokei                             # project line counter
     translate-shell                   # cli translator
-    woomer
     yt-dlp-light
-
-    ## TUI
-    epy                               # ebook reader
-    gtt                               # google translate TUI
-    toipe                             # typing test in the terminal
-    ttyper                            # cli typing test
 
     ## Monitoring / fetch
     htop
     onefetch                          # fetch utility for git repo
     wavemon                           # monitoring for wireless network devices
 
-    ## Fun / screensaver
-    asciiquarium-transparent
-    cbonsai
-    cmatrix
-    countryfetch
-    cowsay
-    figlet
-    fortune
-    lavat
-    lolcat
-    pipes
-    sl
-    tty-clock
-
     ## Multimedia
     imv
     lowfi
-    mpv
+    (mpv.override {
+      scripts = [ mpvScripts.webtorrent-mpv-hook ];
+    })
 
     ## Utilities
     entr                              # perform action when file change
@@ -79,8 +54,5 @@
     wget
     wl-clipboard                      # clipboard utils for wayland (wl-copy, wl-paste)
     xdg-utils
-
-    winetricks
-    wineWow64Packages.waylandFull
   ];
 }

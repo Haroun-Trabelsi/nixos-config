@@ -16,7 +16,6 @@
     ./flatpak.nix
     ./user.nix
     ./wayland.nix
-    ./virtualization.nix
     ./qmk.nix
     ./sops.nix
   ];

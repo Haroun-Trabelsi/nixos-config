@@ -2,7 +2,6 @@
 {
   home.packages = with pkgs; [
     ## Multimedia
-    amberol # music player
     audacity
     gimp
     media-downloader
@@ -16,15 +15,14 @@
     libreoffice
     gnome-calculator
 
+    ## Networking
+    gns3-gui
+    gns3-server
+
     ## Utility
     dconf-editor
     gnome-disk-utility
     popsicle
-    mission-center # GUI resources monitor
     zenity
-
-    ## Level editor
-    ldtk
-    tiled
   ];
 }

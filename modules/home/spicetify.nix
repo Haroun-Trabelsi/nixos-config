@@ -12,13 +12,9 @@ in
 
     enabledExtensions = with spicetifyPkgs.extensions; [
       keyboardShortcut
-      shuffle
       seekSong
       hidePodcasts
       adblock
-      volumePercentage
-      queueTime
-      autoSkipVideo
       playNext
     ];
   };

@@ -10,6 +10,15 @@
         enable = true;
         support32Bit = true;
       };
+
+      extraConfig.pipewire-pulse."90-disable-cork" = {
+        "pulse.cmd" = [
+          {
+            cmd = "unload-module";
+            args = "module-role-cork";
+          }
+        ];
+      };
     };
   };
 
