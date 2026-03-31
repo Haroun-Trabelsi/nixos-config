@@ -16,8 +16,9 @@
     gnome-calculator
 
     ## Networking
-    gns3-gui
-    gns3-server
+    dynamips
+    ubridge
+    vpcs
 
     ## Utility
     dconf-editor

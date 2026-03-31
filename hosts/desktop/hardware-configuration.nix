@@ -44,10 +44,10 @@
     fsType = "ntfs3";
     options = [
       "rw"
+      "force"
       "uid=1000"
       "gid=100"
       "nofail"
-      "x-systemd.automount"
       "x-systemd.device-timeout=2s"
     ];
   };

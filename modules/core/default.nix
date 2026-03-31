@@ -18,5 +18,6 @@
     ./wayland.nix
     ./qmk.nix
     ./sops.nix
+    ./steam.nix
   ];
 }
