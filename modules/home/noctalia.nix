@@ -181,7 +181,7 @@
           "btop" # system monitor theme
           "code" # vscodium editor theme
           "discord" # vesktop midnight + material css
-          "spicetify" # spotify comfy theme colors
+          # "spicetify" # replaced by spotube
           "hyprland" # compositor border/accent colors
           "gtk" # gtk3 + gtk4 theming
           "qt" # qt5ct + qt6ct color scheme

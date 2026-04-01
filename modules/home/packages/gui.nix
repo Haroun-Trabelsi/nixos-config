@@ -3,6 +3,7 @@
   home.packages = with pkgs; [
     ## Multimedia
     audacity
+    spotube
     gimp
     media-downloader
     obs-studio

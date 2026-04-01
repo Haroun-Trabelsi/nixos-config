@@ -28,7 +28,7 @@
     # ./rofi/rofi.nix # launcher (replaced by noctalia launcher)
     ./../../scripts/scripts.nix # personal scripts
     ./ssh.nix # ssh config
-    ./spicetify.nix # spotify client
+    # ./spicetify.nix # removed, replaced by spotube in gui packages
     ./swaylock.nix # lock screen
     ./swayosd.nix # brightness / volume wiget
     ./vscodium # vscode fork
