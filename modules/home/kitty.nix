@@ -24,10 +24,6 @@
       inactive_tab_font_style = "normal";
       tab_bar_style = "powerline";
       tab_powerline_style = "angled";
-      active_tab_foreground = "#cad3f5";
-      active_tab_background = "#494d64";
-      inactive_tab_foreground = "#cad3f5";
-      inactive_tab_background = "#363a4f";
     };
 
     keybindings = {

@@ -18,7 +18,7 @@
     valgrind
     llvmPackages_20.clang-tools
 
-    claude-code
+    # claude-code # installed via npm, nixpkgs version often lags behind
     nodejs_24
     docker
     docker-compose

@@ -7,7 +7,10 @@
       "WebFetch(domain:nix.catppuccin.com)",
       "Bash(ls:*)",
       "Bash(nix flake show:*)",
-      "Bash(nix eval:*)"
+      "Bash(nix eval:*)",
+      "Bash(pw-cli info:*)",
+      "Bash(pw-dump:*)",
+      "Bash(python3 -c \" import json, sys data = json.load\\(sys.stdin\\) for obj in data: if obj.get\\(''info'',{}\\).get\\(''props'',{}\\).get\\(''node.name''\\) == ''alsa_output.pci-0000_00_1f.3.analog-stereo'': params = obj.get\\(''info'',{}\\).get\\(''params'',{}\\) for route in params.get\\(''Route'',[]\\): print\\(json.dumps\\(route, indent=2\\)\\) break \")"
     ]
   }
 }
