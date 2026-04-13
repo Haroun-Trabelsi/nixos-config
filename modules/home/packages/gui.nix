@@ -9,7 +9,6 @@
     pavucontrol
     soundwireserver
     video-trimmer
-    vlc
 
     ## Office
     libreoffice

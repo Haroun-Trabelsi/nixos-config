@@ -8,7 +8,6 @@
       tt = "gtrash put";
       cat = "bat";
       nano = "micro";
-      code = "codium";
       diff = "delta --diff-so-fancy --side-by-side";
       less = "bat";
       copy = "wl-copy";
@@ -26,7 +25,7 @@
       tree = "eza --icons --tree --group-directories-first";
 
       # Nixos
-      cdnix = "cd ~/nixos-config && codium ~/nixos-config";
+      cdnix = "cd ~/nixos-config && code ~/nixos-config";
       ns = "nom-shell --run zsh";
       nsp = "nom-shell --run zsh -p";
       nd = "nom develop --command zsh";
@@ -34,7 +33,7 @@
       nc = "nh-notify nh clean all --keep 5";
       nft = "nh-notify nh os test";
       nfs = "nh-notify nh os switch";
-      nfu = "nh-notify nh os switch --update";
+      nfu = "nix flake update --flake ~/nixos-config nixpkgs hyprland && nh-notify nh os switch";
       nsearch = "nh search";
 
       # python

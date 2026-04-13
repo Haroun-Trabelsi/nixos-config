@@ -12,6 +12,7 @@ let
     terminal = [ "ghostty.desktop" ];
     archive = [ "org.gnome.FileRoller.desktop" ];
     discord = [ "webcord.desktop" ];
+    browser = [ "thorium.desktop" ];
   };
 
   mimeMap = {
@@ -68,6 +69,13 @@ let
       "application/*tar"
     ];
     discord = [ "x-scheme-handler/discord" ];
+    browser = [
+      "text/html"
+      "application/xhtml+xml"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+      "x-scheme-handler/ftp"
+    ];
   };
 
   associations =

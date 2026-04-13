@@ -91,6 +91,12 @@ in
         ];
       };
 
+      wireplumber.extraConfig."49-default-volume" = {
+        "wireplumber.settings" = {
+          "device.routes.default-sink-volume" = 1.0;
+        };
+      };
+
       wireplumber.extraConfig."50-deprioritize-raw-sink" = {
         "monitor.alsa.rules" = [
           {

@@ -20,7 +20,11 @@ in
         "ssh_id_github" = {
           owner = username;
           mode = "0600";
-          path = "/home/${username}/.ssh/id_github_work";
+          path = "/home/${username}/.ssh/id_github";
+        };
+        "github_personal_access_token" = {
+          owner = username;
+          mode = "0400";
         };
       };
     };

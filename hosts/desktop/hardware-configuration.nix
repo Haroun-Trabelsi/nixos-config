@@ -51,6 +51,18 @@
       "x-systemd.device-timeout=2s"
     ];
   };
+  fileSystems."/mnt/csgo" = {
+    device = "/dev/disk/by-uuid/54EF2567469E05CD";
+    fsType = "ntfs3";
+    options = [
+      "rw"
+      "force"
+      "uid=1000"
+      "gid=100"
+      "nofail"
+      "x-systemd.device-timeout=2s"
+    ];
+  };
 
   swapDevices = [
     { device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9"; }

@@ -179,7 +179,7 @@
         activeTemplates = [
           "kitty" # terminal colors
           "btop" # system monitor theme
-          "code" # vscodium editor theme
+          "code" # vscode editor theme
           "discord" # vesktop midnight + material css
           "spicetify" # spotify catppuccin theme colors
           "hyprland" # compositor border/accent colors

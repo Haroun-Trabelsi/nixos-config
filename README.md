@@ -155,7 +155,7 @@ Some notable ones that can help you are:
 |-------|---------|---------|
 | `nft` | `nh-notify nh os test`   | Test configuration changes without modifying the bootloader |
 | `nfs` | `nh-notify nh os switch` | Rebuild and activate the new system configuration |
-| `nfu` | `nh-notify nh os switch --update` | Update all flake inputs and rebuild/activate the new configuration (system update) |
+| `nfu` | `nix flake update --flake ~/nixos-config nixpkgs hyprland && nh-notify nh os switch` | Update `nixpkgs` and `hyprland` flake inputs only, then rebuild/activate |
 | `ns`  | `nom-shell --run zsh` | Enter a nix shell |
 | `nd`  | `nom develop --command zsh` | Enter a development environment from a `flake.nix` file |
 | `nb`  | `nom build` | Build packages exported by a flake |

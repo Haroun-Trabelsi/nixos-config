@@ -6,7 +6,9 @@
       "extensions.autoUpdate" = false; # This stuff fixes vscode freaking out when theres an update
       "window.titleBarStyle" = "custom";
       "window.customTitleBarVisibility" = "never";
-      "workbench.colorTheme" = "NoctaliaTheme";
+      "workbench.colorTheme" = "Eldritch";
+      "workbench.preferredLightColorTheme" = "Eldritch";
+      "workbench.preferredDarkColorTheme" = "Eldritch";
       "window.menuBarVisibility" = "hidden";
       "editor.fontFamily" = "'JetBrains Mono', 'SymbolsNerdFont', monospace";
       "terminal.integrated.fontFamily" = "'Monocraft', 'SymbolsNerdFont'";

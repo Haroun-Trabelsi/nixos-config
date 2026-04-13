@@ -11,6 +11,8 @@ elif hyprctl clients -j | jq -e '.[] | select(.class == "Spotify" or .class == "
     hyprctl dispatch workspace 9
     hyprctl dispatch focuswindow class:Spotify || hyprctl dispatch focuswindow class:spotify
 else
-    # Not running - launch (window rule sends to workspace 9)
-    spotify &
+    # Not running - launch on workspace 9 and switch to it
+    hyprctl dispatch exec '[workspace 9 silent]' spotify
+    sleep 1
+    hyprctl dispatch workspace 9
 fi

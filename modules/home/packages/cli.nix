@@ -2,6 +2,7 @@
 {
   home.packages = with pkgs; [
     ## Better core utils
+    dust                              # disk usage, better du
     duf                               # disk information
     eza                               # ls replacement
     fd                                # find replacement
@@ -15,6 +16,8 @@
 
     ## Tools / useful cli
     aoc-cli                           # Advent of Code command-line tool
+    glow                              # render markdown in terminal
+    lazydocker                        # TUI for Docker
     asciinema
     asciinema-agg
     hyperfine                         # benchmarking tool
