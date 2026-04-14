@@ -13,12 +13,19 @@ in
 
   xdg.desktopEntries.thorium = {
     name = "Thorium";
-    exec = "thorium ${thoriumFlags}";
+    exec = "thorium ${thoriumFlags} %U";
     icon = "chromium"; # Papirus supports this
     terminal = false;
     categories = [
       "Network"
       "WebBrowser"
+    ];
+    mimeType = [
+      "text/html"
+      "application/xhtml+xml"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+      "x-scheme-handler/ftp"
     ];
   };
   xdg.desktopEntries.advancedNetwork = {

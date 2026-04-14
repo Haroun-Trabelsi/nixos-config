@@ -101,6 +101,12 @@
         enableWindowsSearch = true;
       };
 
+      # ── Noctalia Performance ──────────────────────────────────────
+      # Enabled by default via exec-once IPC call; keep wallpaper running
+      noctaliaPerformance = {
+        disableWallpaper = false;
+      };
+
       # ── Control Center ──────────────────────────────────────────
       # controlCenter = {
       #   position = "close_to_bar_button";

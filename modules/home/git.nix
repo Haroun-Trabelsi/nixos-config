@@ -16,9 +16,8 @@
       color.ui = true;
 
       url = {
-        "git@github-work:JourneyAI-Team/".insteadOf = [
+        "git@github.com:JourneyAI-Team/".insteadOf = [
           "wk:"
-          "git@github.com:JourneyAI-Team/"
         ];
       };
 

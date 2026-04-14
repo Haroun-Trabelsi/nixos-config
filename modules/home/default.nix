@@ -29,10 +29,11 @@
     ./../../scripts/scripts.nix # personal scripts
     ./ssh.nix # ssh config
     ./spicetify.nix # spotify client
-    ./swaylock.nix # lock screen
+
     ./swayosd.nix # brightness / volume wiget
     ./vscodium # vscode fork
     # ./waypaper.nix # replaced by noctalia wallpaper
+    ./sops-env.nix # expose sops secrets as systemd session env vars
     ./xdg-mimes.nix # xdg config
     ./zsh # shell
   ];

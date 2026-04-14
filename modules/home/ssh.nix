@@ -21,8 +21,8 @@
         userKnownHostsFile = "~/.ssh/known_hosts";
       };
 
-      github-work = {
-        host = "github-work";
+      github = {
+        host = "github.com";
         hostname = "ssh.github.com";
         user = "git";
         port = 443;

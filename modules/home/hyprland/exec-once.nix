@@ -23,6 +23,9 @@
     # "${if (host == "desktop") then "caelestia shell idleInhibitor enable" else ""}"
     "${if (host == "desktop") then "sleep 5 && noctalia-shell ipc call idleInhibitor enable" else ""}"
 
+    # enable noctalia performance mode by default (wallpaper stays on via settings)
+    "sleep 5 && noctalia-shell ipc call powerProfile enableNoctaliaPerformance"
+
     "ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false"
     "[workspace 1 silent] zen-beta"
     "[workspace 2 silent] ghostty"
