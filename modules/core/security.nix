@@ -4,8 +4,7 @@
     rtkit.enable = true;
     sudo.enable = true;
 
-    pam.services = {
-      hyprlock = { };
-    };
+    # qylock uses PamContext with the default "login" service,
+    # which NixOS ships with out of the box — no extra entry needed.
   };
 }

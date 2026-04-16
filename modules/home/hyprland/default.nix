@@ -7,7 +7,7 @@
     ./settings.nix
     ./binds.nix
     ./windowrules.nix
-    ./hyprlock.nix
+    ./qylock.nix
     ./variables.nix
   ];
 }

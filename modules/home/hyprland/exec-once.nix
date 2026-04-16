@@ -1,11 +1,16 @@
-{ host, ... }:
+{ host, pkgs, ... }:
 {
+  wayland.windowManager.hyprland.settings.env = [
+    "QYLOCK_THEMES,${pkgs.qylock}/share/qylock/themes"
+  ];
+
   wayland.windowManager.hyprland.settings.exec-once = [
     # "hash dbus-update-activation-environment 2>/dev/null"
     "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
     "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 
-    "hyprlock"
+    # Animated video wallpaper via mpvpaper (restores last choice, defaults to Hollow Knight)
+    "qywall restore"
 
     "nm-applet --indicator &"
     "poweralertd &"

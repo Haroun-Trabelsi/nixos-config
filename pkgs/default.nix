@@ -9,4 +9,5 @@
   maple-mono-custom = pkgs.callPackage ./maple-mono { inherit inputs; };
   pixelitos = pkgs.callPackage ./pixelitos { };
   pomo = pkgs.callPackage ./pomo { };
+  qylock = pkgs.callPackage ./qylock { };
 }

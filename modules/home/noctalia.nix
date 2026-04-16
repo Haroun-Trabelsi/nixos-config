@@ -84,8 +84,11 @@
       };
 
       # ── Wallpaper ───────────────────────────────────────────────
+      # Disabled: mpvpaper drives the animated Hollow Knight wallpaper
+      # instead (exec-once.nix). Noctalia only supports static images
+      # and would conflict on the wlr background layer.
       wallpaper = {
-        enabled = true;
+        enabled = false;
         directory = "/home/fantasy/Pictures/Wallpapers";
         fillMode = "crop";
       };

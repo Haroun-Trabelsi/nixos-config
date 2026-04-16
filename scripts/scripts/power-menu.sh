@@ -44,7 +44,7 @@ run_cmd() {
         elif [[ $1 == '--reboot' ]]; then
             systemctl reboot
         elif [[ $1 == '--suspend' ]]; then
-            hyprlock &
+            qylock &
             systemctl suspend
         fi
     else
@@ -62,7 +62,7 @@ case ${chosen} in
         ;;
     $lock)
         sleep 0.1
-        hyprlock
+        qylock
         ;;
     $suspend)
         sleep 0.1
