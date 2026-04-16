@@ -35,7 +35,6 @@
       "$mod, G, exec, toggle-github-desktop"
       # "$mod, W, exec, caelestia shell drawers toggle sidebar"
       "$mod, W, exec, noctalia-shell ipc call notifications toggleHistory"
-      "$mod SHIFT, W, exec, qywall"
       "$mod, N, exec, pavucontrol"
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"
       "$mod, equal, exec, woomer"
