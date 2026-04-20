@@ -13,10 +13,9 @@
 
   hardware.i2c.enable = true;
 
-  boot.kernelModules = [
-    "iwlwifi"
-    "i2c-dev"
-  ];
+  # iwlwifi and i2c-dev are auto-loaded by udev when the hardware is detected,
+  # so we don't eagerly load them here. Saves time in systemd-modules-load.
+  boot.kernelModules = [ ];
 
   boot.extraModulePackages = with config.boot.kernelPackages; [
     ddcci-driver

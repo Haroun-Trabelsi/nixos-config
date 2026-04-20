@@ -94,6 +94,9 @@ in
       wireplumber.extraConfig."49-default-volume" = {
         "wireplumber.settings" = {
           "device.routes.default-sink-volume" = 1.0;
+          # Disable role-based ducking: leave volumes alone when higher-priority
+          # streams play (default 0.3 drops other streams to 30%).
+          "linking.role-based.duck-level" = 1.0;
         };
       };
 

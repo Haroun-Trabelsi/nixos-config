@@ -5,12 +5,16 @@
   ];
 
   wayland.windowManager.hyprland.settings.exec-once = [
+    # Lock screen FIRST so it paints before wallpaper/bar flash up
+    "qylock"
+
     # "hash dbus-update-activation-environment 2>/dev/null"
     "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
     "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 
+    # Wait for qylock to be running before launching visible desktop surfaces
     # Animated video wallpaper via mpvpaper (restores last choice, defaults to Hollow Knight)
-    "qywall restore"
+    "bash -c 'for i in {1..50}; do pgrep -x qylock >/dev/null && break; sleep 0.05; done; qywall restore'"
 
     "nm-applet --indicator &"
     "poweralertd &"
@@ -19,7 +23,7 @@
     "swaync &"
     "udiskie --automount --notify --smart-tray &"
     "hyprctl setcursor Nordzy-catppuccin-macchiato-dark 24 &"
-    "noctalia-shell &"
+    "bash -c 'for i in {1..50}; do pgrep -x qylock >/dev/null && break; sleep 0.05; done; noctalia-shell &'"
 
     # start monitor watcher on real hardware (not VM)
     "${if (host != "vm") then "monitor-watcher &" else ""}"

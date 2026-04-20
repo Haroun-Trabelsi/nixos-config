@@ -20,7 +20,7 @@
         # density = "default"; # "default" | "compact" | "spacious"
         # showCapsule = true;
         # capsuleOpacity = 1;
-        backgroundOpacity = 0.7; # TEST: lowered from 0.93 to 0.7
+        backgroundOpacity = 0; # fully transparent bar background
         marginVertical = 10; # TEST: bumped from 4 to 10
         marginHorizontal = 10; # TEST: bumped from 4 to 10
         frameRadius = 24; # TEST: doubled from 12 to 24
