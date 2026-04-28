@@ -75,7 +75,7 @@
 
       # ── Location & Weather ──────────────────────────────────────
       location = {
-        # name = "Paris";
+        name = "Menzel Bou Zelfa, Tunisia";
         # weatherEnabled = true;
         # useFahrenheit = false;
         # use12hourFormat = false;

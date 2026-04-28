@@ -67,7 +67,6 @@ in
                 "node.name" = "speakers-loopback";
                 "target.object" = "alsa_output.pci-0000_00_1f.3.analog-stereo";
                 "stream.dont-remix" = true;
-                "node.passive" = true;
               };
             };
           }
@@ -84,7 +83,6 @@ in
                 "node.name" = "headphones-loopback";
                 "target.object" = "alsa_output.pci-0000_00_1f.3.analog-stereo";
                 "stream.dont-remix" = true;
-                "node.passive" = true;
               };
             };
           }

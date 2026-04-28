@@ -16,6 +16,7 @@
 
     ## Networking
     dynamips
+    qbittorrent
     ubridge
     vpcs
 
