@@ -21,6 +21,11 @@
         ];
       };
 
+      credential = {
+        "https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+        "https://gist.github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+      };
+
       core.excludesFile = "/home/${username}/.config/git/.gitignore";
 
       filter.lfs = {
@@ -38,6 +43,10 @@
           user = {
             name = "Haroun-MJ";
             email = "haroun@meetjourney.ai";
+          };
+          credential = {
+            "https://github.com".helper = "";
+            "https://gist.github.com".helper = "";
           };
         };
       }
