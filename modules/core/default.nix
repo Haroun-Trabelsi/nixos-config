@@ -14,6 +14,7 @@
     ./services.nix
     ./system.nix
     ./flatpak.nix
+    ./miracast.nix
     ./user.nix
     ./wayland.nix
     ./qmk.nix

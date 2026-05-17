@@ -22,6 +22,7 @@
     nodejs_24
     google-cloud-sdk
     docker
+    sops
     docker-compose
     poetry
     mongodb-compass

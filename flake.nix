@@ -52,6 +52,13 @@
     };
     catppuccin.url = "github:catppuccin/nix";
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
+
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      # NOTE: do NOT make nixpkgs follow ours — nixpkgs 26.05 stdenv made
+      # unpackPhase reject unnamed archives, which breaks lanzaboote's
+      # pinned rust-overlay (rust-src-1.78.0 fetched without .tar.xz name).
+    };
   };
 
   outputs =

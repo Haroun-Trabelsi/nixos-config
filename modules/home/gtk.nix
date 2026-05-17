@@ -29,8 +29,8 @@
   gtk = {
     enable = true;
     iconTheme = {
-      name = "Colloid-dark";
-      package = pkgs.colloid-icon-theme;
+      name = "Tela-circle-purple-dark";
+      package = pkgs.tela-circle-icon-theme.override { colorVariants = [ "purple" ]; };
     };
     font = {
       name = "Jetbrains Mono";

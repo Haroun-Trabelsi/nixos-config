@@ -21,14 +21,11 @@ socat -U - UNIX-CONNECT:"$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.soc
         if echo "$line" | grep -qE "monitor(added|removed)>>(HDMI|DP)"; then
             sleep 1
 
-            # is external monitor connected?
-            if hyprctl monitors | grep -qE "HDMI|DP"; then
-                # external monitor connected - disable laptop screen
-                hyprctl keyword monitor "eDP-1,disable"
-            else
-                # no external monitor - enable laptop screen
-                hyprctl keyword monitor "eDP-1,preferred,auto,1"
-            fi
+            # keep laptop screen on and mirror any external monitor onto it
+            hyprctl keyword monitor "eDP-1,preferred,auto,1"
+            while read -r ext; do
+                hyprctl keyword monitor "${ext},preferred,auto,1,mirror,eDP-1"
+            done < <(hyprctl monitors -j | jq -r '.[] | select(.name != "eDP-1") | .name')
 
             # restart some apps after monitor change
             restart-apps

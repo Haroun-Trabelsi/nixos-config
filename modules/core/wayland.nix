@@ -10,15 +10,21 @@
 
   xdg.portal = {
     enable = true;
-    xdgOpenUsePortal = true;
+    xdgOpenUsePortal = false;
     config = {
       common.default = [ "gtk" ];
-      hyprland.default = [
-        "gtk"
-        "hyprland"
-      ];
+      hyprland = {
+        default = [
+          "gtk"
+          "hyprland"
+        ];
+        "org.freedesktop.impl.portal.OpenURI" = [ "gnome" ];
+      };
     };
 
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-gnome
+    ];
   };
 }

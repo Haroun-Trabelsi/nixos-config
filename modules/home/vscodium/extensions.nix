@@ -14,10 +14,10 @@
       ])
       ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {
-          name = "discord-vscode";
-          publisher = "icrawl";
-          version = "5.9.2";
-          sha256 = "1ndvl8k7r9jqal4mhhivnnk2li4sq0pm7fddrs6ilh19l30l0xp3";
+          name = "vscord";
+          publisher = "LeonardSSH";
+          version = "5.3.9";
+          sha256 = "0b26fm87pakxjhrsh2jm4cb7l2w1k5ffyfsfvxwqh8s426bli68d";
         }
       ];
   };

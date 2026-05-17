@@ -1,129 +1,77 @@
 { pkgs, ... }:
 let
-  audioPortSwitcher = pkgs.writeShellScript "audio-port-switcher" ''
-    # Switch the Built-in Audio ALSA device port when the default sink changes.
-    # Uses pw-cli because wpctl set-route can't handle overlapping route indices
-    # between HDMI and analog outputs on the same HDA Intel PCH card.
-    # Route index 3 + device 4 = analog-output-lineout
-    # Route index 4 + device 4 = analog-output-headphones
+  # The headset mic jack on this ALC256 is a "Phantom Jack" (no hardware sense),
+  # so the kernel can't auto-switch the analog input route when headphones are
+  # plugged in. The headphone OUTPUT jack does have real sense and switches
+  # natively — this service mirrors that state onto the input side.
+  micJackSwitcher = pkgs.writeShellScript "mic-jack-switcher" ''
+    set -u
+
+    card=0
+    jack_numid=15  # 'Headphone Jack'
 
     get_device_id() {
       ${pkgs.pipewire}/bin/pw-cli ls Device 2>/dev/null \
         | ${pkgs.gawk}/bin/awk '/^[[:space:]]*id /{id=$2; gsub(/,/,"",id)} /alsa_card.pci-0000_00_1f.3/{print id; exit}'
     }
 
-    switch_port() {
-      local dev
+    set_input_route() {
+      local dev idx
+      idx="$1"
       dev=$(get_device_id)
       [ -z "$dev" ] && return
-      case "$1" in
-        speakers)   ${pkgs.pipewire}/bin/pw-cli set-param "$dev" Route '{ index: 3, device: 4, props: {}, save: true }' ;;
-        headphones) ${pkgs.pipewire}/bin/pw-cli set-param "$dev" Route '{ index: 4, device: 4, props: {}, save: true }' ;;
-      esac
+      # index 0 = analog-input-internal-mic, index 1 = analog-input-headset-mic
+      ${pkgs.pipewire}/bin/pw-cli set-param "$dev" Route \
+        "{ index: $idx, device: 0, props: {}, save: true }" >/dev/null 2>&1 || true
     }
 
-    # Monitor default-sink metadata changes
-    ${pkgs.pipewire}/bin/pw-metadata -n default -m 2>/dev/null | while IFS= read -r line; do
-      if echo "$line" | ${pkgs.gnugrep}/bin/grep -q "default.audio.sink"; then
-        name=$(echo "$line" | ${pkgs.gnused}/bin/sed -n 's/.*"name":"\([^"]*\)".*/\1/p')
-        switch_port "$name"
+    sync_from_jack() {
+      if ${pkgs.alsa-utils}/bin/amixer -c "$card" cget numid="$jack_numid" 2>/dev/null \
+           | ${pkgs.gnugrep}/bin/grep -q "values=on"; then
+        set_input_route 1
+      else
+        set_input_route 0
       fi
+    }
+
+    # Initial sync at startup
+    sync_from_jack
+
+    # Watch for jack changes
+    ${pkgs.alsa-utils}/bin/alsactl monitor "hw:$card" 2>/dev/null | while read -r line; do
+      case "$line" in
+        *"Headphone Jack"*) sync_from_jack ;;
+      esac
     done
   '';
 in
 {
-  services = {
-    pipewire = {
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+    wireplumber.enable = true;
+
+    alsa = {
       enable = true;
-      pulse.enable = true;
-      wireplumber.enable = true;
+      support32Bit = true;
+    };
 
-      alsa = {
-        enable = true;
-        support32Bit = true;
-      };
-
-      extraConfig.pipewire-pulse."90-disable-cork" = {
-        "pulse.cmd" = [
-          {
-            cmd = "unload-module";
-            args = "module-role-cork";
-          }
-        ];
-      };
-
-      extraConfig.pipewire."92-virtual-sinks" = {
-        "context.modules" = [
-          {
-            name = "libpipewire-module-loopback";
-            args = {
-              "node.description" = "Speakers (Line Out)";
-              "capture.props" = {
-                "node.name" = "speakers";
-                "media.class" = "Audio/Sink";
-                "audio.position" = "FL,FR";
-              };
-              "playback.props" = {
-                "node.name" = "speakers-loopback";
-                "target.object" = "alsa_output.pci-0000_00_1f.3.analog-stereo";
-                "stream.dont-remix" = true;
-              };
-            };
-          }
-          {
-            name = "libpipewire-module-loopback";
-            args = {
-              "node.description" = "Headphones";
-              "capture.props" = {
-                "node.name" = "headphones";
-                "media.class" = "Audio/Sink";
-                "audio.position" = "FL,FR";
-              };
-              "playback.props" = {
-                "node.name" = "headphones-loopback";
-                "target.object" = "alsa_output.pci-0000_00_1f.3.analog-stereo";
-                "stream.dont-remix" = true;
-              };
-            };
-          }
-        ];
-      };
-
-      wireplumber.extraConfig."49-default-volume" = {
-        "wireplumber.settings" = {
-          "device.routes.default-sink-volume" = 1.0;
-          # Disable role-based ducking: leave volumes alone when higher-priority
-          # streams play (default 0.3 drops other streams to 30%).
-          "linking.role-based.duck-level" = 1.0;
-        };
-      };
-
-      wireplumber.extraConfig."50-deprioritize-raw-sink" = {
-        "monitor.alsa.rules" = [
-          {
-            matches = [
-              { "node.name" = "alsa_output.pci-0000_00_1f.3.analog-stereo"; }
-            ];
-            actions = {
-              update-props = {
-                "node.description" = "Built-in Audio (Raw)";
-                "priority.session" = 0;
-                "priority.driver" = 0;
-              };
-            };
-          }
-        ];
-      };
+    extraConfig.pipewire-pulse."90-disable-cork" = {
+      "pulse.cmd" = [
+        {
+          cmd = "unload-module";
+          args = "module-role-cork";
+        }
+      ];
     };
   };
 
-  # Daemon that switches the physical ALSA port when the default sink changes
-  systemd.user.services.audio-port-switcher = {
-    description = "Switch ALSA output port based on default PipeWire sink";
+  systemd.user.services.mic-jack-switcher = {
+    description = "Switch analog input route based on headphone jack state";
     wantedBy = [ "pipewire.service" ];
     after = [ "pipewire.service" "wireplumber.service" ];
     serviceConfig = {
-      ExecStart = audioPortSwitcher;
+      ExecStart = micJackSwitcher;
       Restart = "on-failure";
       RestartSec = 3;
     };

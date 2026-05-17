@@ -174,7 +174,7 @@
 
       # ── Color Scheme ────────────────────────────────────────────
       colorSchemes = {
-        predefinedScheme = "Catppuccin";
+        predefinedScheme = "Eldritch";
         # useWallpaperColors = false;
         # darkMode = true;
         # schedulingMode = "off"; # "off" | "manual" | "auto"
@@ -240,62 +240,45 @@
     };
 
     # ── Color scheme (Material 3) ─────────────────────────────────
-    # Written to ~/.config/noctalia/colors.json
-    # Catppuccin Macchiato palette — uncomment and tweak as desired.
+    # Written to ~/.config/noctalia/colors.json — overrides predefinedScheme
+    # on startup, so values must match the active scheme. Eldritch palette
+    # mirrored from noctalia's Assets/ColorScheme/Eldritch/Eldritch.json.
     colors = {
       dark = {
-        mPrimary = "#cba6f7";
-        mOnPrimary = "#11111b";
-        mSecondary = "#fab387";
-        mOnSecondary = "#11111b";
-        mTertiary = "#94e2d5";
-        mOnTertiary = "#11111b";
-        mError = "#f38ba8";
-        mOnError = "#11111b";
-        mSurface = "#1e1e2e";
-        mOnSurface = "#cdd6f4";
-        mSurfaceVariant = "#313244";
-        mOnSurfaceVariant = "#a3b4eb";
-        mOutline = "#4c4f69";
-        mShadow = "#11111b";
-        mHover = "#94e2d5";
-        mOnHover = "#11111b";
-        # terminal = {
-        #   normal = {
-        #     black = "#45475a"; red = "#f38ba8"; green = "#a6e3a1";
-        #     yellow = "#f9e2af"; blue = "#89b4fa"; magenta = "#f5c2e7";
-        #     cyan = "#94e2d5"; white = "#a6adc8";
-        #   };
-        #   bright = {
-        #     black = "#585b70"; red = "#f37799"; green = "#89d88b";
-        #     yellow = "#ebd391"; blue = "#74a8fc"; magenta = "#f2aede";
-        #     cyan = "#6bd7ca"; white = "#bac2de";
-        #   };
-        #   foreground = "#cdd6f4";
-        #   background = "#1e1e2e";
-        #   selectionFg = "#cdd6f4";
-        #   selectionBg = "#585b70";
-        #   cursorText = "#1e1e2e";
-        #   cursor = "#f5e0dc";
-        # };
+        mPrimary = "#37f499";
+        mOnPrimary = "#171928";
+        mSecondary = "#04d1f9";
+        mOnSecondary = "#171928";
+        mTertiary = "#a48cf2";
+        mOnTertiary = "#171928";
+        mError = "#f16c75";
+        mOnError = "#171928";
+        mSurface = "#212337";
+        mOnSurface = "#ebfafa";
+        mSurfaceVariant = "#292e42";
+        mOnSurfaceVariant = "#ABB4DA";
+        mOutline = "#3b4261";
+        mShadow = "#414868";
+        mHover = "#a48cf2";
+        mOnHover = "#171928";
       };
       light = {
-        mPrimary = "#8839ef";
-        mOnPrimary = "#eff1f5";
-        mSecondary = "#fe640b";
-        mOnSecondary = "#eff1f5";
-        mTertiary = "#40a02b";
-        mOnTertiary = "#eff1f5";
-        mError = "#d20f39";
-        mOnError = "#dce0e8";
-        mSurface = "#eff1f5";
-        mOnSurface = "#4c4f69";
-        mSurfaceVariant = "#ccd0da";
-        mOnSurfaceVariant = "#6c6f85";
-        mOutline = "#a5adcb";
-        mShadow = "#dce0e8";
-        mHover = "#40a02b";
-        mOnHover = "#eff1f5";
+        mPrimary = "#37f499";
+        mOnPrimary = "#171928";
+        mSecondary = "#04d1f9";
+        mOnSecondary = "#171928";
+        mTertiary = "#a48cf2";
+        mOnTertiary = "#171928";
+        mError = "#f16c75";
+        mOnError = "#171928";
+        mSurface = "#ffffff";
+        mOnSurface = "#171928";
+        mSurfaceVariant = "#f2f4f8";
+        mOnSurfaceVariant = "#3b4261";
+        mOutline = "#3b4261";
+        mShadow = "#414868";
+        mHover = "#a48cf2";
+        mOnHover = "#171928";
       };
     };
 

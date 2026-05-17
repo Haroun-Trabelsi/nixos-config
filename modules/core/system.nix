@@ -3,7 +3,7 @@
   # imports = [ inputs.nix-gaming.nixosModules.default ];
   nix = {
     settings = {
-      auto-optimise-store = true;
+      auto-optimise-store = false;
       experimental-features = [
         "nix-command"
         "flakes"

@@ -44,7 +44,7 @@
         padding: 0px 10px;
         border-radius: 25px;
         border: 10px;
-        background: alpha(#24273a, 0.99);
+        background: alpha(#212337, 0.99);
     }
 
     #container {
@@ -52,7 +52,7 @@
     }
 
     image, label {
-        color: #cad3f5;
+        color: #ebfafa;
     }
 
     progressbar:disabled,
@@ -70,13 +70,13 @@
         min-height: inherit;
         border-radius: inherit;
         border: none;
-        background: alpha(#DDDDDD, 0.2);
+        background: alpha(#7081d0, 0.2);
     }
     progress {
         min-height: inherit;
         border-radius: inherit;
         border: none;
-        background: #cad3f5;
+        background: #a48cf2;
     }
   '';
 }
