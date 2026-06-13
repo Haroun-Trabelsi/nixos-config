@@ -1,9 +1,5 @@
-{ host, pkgs, ... }:
+{ host, ... }:
 {
-  wayland.windowManager.hyprland.settings.env = [
-    "QYLOCK_THEMES,${pkgs.qylock}/share/qylock/themes"
-  ];
-
   wayland.windowManager.hyprland.settings.exec-once = [
     # Lock screen FIRST so it paints before wallpaper/bar flash up
     "qylock"
@@ -11,10 +7,6 @@
     # "hash dbus-update-activation-environment 2>/dev/null"
     "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
     "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-
-    # Wait for qylock to be running before launching visible desktop surfaces
-    # Animated video wallpaper via mpvpaper (restores last choice, defaults to Hollow Knight)
-    "bash -c 'for i in {1..50}; do pgrep -x qylock >/dev/null && break; sleep 0.05; done; qywall restore'"
 
     "nm-applet --indicator &"
     "poweralertd &"
@@ -36,7 +28,9 @@
     "sleep 5 && noctalia-shell ipc call powerProfile enableNoctaliaPerformance"
 
     "ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false"
-    "[workspace 1 silent] zen-beta"
     "[workspace 2 silent] ghostty"
+
+    # Wallpaper Engine wallpaper on all monitors (muted)
+    "bash -c 'for i in {1..50}; do hyprctl monitors -j | jq -e \".[0].name\" >/dev/null 2>&1 && break; sleep 0.1; done; args=\"\"; for out in $(hyprctl monitors -j | jq -r \".[].name\"); do args=\"$args --screen-root $out --bg 2411270069\"; done; exec linux-wallpaperengine --silent --no-fullscreen-pause --fps 60 $args >/dev/null 2>&1'"
   ];
 }

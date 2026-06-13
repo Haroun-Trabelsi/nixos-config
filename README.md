@@ -210,71 +210,118 @@ Here are some of the main keybinds:
 # 🚀 Installation
 
 > [!CAUTION]
-> This is a **personal** configuration. Use at your own risk. I am not responsible for any issues that may arise from using this setup. Always review and adapt the configuration to your needs before installation.
+> This is a **personal** configuration. Use at your own risk. Always review and adapt the configuration to your needs before installation.
 
 > [!WARNING]
-> **VM Usage Notice:** Hyprland does **not** officially support virtual machines. While it often works, you may encounter graphical issues, performance problems, or complete incompatibility depending on your VM configuration.
->
-> If you wish to test this configuration in a VM, please review Hyprland's [VM guide](https://wiki.hypr.land/Getting-Started/Master-Tutorial/#vm) for setup recommendations and known limitations.
+> **VM Usage Notice:** Hyprland does **not** officially support virtual machines. While it often works, you may encounter graphical issues or performance problems depending on your VM configuration. See Hyprland's [VM guide](https://wiki.hypr.land/Getting-Started/Master-Tutorial/#vm).
 
-### Installation Steps
+### Bootstrap procedure (fresh device)
 
-#### 1. **Install NixOS**
-First, install NixOS using any [graphical ISO](https://nixos.org/download.html#nixos-iso).
+This fork is set up for one host in particular — `desktop` (AMD CPU + NVIDIA RTX 5060 Ti, Secure Boot via Lanzaboote, sops-nix for secrets). The vanilla `install.sh` is **not** enough on a fresh machine — there are a few host-specific gotchas you need to walk through manually. Read this section before running anything.
 
-*Tested with the GNOME installer using the "No desktop" option*
+#### 1. Install NixOS
 
-#### 2. **Clone the Repository**
+Boot any official [NixOS ISO](https://nixos.org/download.html#nixos-iso). The graphical installer's "No desktop" option works fine. Complete the install and reboot into the base system before continuing.
+
+#### 2. Clone the repo
 
 ```bash
 nix-shell -p git
-git clone https://github.com/Frost-Phoenix/nixos-config
-cd nixos-config
+git clone https://github.com/Haroun-Trabelsi/nixos-config ~/nixos-config
+cd ~/nixos-config
 ```
 
-The configuration expects the repo to be located at `$HOME/nixos-config`.
+The configuration expects the repo at `$HOME/nixos-config`.
 
-#### 3. **Run the Install Script**
+#### 3. Regenerate `hardware-configuration.nix`
 
-> [!TIP]
-> As it is better to know what a script does before running it, you are advised to read and understand it. You can find the install script [here](./install.sh)
+The committed `hosts/desktop/hardware-configuration.nix` contains UUIDs and a disk layout from the previous install — those will not match a fresh machine. Replace it:
+
+```bash
+sudo nixos-generate-config --show-hardware-config > hosts/desktop/hardware-configuration.nix
+```
+
+Then re-apply the host-specific tweaks that aren't auto-generated:
+- `boot.kernelModules = [ ];` (intentionally empty — no KVM on this host)
+- `hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;` (the generator may emit `intel` on AMD; confirm it's `amd`)
+- The extra `/mnt/storage`, `/mnt/csgo`, `/mnt/nvme` NTFS mounts — re-add only if those drives are physically present on the new machine.
+
+> [!IMPORTANT]
+> `install.sh` will copy `/etc/nixos/hardware-configuration.nix` over the committed one automatically, but the script's copy does **not** strip the auto-generated `kvm-intel` / `intel.updateMicrocode` lines. Fix them by hand after running the script if you let it auto-copy.
+
+#### 4. (Optional) Update the disk path in `disko.nix`
+
+`hosts/desktop/disko.nix` pins `device = "/dev/disk/by-id/ata-USSD_512GB_..."` — the serial of the *current* SSD. If you want to use disko to partition a fresh disk, replace that value with the new disk's `by-id` path (`ls /dev/disk/by-id`). If you're not partitioning with disko, this file is unused at activation time.
+
+#### 5. Bootstrap Secure Boot (Lanzaboote)
+
+This config force-disables `systemd-boot` and uses [Lanzaboote](https://github.com/nix-community/lanzaboote) for Secure Boot. **The system will not boot after activation unless keys are enrolled first.**
+
+In your firmware UI, put Secure Boot into **Setup Mode** (clear factory keys), then:
+
+```bash
+# generate keys
+sudo nix run nixpkgs#sbctl -- create-keys
+
+# enroll Microsoft + your keys (Microsoft keys are needed for OptionROMs)
+sudo nix run nixpkgs#sbctl -- enroll-keys --microsoft
+```
+
+After enrollment, re-enable Secure Boot in firmware. The first `nixos-rebuild switch` after this step will sign the bootloader and kernel.
+
+#### 6. Bootstrap sops age key
+
+Secrets in `secrets/secrets.yaml` are encrypted with [sops-nix](https://github.com/Mic92/sops-nix). The age private key is **not** in the repo — restore it from your backup:
+
+```bash
+mkdir -p ~/.config/sops/age
+# copy your existing age key into:
+#   ~/.config/sops/age/keys.txt   (chmod 600)
+```
+
+Without this file, `nixos-rebuild` will fail to materialize `/run/secrets/github_personal_access_token` and `/run/secrets/ssh_id_github`. The shell will still boot, but GitHub SSH and any tooling that reads the PAT will silently fail.
+
+If you don't have the age key, you can either re-encrypt `secrets/secrets.yaml` with a new key (`sops` + new recipient in `.sops.yaml`) or temporarily delete `secrets/secrets.yaml` — `modules/core/sops.nix` is wrapped in `lib.mkIf hasSecrets` and will no-op without it.
+
+#### 7. Run the install script
 
 ```bash
 ./install.sh
 ```
 
-The script will guide you through host selection and apply the configuration.
-
-The installation phase can take quite some time depending on your machine.
+It prompts for username + host, copies `/etc/nixos/hardware-configuration.nix` into the repo, sets up wallpaper dirs, and runs `nixos-rebuild switch --flake .#${HOST}`. Build time depends on your hardware — Aseprite alone takes ~20 min from source unless you opt out at the prompt.
 
 > [!NOTE]
-> If the build gets stuck , due to RAM constraints (see [PR #30](https://github.com/Frost-Phoenix/nixos-config/pull/30)), you may need to edit the script to limit CPU cores:
+> If the build OOMs, edit the last line of `install.sh` to limit parallelism:
 >
 > ```diff
-> # Change in install.sh:
 > - sudo nixos-rebuild switch --flake .#${HOST}
 > + sudo nixos-rebuild switch --cores 4 --flake .#${HOST}
 > ```
 
-#### 4. **Reboot**
+#### 8. Reboot
 
-After the installation completes, reboot your system. If the installation was successful, you should be greeted by Hyprlock.
+If everything succeeded, Hyprlock greets you on boot. If you see GRUB / systemd-boot instead of Lanzaboote, step 5 was skipped or the keys weren't enrolled — recover via the previous generation, redo step 5, then `nfs` again.
 
-#### 5. **Post Install**
+#### 9. Post-install manual steps
 
-Some manual configuration is still required:
+A few things aren't (and can't be) automated by nix:
 
-- **Browser**: Configure your browser extensions, settings, etc. (for now, all browser configuration is done manually)
-- **Aseprite Themes**: Import themes from aseprite [themes folder](./modules/home/aseprite/themes/)
-- **Git Identity**: Update the [git.nix](./modules/home/git.nix) file with your name and email
-```nix
-programs.git = {
-   ...
-   userName = "<your_name>";
-   userEmail = "<your_email>";
-   ...
-};
-```
+- **Git identity** — edit `modules/home/git.nix` with your name + email, then `nfs`.
+- **claude-code** — `modules/home/zsh/zsh.nix` exports `CLAUDE_CODE_*` env vars but the binary itself is installed via npm (the nixpkgs version lags). Run `npm i -g @anthropic-ai/claude-code` after first login.
+- **Browser** — Zen / Thorium are launched at startup; extensions, profiles, and bookmarks are not managed by nix.
+- **Aseprite themes** — import from `modules/home/aseprite/themes/` if Aseprite is enabled.
+- **Hyprland monitors / workspaces** — `modules/home/hyprland/monitors.nix` sources `~/.config/hypr/{monitors,workspaces}.conf` (both wrapped with `noerror`). Drop in per-machine config files if you want monitor placement / workspace rules.
+- **Failing-DIMM `memmap` reservations** — `hosts/desktop/default.nix:97-105` reserves bad pages from a specific failing DIMM (RMA pending). If you build on a different machine, **delete the `memmap=` kernelParams** or you'll waste a tiny amount of RAM on nothing.
+
+### Known fragile spots
+
+A non-exhaustive list of things that are tied to the current install and worth re-checking when you wipe:
+
+- `hosts/desktop/disko.nix:2` — disk `by-id` is hardware-specific.
+- `hosts/desktop/hardware-configuration.nix` — all `fileSystems` / `swapDevices` UUIDs.
+- `hosts/desktop/default.nix:55-74` — TLP battery + Intel-GPU keys are stale (desktop has no battery, GPU is NVIDIA). Harmless but produces boot-log warnings.
+- `modules/home/hyprland/variables.nix:9` — `SSH_AUTH_SOCK` hardcodes UID `1000`. Fine for the default user, latent bug if uid differs.
 
 # 👥 Credits
 

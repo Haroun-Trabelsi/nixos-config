@@ -23,7 +23,7 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
@@ -63,12 +63,24 @@
       "x-systemd.device-timeout=2s"
     ];
   };
+  fileSystems."/mnt/nvme" = {
+    device = "/dev/disk/by-uuid/FC66525166520CB0";
+    fsType = "ntfs3";
+    options = [
+      "rw"
+      "force"
+      "uid=1000"
+      "gid=100"
+      "nofail"
+      "x-systemd.device-timeout=2s"
+    ];
+  };
 
   swapDevices = [
     { device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9"; }
   ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   hardware.enableRedistributableFirmware = true;
 }

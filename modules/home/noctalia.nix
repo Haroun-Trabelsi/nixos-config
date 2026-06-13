@@ -83,16 +83,6 @@
         # firstDayOfWeek = -1; # -1 = locale default, 0 = Sunday, 1 = Monday
       };
 
-      # ── Wallpaper ───────────────────────────────────────────────
-      # Disabled: mpvpaper drives the animated Hollow Knight wallpaper
-      # instead (exec-once.nix). Noctalia only supports static images
-      # and would conflict on the wlr background layer.
-      wallpaper = {
-        enabled = false;
-        directory = "/home/fantasy/Pictures/Wallpapers";
-        fillMode = "crop";
-      };
-
       # ── App Launcher ────────────────────────────────────────────
       appLauncher = {
         # position = "center"; # "center" | "top" | "bottom"
@@ -105,7 +95,7 @@
       };
 
       # ── Noctalia Performance ──────────────────────────────────────
-      # Enabled by default via exec-once IPC call; keep wallpaper running
+      # Enabled by default via exec-once IPC call.
       noctaliaPerformance = {
         disableWallpaper = false;
       };

@@ -15,10 +15,12 @@
     ./system.nix
     ./flatpak.nix
     ./miracast.nix
+    ./deepcool.nix
     ./user.nix
     ./wayland.nix
     ./qmk.nix
     ./sops.nix
     ./steam.nix
+    ./sunshine.nix
   ];
 }

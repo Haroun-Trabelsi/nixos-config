@@ -25,7 +25,6 @@
       "match:title ^(Picture-in-Picture)$, pin on"
       "match:title ^(Picture-in-Picture)$, float on"
 
-      "match:class ^(zen-beta)$, workspace 1"
       "match:class ^(Gimp-2.10)$, workspace 4"
       "match:class ^(Aseprite)$, workspace 4"
       "match:class ^(Audacious)$, workspace 5"
@@ -38,7 +37,6 @@
       "match:class ^(vesktop)$, workspace 10"
 
       "match:class ^(mpv)$, idle_inhibit focus"
-      "match:class ^(zen-beta)$, match:title ^(.*YouTube.*)$, idle_inhibit focus"
       "match:class ^(zen)$, idle_inhibit fullscreen"
 
       "match:class ^(xdg-desktop-portal-gtk)$, dim_around on"

@@ -29,6 +29,9 @@
     mongosh
     railway
     redis
+    ngrok
+    stripe-cli
+    prometheus
     terraform
     ## Python
     python3

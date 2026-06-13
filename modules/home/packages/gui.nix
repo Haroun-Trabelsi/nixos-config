@@ -4,11 +4,13 @@
     ## Multimedia
     audacity
     gimp
+    linux-wallpaperengine
     media-downloader
     obs-studio
     pavucontrol
     soundwireserver
     video-trimmer
+    vlc
 
     ## Office
     libreoffice

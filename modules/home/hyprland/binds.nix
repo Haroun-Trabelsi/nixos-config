@@ -37,7 +37,6 @@
       "$mod, W, exec, noctalia-shell ipc call notifications toggleHistory"
       "$mod, N, exec, pavucontrol"
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"
-      "$mod, equal, exec, woomer"
       "$mod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
       "$mod, Tab, workspace, previous"
       "$mod, A, pin,"
@@ -47,6 +46,9 @@
       ", Print, exec, screenshot --copy"
       "$mod, Print, exec, screenshot --save"
       "$mod SHIFT, Print, exec, screenshot --swappy"
+
+      # screen recording (toggle: same bind starts/stops)
+      "$mod ALT, R, exec, screenrecord"
 
       # OCR
       "$mod CTRL, O, exec, ocr"
