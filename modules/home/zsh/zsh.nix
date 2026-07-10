@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   programs.zsh = {
     enable = true;
-    # enableCompletion = true;
+    enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
@@ -113,7 +113,11 @@
       zstyle ':fzf-tab:*' switch-group ',' '.'
     '';
 
-    initContent = ''
+    initContent = lib.mkMerge [
+      (lib.mkAfter ''
+        eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+      '')
+      ''
       # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
       # Initialization code that may require console input (password prompts, [y/n]
       # confirmations, etc.) must go above this block; everything else may go below.
@@ -123,9 +127,10 @@
 
       DISABLE_AUTO_UPDATE=true
       DISABLE_MAGIC_FUNCTIONS=true
+      export CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=TRUE
       export "MICRO_TRUECOLOR=1"
+      export GITHUB_PERSONAL_ACCESS_TOKEN="$(cat /run/secrets/github_personal_access_token 2>/dev/null)"
       export PATH="$PATH:$HOME/.local/bin"
-
       setopt sharehistory
       setopt hist_ignore_space
       setopt hist_ignore_all_dups
@@ -175,11 +180,12 @@
         zle -N zle-line-init
         zle -N zle-line-finish
       fi
-    '';
+    ''
+    ];
   };
 
   programs.zoxide = {
     enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
   };
 }
