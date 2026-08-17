@@ -7,6 +7,7 @@
     ./hardware.nix
     ./xserver.nix
     ./network.nix
+    ./tailscale.nix
     ./bluetooth.nix
     ./browser-policies.nix
     ./nh.nix
