@@ -3,7 +3,8 @@ with lib;
 let
   defaultApps = {
     text = [ "org.gnome.TextEditor.desktop" ];
-    image = [ "imv-dir.desktop" ];
+    # our own visible entry from imv.nix, not the package's NoDisplay=true one
+    image = [ "imv-viewer.desktop" ];
     audio = [ "mpv.desktop" ];
     video = [ "mpv.desktop" ];
     directory = [ "org.kde.dolphin.desktop" ];
@@ -13,15 +14,21 @@ let
     archive = [ "org.gnome.FileRoller.desktop" ];
     discord = [ "webcord.desktop" ];
     browser = [ "thorium.desktop" ];
+    # our own scheme: claude-plan://ENG-123 from the Linear bookmarklet
+    claudePlan = [ "linear-plan.desktop" ];
   };
 
   mimeMap = {
     text = [ "text/plain" ];
     image = [
+      "image/avif"
       "image/bmp"
       "image/gif"
+      "image/heic"
+      "image/heif"
       "image/jpeg"
       "image/jpg"
+      "image/jxl"
       "image/png"
       "image/svg+xml"
       "image/tiff"
@@ -38,13 +45,19 @@ let
       "audio/x-matroska"
     ];
     video = [
+      "video/3gpp"
+      "video/3gpp2"
       "video/mp2t"
       "video/mp4"
       "video/mpeg"
       "video/ogg"
+      "video/quicktime"
       "video/webm"
       "video/x-flv"
+      "video/x-m4v"
       "video/x-matroska"
+      "video/x-ms-asf"
+      "video/x-ms-wmv"
       "video/x-msvideo"
     ];
     directory = [ "inode/directory" ];
@@ -69,6 +82,7 @@ let
       "application/*tar"
     ];
     discord = [ "x-scheme-handler/discord" ];
+    claudePlan = [ "x-scheme-handler/claude-plan" ];
     browser = [
       "text/html"
       "application/xhtml+xml"

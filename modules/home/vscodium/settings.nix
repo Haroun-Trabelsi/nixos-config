@@ -4,6 +4,39 @@
     profiles.default.userSettings = {
       "update.mode" = "none";
       "extensions.autoUpdate" = false; # This stuff fixes vscode freaking out when theres an update
+
+      # --- background CPU ---
+      # Telemetry, crash reporting and experiments all poll and phone home on a
+      # timer. None of them do anything for you on a battery-powered laptop.
+      "telemetry.telemetryLevel" = "off";
+      "telemetry.enableTelemetry" = false;
+      "telemetry.enableCrashReporter" = false;
+      "workbench.enableExperiments" = false;
+      "workbench.settings.enableNaturalLanguageSearch" = false;
+      "npm.fetchOnlinePackageInfo" = false;
+      "extensions.ignoreRecommendations" = true;
+      "update.showReleaseNotes" = false;
+
+      # The file watcher walks and inotify-watches every path in the workspace.
+      # On a node/python repo that is tens of thousands of files it will never
+      # need, and each change wakes the CPU. These are the usual offenders.
+      "files.watcherExclude" = {
+        "**/.git/objects/**" = true;
+        "**/.git/subtree-cache/**" = true;
+        "**/node_modules/**" = true;
+        "**/.venv/**" = true;
+        "**/venv/**" = true;
+        "**/__pycache__/**" = true;
+        "**/.mypy_cache/**" = true;
+        "**/.pytest_cache/**" = true;
+        "**/dist/**" = true;
+        "**/build/**" = true;
+        "**/.next/**" = true;
+        "**/target/**" = true;
+        "**/result" = true;
+        "**/.direnv/**" = true;
+      };
+      "search.followSymlinks" = false;
       "window.titleBarStyle" = "custom";
       "window.customTitleBarVisibility" = "never";
       "workbench.colorTheme" = "Eldritch";

@@ -41,8 +41,8 @@
         condition = "gitdir:~/work/";
         contents = {
           user = {
-            name = "Haroun-MJ";
-            email = "haroun@meetjourney.ai";
+            name = "Haroun Trabelsi";
+            email = "fantasycrit20@gmail.com";
           };
           credential = {
             "https://github.com".helper = "";

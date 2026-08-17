@@ -2,6 +2,7 @@
 {
   imports = [
     ./sway.nix # compositor, packages, session
+    ./variables.nix # session environment
     ./input.nix # keyboard/touchpad/seat
     ./outputs.nix # monitors + workspace pinning
     ./binds.nix # keybindings

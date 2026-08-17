@@ -11,7 +11,6 @@
     };
     thorium.url = "github:Rishabh5321/thorium_flake";
     nix-gaming.url = "github:fufexan/nix-gaming";
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
@@ -23,10 +22,6 @@
       flake = false;
     };
 
-    spicetify-nix = {
-      url = "github:Gerg-L/spicetify-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     superfile.url = "github:yorukot/superfile";
 
     disko = {

@@ -15,7 +15,6 @@
     ./security.nix
     ./services.nix
     ./system.nix
-    ./flatpak.nix
     ./user.nix
     ./wayland.nix
     ./qmk.nix

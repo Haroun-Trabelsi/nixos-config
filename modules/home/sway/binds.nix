@@ -32,7 +32,7 @@ in
         "Alt+e" = "exec dolphin --qwindowgeometry 1111x700";
         "${mod}+b" = "exec toggle-browser";
         "${mod}+d" = "exec toggle-discord";
-        "${mod}+s" = "exec toggle-spotify";
+        "${mod}+s" = "exec toggle-music";
         "${mod}+g" = "exec toggle-github-desktop";
         "${mod}+c" = "exec work-terminals";
         "${mod}+n" = "exec pavucontrol";
