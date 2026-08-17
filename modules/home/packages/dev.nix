@@ -9,6 +9,27 @@
   # self-updating npm CLIs that aren't in nixpkgs (e.g. the Salesforce CLI,
   # `@salesforce/cli` -> `sf`) can be installed and update themselves.
   home.sessionVariables.NPM_CONFIG_PREFIX = "${config.home.homeDirectory}/.npm-global";
+  # /usr/local/bin is not on NixOS's PATH by default. It holds the Coder CLI,
+  # installed imperatively by coder.com's install script (a 421 MB static Go
+  # binary at /usr/local/bin/coder — it runs fine without nix-ld).
+  #
+  # APPENDED via sessionVariablesExtra, not home.sessionPath: home-manager
+  # PREPENDS sessionPath ahead of $PATH, which would let anything dropped into
+  # /usr/local/bin silently shadow a Nix-store binary of the same name. Appending
+  # means the store always wins and this is a fallback only.
+  #
+  # Two caveats that come with living outside Nix: it is not reproducible (a
+  # fresh install of this flake will not have the binary), and it is never
+  # garbage-collected or rebuilt when nixpkgs moves.
+  #
+  # nixpkgs does package coder, but at 2.33.9 against the 2.36.0 mainline
+  # installed here. Coder is version-sensitive between CLI and deployment, so
+  # the upstream installer is the right call while that gap exists — switch to
+  # `pkgs.coder` and drop this once the versions line up.
+  home.sessionVariablesExtra = ''
+    export PATH="$PATH:/usr/local/bin"
+  '';
+
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-global/bin" ];
 
   home.packages = with pkgs; [
