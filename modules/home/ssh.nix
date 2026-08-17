@@ -1,5 +1,21 @@
-{ ... }:
+{ lib, ... }:
 {
+  # home-manager normally symlinks ~/.ssh/config into the Nix store, where the
+  # file is owned by root. OpenSSH accepts that (it explicitly allows uid 0 as
+  # long as the file is not group/other-writable), but stricter clients do not —
+  # Zed refuses to connect with "Bad owner or permissions on ~/.ssh/config"
+  # because it insists the file be owned by the invoking user.
+  #
+  # So: redirect home-manager's generated file to ~/.ssh/config.hm, then copy it
+  # into place as a real file owned by this user with mode 600. Overriding
+  # `target` also stops home-manager managing ~/.ssh/config directly, which
+  # avoids it fighting the copy and littering .hm-backup files on every switch.
+  home.file.".ssh/config".target = ".ssh/config.hm";
+
+  home.activation.sshConfigRealFile = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    run install -m600 -T "$HOME/.ssh/config.hm" "$HOME/.ssh/config"
+  '';
+
   programs.ssh = {
     enable = true;
 
