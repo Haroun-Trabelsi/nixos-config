@@ -10,6 +10,7 @@
     ./hardware-configuration.nix
     ./../../modules/core
     ./ollama.nix
+    ./tv-audio.nix
     inputs.lanzaboote.nixosModules.lanzaboote
   ];
 
@@ -18,6 +19,13 @@
   boot.lanzaboote = {
     enable = true;
     pkiBundle = "/var/lib/sbctl";
+
+    # Always show the generation list, with no countdown and no key held down.
+    # loader.conf(5): "menu-force" disables the timeout while always showing the
+    # menu. It has to be set here rather than via boot.loader.timeout because
+    # that option is typed `null or signed integer`; lanzaboote.settings is a
+    # freeform attrset written straight into loader.conf, so it accepts it.
+    settings.timeout = "menu-force";
   };
 
   # NVIDIA
