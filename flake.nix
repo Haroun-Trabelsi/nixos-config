@@ -5,6 +5,18 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nur.url = "github:nix-community/NUR";
 
+    # Pinned ONLY to supply zed-editor, overlaid in modules/core/nixpkgs.nix.
+    # The main nixpkgs (nixos-unstable) currently carries Zed 0.229.0, and Zed's
+    # server no longer publishes a zed-remote-server asset for a release that
+    # old — so `zed --ssh` fails with "not found in 0.229.0" and remote
+    # development is impossible. This rev has 1.9.0.
+    #
+    # Deliberately a separate input rather than bumping nixpkgs: the blast radius
+    # of a full unstable update right after the sway/power migration is the whole
+    # system, and everything else here is measured and verified as-is.
+    # Revisit (and drop this input) once nixos-unstable catches up past 1.9.0.
+    nixpkgs-zed.url = "github:NixOS/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
