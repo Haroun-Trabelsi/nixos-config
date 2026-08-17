@@ -79,6 +79,12 @@
         command = "move container to workspace number 8";
       }
       {
+        # Zed's Wayland app_id. Verify with `swaymsg -t get_tree` on first run;
+        # if it differs, this rule and toggle-zed both need the real value.
+        criteria.app_id = "^dev\\.zed\\.Zed$";
+        command = "move container to workspace number 8";
+      }
+      {
         criteria.app_id = "^com\\.obsproject\\.Studio$";
         command = "move container to workspace number 8";
       }

@@ -34,7 +34,9 @@ in
         "${mod}+d" = "exec toggle-discord";
         "${mod}+s" = "exec toggle-music";
         "${mod}+g" = "exec toggle-github-desktop";
-        "${mod}+c" = "exec work-terminals";
+        "${mod}+c" = "exec toggle-zed";
+        # work-terminals lost Win+C to zed; kept here rather than dropped
+        "${mod}+Shift+c" = "exec work-terminals";
         "${mod}+n" = "exec pavucontrol";
         "${mod}+Shift+p" = "exec linear-plan";
         "Ctrl+Shift+Escape" = "exec missioncenter";

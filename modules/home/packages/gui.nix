@@ -11,6 +11,11 @@
     video-trimmer
     vlc
 
+    ## Editors
+    # Native (Rust/GPUI), not Electron — the point of Win+C. VS Code stays
+    # installed for when you want its extension ecosystem.
+    zed-editor
+
     ## Office
     libreoffice
     onlyoffice-desktopeditors
