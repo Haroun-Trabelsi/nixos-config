@@ -35,7 +35,10 @@
     # claude-code # installed via npm, nixpkgs version often lags behind
     nodejs_24
     google-cloud-sdk
-    docker
+    # Client only (no dockerd binary): the CLI is still needed to drive a REMOTE
+    # daemon via `docker context`, which is the whole point of moving these
+    # services off the laptop. pkgs.docker would ship the daemon too.
+    docker-client
     sops
     docker-compose
     poetry

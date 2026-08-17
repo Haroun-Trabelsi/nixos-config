@@ -26,15 +26,25 @@
     };
     backupFileExtension = "hm-backup";
   };
-  virtualisation.docker.enable = true;
-
-  # don't start docker at boot — socket activation starts it on first use
-  systemd.services.docker.wantedBy = pkgs.lib.mkForce [ ];
+  # No local Docker daemon. The redis/qdrant/mongodb containers were the single
+  # largest power item left: with them up the machine drew ~15 W against a 4.22 W
+  # idle, i.e. battery life fell from ~6.5 h to under 2 h.
+  #
+  # Socket activation meant they were not running at boot, but any stray `docker`
+  # command woke the daemon and every container with a restart policy — which is
+  # exactly what happened while auditing this.
+  #
+  # /var/lib/docker is left untouched, so no images, volumes or container data are
+  # lost and re-enabling is one line. Run these services on a remote host and
+  # reach it over the tailnet:
+  #   docker context create remote --docker host=ssh://user@host
+  #   docker context use remote
   users.users.${username} = {
     isNormalUser = true;
     description = "${username}";
     extraGroups = [
-      "docker"
+      # "docker" dropped with the local daemon — the group only grants access to
+      # a socket that no longer exists.
       # "i2c" dropped along with hardware.i2c/ddcci — see modules/core/hardware.nix
       "networkmanager"
       "wheel"
