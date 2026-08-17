@@ -81,10 +81,21 @@ lib.mkIf (config.machine.profile == "laptop") {
     # Framebuffer compression: fewer memory reads to scan out an unchanged screen.
     "i915.enable_fbc=1"
 
-    # NOT setting i915.enable_psr / enable_psr2_sel_fetch here. Panel self-refresh
-    # is the biggest display-pipe saving left, but on ASUS panels it can flicker
-    # or flash black, and the failure mode is intermittent enough that bundling
-    # it with anything else makes the regression ambiguous. It goes in alone.
+    # Panel self-refresh: the display sleeps its link and refreshes itself from
+    # the panel's own framebuffer while the image is static, so the memory and
+    # display pipes idle instead of scanning out identical frames 60x a second.
+    # PSR2 selective fetch narrows that further to only the damaged rectangles.
+    #
+    # This only pays off now that nothing repaints the screen continuously — the
+    # 60 fps wallpaper engine defeated it entirely, and `hide_cursor 5000` in the
+    # sway seat config exists so a visible pointer does not keep its plane live.
+    #
+    # KNOWN RISK: on some ASUS panels PSR flickers or flashes black, and the
+    # failure mode is intermittent — it can take hours to show. If you see it,
+    # drop these two lines; nothing else depends on them.
+    # Check status: sudo cat /sys/kernel/debug/dri/0/i915_edp_psr_status
+    "i915.enable_psr=1"
+    "i915.enable_psr2_sel_fetch=1"
   ];
 
   # Radio power save, matching the TLP setting above.
