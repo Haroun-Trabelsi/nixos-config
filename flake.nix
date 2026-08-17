@@ -71,33 +71,32 @@
         config.allowUnfree = true;
       };
       lib = nixpkgs.lib;
+
+      # The single system config. Both machines boot this; the tower is a
+      # specialisation inside it (see hosts/portable/specialisations.nix).
+      portable = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [ ./hosts/portable ];
+        specialArgs = {
+          inherit self inputs username;
+        };
+      };
     in
     {
       nixosConfigurations = {
-        desktop = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [ ./hosts/desktop ];
-          specialArgs = {
-            host = "desktop";
-            inherit self inputs username;
-          };
-        };
-        p14s = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [ ./hosts/p14s ];
-          specialArgs = {
-            host = "p14s";
-            inherit self inputs username;
-          };
-        };
-        vm = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [ ./hosts/vm ];
-          specialArgs = {
-            host = "vm";
-            inherit self inputs username;
-          };
-        };
+        # One config for one portable SSD. The base is the laptop; the AMD/NVIDIA
+        # tower is a `specialisation` inside it with its own signed boot entry,
+        # picked from the boot menu rather than by rebuilding first.
+        #
+        # There is no `host` specialArg any more: specialArgs are fixed per
+        # nixosConfiguration and cannot vary per specialisation, so the machine
+        # is a normal option (config.machine.profile / osConfig.machine.profile).
+        portable = portable;
+
+        # networking.hostName is still "desktop", and `nh os switch` resolves
+        # .#<hostname>, so this alias keeps nh and `--flake .#desktop` working.
+        desktop = portable;
+
         iso = nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [ ./hosts/iso ];

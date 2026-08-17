@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./machine.nix
     ./nixpkgs.nix
     ./bootloader.nix
     ./hardware.nix
@@ -19,6 +20,5 @@
     ./wayland.nix
     ./qmk.nix
     ./sops.nix
-    ./steam.nix
   ];
 }

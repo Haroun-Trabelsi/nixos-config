@@ -1,4 +1,4 @@
-{ host, ... }:
+{ ... }:
 {
   wayland.windowManager.hyprland.settings.exec-once = [
     # Nothing auto-locks at login. Lock manually with Win+Escape or the power menu.
@@ -15,8 +15,8 @@
     "hyprctl setcursor Nordzy-catppuccin-macchiato-dark 24 &"
     "noctalia-shell &"
 
-    # start monitor watcher on real hardware (not VM)
-    "${if (host != "vm") then "monitor-watcher &" else ""}"
+    # (the old `host != "vm"` guard went away with the vm host)
+    "monitor-watcher &"
 
     # Removed for the ~10 W power target:
     #

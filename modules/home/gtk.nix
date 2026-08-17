@@ -1,7 +1,6 @@
 {
   lib,
   pkgs,
-  host,
   ...
 }:
 {
@@ -34,7 +33,8 @@
     };
     font = {
       name = "Jetbrains Mono";
-      size = if (host == "p14s") then 14 else 12;
+      # was `if host == "p14s" then 14 else 12`; the p14s host is gone
+      size = 12;
     };
     gtk3 = {
       extraConfig = {
