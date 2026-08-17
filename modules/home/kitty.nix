@@ -1,4 +1,7 @@
-{ ... }:
+{ config, ... }:
+let
+  c = config.theme.colors;
+in
 {
   programs.kitty = {
     enable = true;
@@ -8,9 +11,34 @@
       size = 14;
     };
 
-    extraConfig = "include themes/noctalia.conf";
+    # Was `include themes/noctalia.conf`, a file rewritten at runtime by the
+    # noctalia QML process. Colours now come from modules/home/theme.nix at
+    # build time, so kitty no longer depends on a shell process being alive.
 
     settings = {
+      # --- colours (from modules/home/theme.nix) ---
+      background = c.base;
+      foreground = c.text;
+      cursor = c.primary;
+      selection_background = c.overlay;
+      selection_foreground = c.text;
+      color0 = c.black;
+      color1 = c.red;
+      color2 = c.green;
+      color3 = c.yellow;
+      color4 = c.blue;
+      color5 = c.magenta;
+      color6 = c.cyan;
+      color7 = c.white;
+      color8 = c.brightBlack;
+      color9 = c.brightRed;
+      color10 = c.brightGreen;
+      color11 = c.brightYellow;
+      color12 = c.brightBlue;
+      color13 = c.brightMagenta;
+      color14 = c.brightCyan;
+      color15 = c.brightWhite;
+
       confirm_os_window_close = 0;
       # Opaque so the compositor can bound damage to the terminal rectangle.
       # With a transparent surface every cursor blink forces everything beneath

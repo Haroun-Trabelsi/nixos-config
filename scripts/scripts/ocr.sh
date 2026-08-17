@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-
-# Create temporary file for screenshot
-temp_image=$(mktemp /tmp/ocr-screenshot-XXXXXX.png)
-
-# Capture screen area with grimblast
-grimblast --freeze save area "$temp_image"
-
-# Perform OCR and copy to clipboard
-tesseract "$temp_image" stdout 2> /dev/null | wl-copy
-
-# Clean up temporary file
-rm -f "$temp_image"
+# Select a region, OCR it, put the text on the clipboard.
+set -euo pipefail
+tmp=$(mktemp --suffix=.png)
+trap 'rm -f "$tmp"' EXIT
+grimshot save area "$tmp"
+tesseract "$tmp" - 2>/dev/null | wl-copy
+notify-send "OCR" "Text copied to clipboard"

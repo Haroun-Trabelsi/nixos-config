@@ -19,7 +19,7 @@ fi
 time=$(date +'%Y_%m_%d_at_%Hh%Mm%Ss')
 file="${dir}/Recording_${time}.mp4"
 
-output=$(hyprctl -j monitors | jq -r '.[] | select(.focused) | .name')
+output=$(swaymsg -t get_outputs -r | jq -r '.[] | select(.focused) | .name')
 
 wf-recorder -o "$output" -f "$file" &
 echo $! > "$pidfile"

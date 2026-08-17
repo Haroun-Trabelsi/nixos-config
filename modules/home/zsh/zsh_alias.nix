@@ -33,7 +33,7 @@
       nc = "nh-notify nh clean all --keep 5";
       nft = "nh-notify nh os test";
       nfs = "nh-notify nh os switch";
-      nfu = "nix flake update --flake ~/nixos-config nixpkgs hyprland && nh-notify nh os switch";
+      nfu = "nix flake update --flake ~/nixos-config nixpkgs && nh-notify nh os switch";
       nsearch = "nh search";
 
       # python

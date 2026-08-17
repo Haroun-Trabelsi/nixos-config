@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
-hyprctl dispatch togglefloating
-hyprctl dispatch resizeactive exact 1111 700
-hyprctl dispatch centerwindow
+swaymsg floating toggle
+swaymsg resize set 1111 700
+swaymsg move position center

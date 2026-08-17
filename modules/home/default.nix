@@ -1,8 +1,7 @@
-{ inputs, ... }:
+{ ... }:
 {
   imports = [
     # inputs.caelestia-shell.homeManagerModules.default
-    inputs.noctalia-shell.homeModules.default
     ./bat.nix # better cat command
     ./btop.nix # resouces monitor
     ./discord.nix # discord
@@ -12,14 +11,15 @@
     ./git.nix # version control
     ./gnome.nix # gnome apps
     ./gtk.nix # gtk theme
-    ./hyprland # window manager
+    ./sway # window manager
+    ./theme.nix # frozen palette, single source of truth for colours
+    ./imv.nix # image viewer desktop entry
     ./lazygit.nix
+    ./linear-plan.nix # claude-plan:// handler for planning Linear issues
     # ./nemo.nix # file manager (replaced by dolphin)
     ./dolphin.nix # file manager
     ./nvim.nix # neovim editor
     ./obsidian.nix
-    # ./caelestia.nix
-    ./noctalia.nix
     ./thorium.nix
     ./p10k/p10k.nix
     ./slack.nix

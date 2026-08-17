@@ -2,10 +2,10 @@
 
 command="$@"
 
-command_window_address=$(hyprctl activewindow -j | jq -r '.address')
+command_window_address=$(swaymsg -t get_tree | jq -r 'recurse(.nodes[]?,.floating_nodes[]?) | select(.focused==true) | .id')
 
 focus() {
-    hyprctl dispatch focuswindow "address:$command_window_address" > /dev/null
+    swaymsg "[con_id=$command_window_address] focus" > /dev/null
 }
 
 start_time=$(date +%s)
@@ -17,7 +17,7 @@ end_time=$(date +%s)
 duration=$(($end_time - $start_time))
 duration_formatted="$((duration / 60))m $(printf "%02d" $((duration % 60)))s"
 
-active_window_address=$(hyprctl activewindow -j | jq -r '.address')
+active_window_address=$(swaymsg -t get_tree | jq -r 'recurse(.nodes[]?,.floating_nodes[]?) | select(.focused==true) | .id')
 
 if [ "$active_window_address" != "$command_window_address" ]; then
     if [ $exit_status -ne 0 ]; then

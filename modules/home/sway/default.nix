@@ -1,0 +1,15 @@
+{ ... }:
+{
+  imports = [
+    ./sway.nix # compositor, packages, session
+    ./input.nix # keyboard/touchpad/seat
+    ./outputs.nix # monitors + workspace pinning
+    ./binds.nix # keybindings
+    ./rules.nix # window rules
+    ./startup.nix # exec-once equivalent
+    ./bar.nix # swaybar + i3status-rust
+    ./idle.nix # swayidle + swaylock
+    ./notifications.nix # mako
+    ./launcher.nix # fuzzel
+  ];
+}
