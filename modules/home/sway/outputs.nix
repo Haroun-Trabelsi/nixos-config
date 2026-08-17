@@ -72,8 +72,10 @@ in
     ];
   };
 
-  # Deliberately no swaybg process: `background <colour> solid_color` is drawn
-  # by sway itself, so the wallpaper costs zero processes and zero redraws.
+  # `background <colour> solid_color` does still spawn one swaybg per output
+  # (verified: `swaybg -o * -c #171928`), so this is not literally zero
+  # processes — but swaybg draws once and then idles, against the previous
+  # linux-wallpaperengine rendering at 60 fps forever, measured at ~15 W.
   #
   # Regression to be aware of: sway cannot mirror outputs, so the laptop's old
   # `,preferred,auto,1,mirror,eDP-1` rule has no equivalent — external displays
