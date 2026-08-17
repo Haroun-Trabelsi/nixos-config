@@ -34,16 +34,11 @@ in
   # which is the sway equivalent of Hyprland's idle_inhibit.
   services.swayidle = {
     enable = true;
-    events = [
-      {
-        event = "before-sleep";
-        command = lock;
-      }
-      {
-        event = "lock";
-        command = lock;
-      }
-    ];
+    # attrset keyed by event name; the list-of-{event,command} form is deprecated
+    events = {
+      before-sleep = lock;
+      lock = lock;
+    };
     timeouts = [
       {
         timeout = 300; # 5 min — screen off
