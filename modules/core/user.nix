@@ -18,9 +18,11 @@
       home.username = "${username}";
       home.homeDirectory = "/home/${username}";
       home.stateVersion = "26.05";
-      home.sessionVariables = {
-        LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
-      };
+      # NOTE: do NOT set a global LD_LIBRARY_PATH to the nix-ld lib dir. It
+      # overrides every binary's own RPATH and forces proper Nix programs (e.g.
+      # hyprctl) onto nix-ld's older libstdc++, breaking them with GLIBCXX
+      # errors. nix-ld works via its own loader + NIX_LD_LIBRARY_PATH, which
+      # programs.nix-ld sets automatically — no LD_LIBRARY_PATH needed.
       programs.home-manager.enable = true;
     };
     backupFileExtension = "hm-backup";
@@ -34,7 +36,7 @@
     description = "${username}";
     extraGroups = [
       "docker"
-      "i2c"
+      # "i2c" dropped along with hardware.i2c/ddcci — see modules/core/hardware.nix
       "networkmanager"
       "wheel"
     ];

@@ -56,8 +56,13 @@
     decoration = {
       rounding = 4;
 
+      # Blur off for the power target. `xray = true` was the expensive part: it
+      # re-blurs the full screen whenever anything *behind* a window changes, so
+      # a blinking cursor in a semi-transparent terminal repainted all 1920x1080
+      # continuously. Shadows add another full-surface composite pass.
+      # Sway (Phase 4) has neither, so this also previews the end state.
       blur = {
-        enabled = true;
+        enabled = false;
 
         size = 3;
         noise = 0;
@@ -69,7 +74,7 @@
       };
 
       shadow = {
-        enabled = true;
+        enabled = false;
 
         range = 20;
         render_power = 3;
@@ -80,7 +85,9 @@
     };
 
     animations = {
-      enabled = true;
+      # Every animation is a timed sequence of full recomposites that keeps the
+      # GPU out of its idle state for the duration. Sway has no animations.
+      enabled = false;
 
       bezier = [
         "fluent_decel, 0, 0.2, 0.4, 1"

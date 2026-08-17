@@ -7,6 +7,7 @@
     ./xserver.nix
     ./network.nix
     ./bluetooth.nix
+    ./browser-policies.nix
     ./nh.nix
     ./pipewire.nix
     ./program.nix
@@ -14,13 +15,10 @@
     ./services.nix
     ./system.nix
     ./flatpak.nix
-    ./miracast.nix
-    ./deepcool.nix
     ./user.nix
     ./wayland.nix
     ./qmk.nix
     ./sops.nix
     ./steam.nix
-    ./sunshine.nix
   ];
 }

@@ -4,7 +4,6 @@
     ## Multimedia
     audacity
     gimp
-    linux-wallpaperengine
     media-downloader
     obs-studio
     pavucontrol
@@ -14,6 +13,7 @@
 
     ## Office
     libreoffice
+    onlyoffice-desktopeditors
     gnome-calculator
 
     ## Networking

@@ -1,8 +1,7 @@
 { host, ... }:
 {
   wayland.windowManager.hyprland.settings.exec-once = [
-    # Lock screen FIRST so it paints before wallpaper/bar flash up
-    "qylock"
+    # Nothing auto-locks at login. Lock manually with Win+Escape or the power menu.
 
     # "hash dbus-update-activation-environment 2>/dev/null"
     "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
@@ -12,25 +11,43 @@
     "poweralertd &"
     "wl-clip-persist --clipboard both &"
     "wl-paste --watch cliphist store &"
-    "swaync &"
     "udiskie --automount --notify --smart-tray &"
     "hyprctl setcursor Nordzy-catppuccin-macchiato-dark 24 &"
-    "bash -c 'for i in {1..50}; do pgrep -x qylock >/dev/null && break; sleep 0.05; done; noctalia-shell &'"
+    "noctalia-shell &"
 
     # start monitor watcher on real hardware (not VM)
     "${if (host != "vm") then "monitor-watcher &" else ""}"
 
-    # enable keep awake on desktop (no idle/sleep)
-    # "${if (host == "desktop") then "caelestia shell idleInhibitor enable" else ""}"
-    "${if (host == "desktop") then "sleep 5 && noctalia-shell ipc call idleInhibitor enable" else ""}"
-
-    # enable noctalia performance mode by default (wallpaper stays on via settings)
-    "sleep 5 && noctalia-shell ipc call powerProfile enableNoctaliaPerformance"
-
-    "ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false"
-    "[workspace 2 silent] ghostty"
-
-    # Wallpaper Engine wallpaper on all monitors (muted)
-    "bash -c 'for i in {1..50}; do hyprctl monitors -j | jq -e \".[0].name\" >/dev/null 2>&1 && break; sleep 0.1; done; args=\"\"; for out in $(hyprctl monitors -j | jq -r \".[].name\"); do args=\"$args --screen-root $out --bg 2411270069\"; done; exec linux-wallpaperengine --silent --no-fullscreen-pause --fps 60 $args >/dev/null 2>&1'"
+    # Removed for the ~10 W power target:
+    #
+    #   swaync                  dead line — swaync is not installed by this flake
+    #                           and noctalia already owns notifications.
+    #
+    #   idleInhibitor enable    pinned the session awake, so the screen never
+    #                           blanked and the machine never idled. On a 36.6 Wh
+    #                           laptop that is the difference between DPMS-off
+    #                           saving ~1.5 W and saving nothing.
+    #
+    #   powerProfile enable-    asked noctalia for *performance* mode at every
+    #   NoctaliaPerformance     login, fighting every governor/EPP setting.
+    #
+    #   linux-wallpaperengine   rendered an animated wallpaper at 60 fps on every
+    #                           output with --no-fullscreen-pause. The single
+    #                           largest continuous GPU cost in this config: it
+    #                           held the iGPU out of RC6 (gt_cur_freq pinned at
+    #                           550 MHz against an RPn of 100) and defeated panel
+    #                           self-refresh entirely. Est. 3-6 W.
+    #
+    #   ghostty x2, thorium,    the autostart zoo. Five apps (four of them
+    #   openrgb, spotify,       Electron/Chromium) launched at login whether or
+    #   vesktop, twin kitty     not they were wanted, each holding memory and
+    #                           waking the CPU forever. Launch them on demand
+    #                           instead — the Win+B/S/D/C toggle binds already
+    #                           do exactly that, and work-terminals.sh still
+    #                           brings up the Salesforce twin when needed.
+    #
+    #   sleep 6 && workspace 1  only existed to pull focus back after the
+    #                           autostarted apps had spawned. Nothing autostarts
+    #                           now, so it has nothing to correct for.
   ];
 }

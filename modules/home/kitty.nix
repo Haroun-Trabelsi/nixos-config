@@ -12,7 +12,10 @@
 
     settings = {
       confirm_os_window_close = 0;
-      background_opacity = "0.66";
+      # Opaque so the compositor can bound damage to the terminal rectangle.
+      # With a transparent surface every cursor blink forces everything beneath
+      # it to be recomposited too.
+      background_opacity = "1.0";
       scrollback_lines = 10000;
       enable_audio_bell = false;
       mouse_hide_wait = 60;

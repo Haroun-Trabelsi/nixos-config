@@ -4,7 +4,11 @@
     gvfs.enable = true;
 
     gnome = {
-      tinysparql.enable = true;
+      # tinysparql (Tracker) is a filesystem indexer. This root lives on a
+      # USB-attached SSD, where background indexing is the worst possible I/O
+      # pattern — it keeps the link active and the package out of deep C-states.
+      # Nothing in this config queries it.
+      tinysparql.enable = false;
       gnome-keyring.enable = true;
     };
 

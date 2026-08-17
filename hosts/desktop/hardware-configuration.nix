@@ -39,42 +39,11 @@
       "dmask=0077"
     ];
   };
-  fileSystems."/mnt/storage" = {
-    device = "/dev/disk/by-uuid/703C3F103C3ED0B8";
-    fsType = "ntfs3";
-    options = [
-      "rw"
-      "force"
-      "uid=1000"
-      "gid=100"
-      "nofail"
-      "x-systemd.device-timeout=2s"
-    ];
-  };
-  fileSystems."/mnt/csgo" = {
-    device = "/dev/disk/by-uuid/54EF2567469E05CD";
-    fsType = "ntfs3";
-    options = [
-      "rw"
-      "force"
-      "uid=1000"
-      "gid=100"
-      "nofail"
-      "x-systemd.device-timeout=2s"
-    ];
-  };
-  fileSystems."/mnt/nvme" = {
-    device = "/dev/disk/by-uuid/FC66525166520CB0";
-    fsType = "ntfs3";
-    options = [
-      "rw"
-      "force"
-      "uid=1000"
-      "gid=100"
-      "nofail"
-      "x-systemd.device-timeout=2s"
-    ];
-  };
+  # The four /mnt/{storage,csgo,nvme,wd} NTFS mounts that used to live here
+  # referenced UUIDs that exist on no disk attached to this machine — they were
+  # left over from a previous box. With `nofail` they never failed loudly, they
+  # just sat `loaded inactive dead` forever. boot.supportedFilesystems still
+  # includes "ntfs", so udisks2 mounts NTFS drives on demand when plugged in.
 
   swapDevices = [
     { device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9"; }

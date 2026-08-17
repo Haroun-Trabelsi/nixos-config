@@ -9,8 +9,6 @@
   imports = [
     ./hardware-configuration.nix
     ./../../modules/core
-    ./ollama.nix
-    ./tv-audio.nix
     inputs.lanzaboote.nixosModules.lanzaboote
   ];
 
