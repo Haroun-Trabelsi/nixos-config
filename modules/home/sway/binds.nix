@@ -34,14 +34,15 @@ in
         "${mod}+d" = "exec toggle-discord";
         "${mod}+s" = "exec toggle-music";
         "${mod}+g" = "exec toggle-github-desktop";
-        "${mod}+c" = "exec toggle-zed";
-        # work-terminals lost Win+C to zed; kept here rather than dropped
+        # VS Code in a browser tab, running on the Coder workspace — the editor
+        # (extension host, language servers, tsserver, watchers) runs remotely,
+        # so the laptop only renders a tab in an already-open browser.
+        "${mod}+c" = "exec code-web";
         "${mod}+Shift+c" = "exec work-terminals";
         "${mod}+n" = "exec pavucontrol";
         "${mod}+Shift+p" = "exec linear-plan";
-        # VS Code in a browser tab, running on the Coder workspace. Swap this
-        # onto ${mod}+c if you want it as the primary editor key.
-        "${mod}+Shift+v" = "exec code-web";
+        # zed, kept for offline work — code-web needs the workspace reachable.
+        "${mod}+Shift+v" = "exec toggle-zed";
         "Ctrl+Shift+Escape" = "exec missioncenter";
 
         # --- window management ---
