@@ -32,8 +32,26 @@
         enable = true;
         percentageLow = 20;
         percentageCritical = 10;
-        percentageAction = 5;
-        criticalPowerAction = "HybridSleep";
+
+        # 7%, not 5%: upower history shows this battery reached 0% at least once,
+        # so the extra margin buys time for a clean shutdown. At the observed
+        # 10.5 W median that is roughly 15 minutes of headroom.
+        percentageAction = 7;
+
+        # PowerOff, NOT HybridSleep. HybridSleep writes a hibernation image and
+        # cannot work here:
+        #   * no resume= on the kernel cmdline, so the kernel could never find
+        #     the image on the way back up
+        #   * swap is 17 GiB against 23.1 GiB of RAM, and zram sits at higher
+        #     priority, so the image has nowhere guaranteed to fit
+        # The action therefore failed silently and the battery ran down to a hard
+        # power cut instead. PowerOff always works and gives applications SIGTERM.
+        #
+        # Hibernation could be made to work (resume=UUID=..., swap >= RAM), but
+        # hibernating to a USB-attached swap partition and resuming from it is
+        # fragile, and this machine is unplugged in ~1.5 h bursts, so a clean
+        # shutdown is the better trade.
+        criticalPowerAction = "PowerOff";
       };
 
       tlp = {
