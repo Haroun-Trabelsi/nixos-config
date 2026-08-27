@@ -39,6 +39,9 @@ in
         "${mod}+Shift+c" = "exec work-terminals";
         "${mod}+n" = "exec pavucontrol";
         "${mod}+Shift+p" = "exec linear-plan";
+        # VS Code in a browser tab, running on the Coder workspace. Swap this
+        # onto ${mod}+c if you want it as the primary editor key.
+        "${mod}+Shift+v" = "exec code-web";
         "Ctrl+Shift+Escape" = "exec missioncenter";
 
         # --- window management ---
