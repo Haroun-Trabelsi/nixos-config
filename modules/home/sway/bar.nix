@@ -87,10 +87,18 @@ in
           warning = 75;
         }
         {
-          # The number that matters for this whole project.
-          block = "battery";
-          format = " $icon $percentage $power ";
-          missing_format = "";
+          # The number that matters for this whole project — and deliberately NOT
+          # the built-in `battery` block, which reads power_now. On this ASUS EC
+          # power_now is a computed estimate that swings 3-18 W at random and
+          # reports "Charging" while the pack is draining (measured: 25 min of
+          # "Charging" during which it fell 77% -> 70%, a real -5.77 W).
+          #
+          # battery-net differences energy_now instead, so the sign is truthful.
+          # It turns Warning when a charger is attached but the battery is STILL
+          # losing charge — the exact condition power_now hides.
+          block = "custom";
+          command = "battery-net";
+          json = true;
           interval = 30;
         }
         {
