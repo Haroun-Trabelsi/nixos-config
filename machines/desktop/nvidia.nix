@@ -1,4 +1,9 @@
-{ config, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -25,5 +30,19 @@
     LIBVA_DRIVER_NAME = "nvidia";
     __GL_GSYNC_ALLOWED = "0";
     __GL_VRR_ALLOWED = "0";
+  };
+
+  # sway/wlroots refuse to start on the NVIDIA driver stack unless explicitly
+  # told to. The `open` kernel module still uses that stack, so the check fires
+  # here too. Without this, greetd's initial_session (plain `sway`) dies
+  # immediately and greetd falls back to the tuigreet password prompt — which is
+  # exactly what happened the first time this specialisation was booted.
+  #
+  # mkForce because modules/core/xserver.nix sets these for the laptop, where
+  # the flag is neither needed nor wanted.
+  services.greetd.settings = {
+    initial_session.command = lib.mkForce "sway --unsupported-gpu";
+    default_session.command = lib.mkForce
+      "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'sway --unsupported-gpu'";
   };
 }
