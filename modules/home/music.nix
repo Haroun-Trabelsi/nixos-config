@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, osConfig, ... }:
 {
   # Replaces Electron Spotify + spicetify.
   #
@@ -15,7 +15,8 @@
   # IF YOU EVER HAVE PREMIUM: add pkgs.spotify-player below and point the
   # $mod+S bind at it. That is the whole change.
   services.mpd = {
-    enable = true;
+    # laptop: mpd + rmpc. The desktop uses Spotify + spicetify
+    enable = osConfig.machine.profile == "laptop";
     musicDirectory = "${config.home.homeDirectory}/Music";
 
     # Socket activation: mpd is not running at all until a client connects, so

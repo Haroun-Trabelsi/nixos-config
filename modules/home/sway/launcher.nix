@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, osConfig, ... }:
 let
   c = config.theme.colors;
   strip = h: builtins.substring 1 6 h; # fuzzel wants RRGGBBAA without the '#'
@@ -11,7 +11,8 @@ in
   # It also serves as the dmenu for the clipboard picker and the power menu,
   # which is why scripts/scripts/{power-menu,clipboard-picker}.sh call it.
   programs.fuzzel = {
-    enable = true;
+    # noctalia has its own launcher on the desktop
+    enable = osConfig.machine.profile == "laptop";
     settings = {
       main = {
         terminal = "ghostty -e";

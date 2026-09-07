@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, osConfig, ... }:
 let
   c = config.theme.colors;
 in
@@ -45,7 +45,8 @@ in
   ];
 
   programs.i3status-rust = {
-    enable = true;
+    # swaybar/i3status-rust is the laptop bar; noctalia provides the desktop bar
+    enable = osConfig.machine.profile == "laptop";
     bars.default = {
       theme = "native"; # colours come from swaybar above
       icons = "awesome6";

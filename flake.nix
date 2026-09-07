@@ -17,6 +17,31 @@
     # Revisit (and drop this input) once nixos-unstable catches up past 1.9.0.
     nixpkgs-zed.url = "github:NixOS/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea";
 
+    # Restored for the desktop specialisation, which runs Hyprland + noctalia.
+    #
+    # PINNED to the exact revisions this desktop last ran (from the pre-migration
+    # lock), NOT the latest. Four months of upstream drift had already renamed
+    # `programs.noctalia-shell` to `programs.noctalia`, and Hyprland changes its
+    # config syntax often — tracking HEAD would mean rewriting a 289-line shell
+    # config and 400 lines of compositor settings to chase upstream, when the
+    # goal here is simply to reproduce a desktop that worked.
+    #
+    # Unpin deliberately, one at a time, when you actually want to update.
+    #
+    # No hyprland flake input: nixpkgs' hyprland is used instead. The flake
+    # input built from source (no usable binary cache for a non-trusted user),
+    # which froze the machine. nixpkgs' build comes from cache.nixos.org.
+
+    noctalia-shell = {
+      url = "github:noctalia-dev/noctalia-shell/761869a561548874fe7e293b157fd7841576b367";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix/2bfdf55faf76fed12950b17d4af501e5a463607f";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";

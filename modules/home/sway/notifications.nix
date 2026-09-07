@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, osConfig, ... }:
 let
   c = config.theme.colors;
 in
@@ -10,7 +10,8 @@ in
   # (The old config also exec'd `swaync` at login, which was never installed by
   # this flake at all — a dead line for as long as it existed.)
   services.mako = {
-    enable = true;
+    # noctalia handles notifications on the desktop
+    enable = osConfig.machine.profile == "laptop";
     settings = {
       font = "JetBrainsMono Nerd Font 11";
       background-color = c.mantle;

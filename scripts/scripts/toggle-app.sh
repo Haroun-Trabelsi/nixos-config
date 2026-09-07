@@ -1,29 +1,16 @@
 #!/usr/bin/env bash
-# Generic show/hide/launch toggle for sway.
+# Generic show/hide/launch toggle, compositor-agnostic via `wm`.
 #
-#   toggle-app <criteria> <pattern> <launch command...>
+#   toggle-app <ident> <launch command...>
 #
-# criteria is "app_id" (Wayland clients) or "class" (Xwayland clients) — getting
-# that wrong is the usual reason a toggle silently does nothing. Check with:
-#   swaymsg -t get_tree | jq '.. | select(.pid?) | {app_id, class, name}'
+# <ident> is the window's app_id (Wayland) or class (Xwayland) — `wm` checks
+# both on sway and uses class on Hyprland. Find the real value with:
+#   swaymsg -t get_tree | jq '..|select(.pid?)|{app_id,class,name}'   (sway)
+#   hyprctl clients -j  | jq '.[].class'                              (hyprland)
 #
-# Behaviour matches the old hyprctl versions: focused -> go back, running ->
-# focus, otherwise -> launch.
-set -euo pipefail
-
-crit=$1; pat=$2; shift 2
-
-tree=$(swaymsg -t get_tree)
-
-focused=$(jq -r --arg c "$crit" '.. | select(.focused? == true) | .[$c] // empty' <<<"$tree")
-if [[ "$focused" == "$pat" ]]; then
-    swaymsg workspace back_and_forth
-    exit 0
-fi
-
-if jq -e --arg c "$crit" --arg p "$pat" '.. | select(.pid? and (.[$c] // "") == $p)' <<<"$tree" >/dev/null; then
-    swaymsg "[$crit=\"^${pat}$\"] focus"
-    exit 0
-fi
-
+# Behaviour: focused -> go back; running -> focus; otherwise -> launch.
+set -uo pipefail
+ident=$1; shift
+[ "$(wm focused)" = "$ident" ] && { wm back; exit 0; }
+wm running "$ident" && { wm focus "$ident"; exit 0; }
 exec "$@"

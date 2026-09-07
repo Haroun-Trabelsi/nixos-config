@@ -71,11 +71,11 @@
         command = "move container to workspace number 6";
       }
       {
-        criteria.app_id = "^code$";
+        criteria.app_id = "^codium$";
         command = "move container to workspace number 8";
       }
       {
-        criteria.class = "^code$";
+        criteria.class = "^codium$";
         command = "move container to workspace number 8";
       }
       {

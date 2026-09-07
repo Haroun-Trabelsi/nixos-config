@@ -4,7 +4,9 @@ let
   lock = "${pkgs.swaylock}/bin/swaylock -f";
 in
 {
-  # swaylock replaces hyprlock. Solid colour rather than swaylock-effects'
+  # Shared by BOTH machines (sway on the laptop, Hyprland on the desktop):
+# swaylock speaks ext-session-lock-v1, which Hyprland implements too.
+# swaylock replaces hyprlock. Solid colour rather than swaylock-effects'
   # screenshot-and-blur pass, which costs a full-screen GPU operation every time
   # the screen locks.
   programs.swaylock = {
@@ -42,8 +44,10 @@ in
     timeouts = [
       {
         timeout = 300; # 5 min — screen off
-        command = "${pkgs.sway}/bin/swaymsg 'output * dpms off'";
-        resumeCommand = "${pkgs.sway}/bin/swaymsg 'output * dpms on'";
+        # `dpms` detects sway vs Hyprland at runtime — this ladder is shared
+        # by both machines, so it must not hardcode swaymsg.
+        command = "dpms off";
+        resumeCommand = "dpms on";
       }
       {
         timeout = 600; # 10 min — lock

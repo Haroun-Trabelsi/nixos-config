@@ -1,4 +1,12 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+let
+  isDesktop = config.machine.profile == "desktop";
+in
 {
   # Required for Qt plugins installed into a profile (qt6ct, breeze) to be
   # found at all: it adds /etc/profiles/per-user/$USER/lib/qt-{5,6}/plugins to
@@ -13,8 +21,8 @@
   # does apply to the session.
   environment.sessionVariables = {
     QT_QPA_PLATFORMTHEME = "qt6ct";
-    XDG_CURRENT_DESKTOP = "sway";
-    XDG_SESSION_DESKTOP = "sway";
+    XDG_CURRENT_DESKTOP = if isDesktop then "Hyprland" else "sway";
+    XDG_SESSION_DESKTOP = if isDesktop then "Hyprland" else "sway";
     XDG_SESSION_TYPE = "wayland";
 
     # Electron/Chromium (VS Code, vesktop, thorium) as native Wayland clients
@@ -41,15 +49,25 @@
   };
 
   programs.sway = {
-    enable = true;
+    enable = !isDesktop;
     wrapperFeatures.gtk = true;
   };
+
+  # nixpkgs' hyprland, deliberately — see modules/home/hyprland/hyprland.nix.
+  programs.hyprland.enable = isDesktop;
 
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = false;
     config = {
       common.default = [ "gtk" ];
+      hyprland = {
+        default = [
+          "gtk"
+          "hyprland"
+        ];
+        "org.freedesktop.impl.portal.OpenURI" = [ "gnome" ];
+      };
       sway = {
         # xdg-desktop-portal-wlr provides ScreenCast on wlroots compositors.
         # This is what Discord/OBS screen sharing goes through — without it

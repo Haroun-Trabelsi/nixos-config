@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Was toggle-spotify (Electron). Now toggles the mpd TUI in its own terminal.
-# mpd itself is socket-activated, so it starts on first connect and nothing
-# runs when no music is playing.
-exec toggle-app app_id rmpc kitty --class=rmpc rmpc
+# Desktop has Spotify (spicetify-themed); laptop has mpd + rmpc. Pick whichever
+# this machine actually installed rather than branching on hostname.
+if command -v spotify >/dev/null 2>&1; then
+  exec toggle-app Spotify spotify
+else
+  exec toggle-app rmpc kitty --class=rmpc rmpc
+fi

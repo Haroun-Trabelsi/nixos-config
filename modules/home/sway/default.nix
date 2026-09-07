@@ -9,7 +9,6 @@
     ./rules.nix # window rules
     ./startup.nix # exec-once equivalent
     ./bar.nix # swaybar + i3status-rust
-    ./idle.nix # swayidle + swaylock
     ./notifications.nix # mako
     ./launcher.nix # fuzzel
   ];

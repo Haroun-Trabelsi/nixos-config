@@ -2,6 +2,6 @@
 {
   programs.vscode = {
     enable = true;
-    package = pkgs.vscode;
+    package = pkgs.vscodium; # the binary is `codium`, not `code`
   };
 }

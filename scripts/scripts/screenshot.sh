@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-# grimblast is Hyprland-only; grimshot is its sway counterpart.
-# Note: no --freeze equivalent (that was a Hyprland feature). Add `wayfreeze`
-# if freezing the screen during selection turns out to matter.
+# grim + slurp directly: works on sway AND Hyprland, unlike grimshot (sway-only)
+# or grimblast (Hyprland-only). One script for both machines.
+set -uo pipefail
 dir="$HOME/Pictures/Screenshots"
-time=$(date +'%Y_%m_%d_at_%Hh%Mm%Ss')
-file="${dir}/Screenshot_${time}.png"
-
+file="${dir}/Screenshot_$(date +'%Y_%m_%d_at_%Hh%Mm%Ss').png"
 mkdir -p "$dir"
 
-case "$1" in
-    --copy)   grimshot --notify copy area ;;
-    --save)   grimshot --notify save area "$file" ;;
-    --swappy) grimshot save area "$file" && swappy -f "$file" ;;
-    *)        grimshot --notify copy area ;;
+region=$(slurp) || exit 1   # cancelled
+case "${1:---copy}" in
+  --copy)   grim -g "$region" - | wl-copy && notify-send "Screenshot" "Copied to clipboard" ;;
+  --save)   grim -g "$region" "$file" && notify-send "Screenshot" "Saved to $file" ;;
+  --swappy) grim -g "$region" "$file" && swappy -f "$file" ;;
+  *)        grim -g "$region" - | wl-copy ;;
 esac

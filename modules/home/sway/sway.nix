@@ -1,10 +1,11 @@
-{ pkgs, config, ... }:
+{ pkgs, config, osConfig, ... }:
 let
   c = config.theme.colors;
 in
 {
   wayland.windowManager.sway = {
-    enable = true;
+    # laptop only — the desktop runs Hyprland
+    enable = osConfig.machine.profile == "laptop";
     xwayland = true;
     systemd.enable = true;
     wrapperFeatures.gtk = true;

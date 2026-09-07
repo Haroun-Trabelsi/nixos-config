@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec toggle-app class "GitHub Desktop" github-desktop
+exec toggle-app "GitHub Desktop" github-desktop

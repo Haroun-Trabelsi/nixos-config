@@ -1,6 +1,7 @@
-{ ... }:
+{ inputs, ... }:
 {
   imports = [
+    inputs.noctalia-shell.homeModules.default
     # inputs.caelestia-shell.homeManagerModules.default
     ./bat.nix # better cat command
     ./btop.nix # resouces monitor
@@ -11,7 +12,13 @@
     ./git.nix # version control
     ./gnome.nix # gnome apps
     ./gtk.nix # gtk theme
-    ./sway # window manager
+    # BOTH compositors are imported; each gates itself on
+    # osConfig.machine.profile, because module `imports` cannot depend on
+    # config. Disabling a compositor makes its whole settings tree inert.
+    ./sway # laptop compositor
+    ./hyprland # desktop compositor
+    ./noctalia.nix # desktop shell
+    ./lock.nix # swaylock + swayidle, shared by both compositors
     ./theme.nix # frozen palette, single source of truth for colours
     ./imv.nix # image viewer desktop entry
     ./lazygit.nix
@@ -28,7 +35,8 @@
     # ./rofi/rofi.nix # launcher (replaced by noctalia launcher)
     ./../../scripts/scripts.nix # personal scripts
     ./ssh.nix # ssh config
-    ./music.nix # mpd + rmpc (replaces Electron Spotify + spicetify)
+    ./music.nix # mpd + rmpc (laptop)
+    ./spicetify.nix # Spotify + spicetify (desktop)
 
     ./swayosd.nix # brightness / volume wiget
     ./vscodium # vscode fork
