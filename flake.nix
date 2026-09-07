@@ -54,6 +54,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # gpakosz/.tmux ("Oh my tmux!"). Not a flake — just the two config files.
+    # flake.lock pins the exact rev, so this is reproducible until you choose to
+    # update it.
+    oh-my-tmux = {
+      url = "github:gpakosz/.tmux";
+      flake = false;
+    };
+
     maple-mono = {
       url = "github:subframe7536/maple-font/variable";
       flake = false;

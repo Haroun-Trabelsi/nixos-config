@@ -457,6 +457,22 @@
         "type": "github"
       }
     },
+    "oh-my-tmux": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786203437,
+        "narHash": "sha256-YDzbZVFhrAMBhOI8HVDxR3rEPkrEwG57IUbnZicmfn4=",
+        "owner": "gpakosz",
+        "repo": ".tmux",
+        "rev": "58a3dcc0d718ec0fa1c0d5a2fddd640a1ad7a5b7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gpakosz",
+        "repo": ".tmux",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -492,6 +508,7 @@
         "nixpkgs-zed": "nixpkgs-zed",
         "noctalia-shell": "noctalia-shell",
         "nur": "nur",
+        "oh-my-tmux": "oh-my-tmux",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "superfile": "superfile",

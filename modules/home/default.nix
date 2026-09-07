@@ -19,6 +19,7 @@
     ./hyprland # desktop compositor
     ./noctalia.nix # desktop shell
     ./lock.nix # swaylock + swayidle, shared by both compositors
+    ./tmux.nix # gpakosz/.tmux ("Oh my tmux!")
     ./theme.nix # frozen palette, single source of truth for colours
     ./imv.nix # image viewer desktop entry
     ./lazygit.nix
