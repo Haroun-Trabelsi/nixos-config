@@ -36,21 +36,19 @@
   # A desktop is on mains permanently; latency is worth more than watts here.
   powerManagement.cpuFreqGovernor = "performance";
 
-  # Bad-RAM reservations from MemTest86 (2026-05-13, 3 passes).
-  # Coalesced bad-page clusters at ~15.1 GiB — single DIMM likely failing.
-  # Total reserved: ~735 KiB across 8 ranges. Desktop-only: this is that
-  # machine's RAM, and applying it on the laptop reserved addresses at random.
-  # kernelParams is a list, so these append with no mkForce needed.
-  boot.kernelParams = [
-    "memmap=0x40000\$0x3c5e00000" # 256 KiB
-    "memmap=0x5000\$0x3c623b000" # 20 KiB
-    "memmap=0xd000\$0x3c6640000" # 52 KiB
-    "memmap=0x3000\$0x3c675c000" # 12 KiB
-    "memmap=0x2b000\$0x3c974b000" # 172 KiB
-    "memmap=0x1000\$0x3cda04000" # 4 KiB
-    "memmap=0x31000\$0x3cdb40000" # 196 KiB
-    "memmap=0x5000\$0x3ce65b000" # 20 KiB
-  ];
+  # The bad-RAM `memmap=` reservations are GONE. They coalesced bad-page clusters
+  # found by MemTest86 on 2026-05-13 at ~15.1 GiB — ~735 KiB across 8 ranges on
+  # a single failing DIMM. That DIMM has been replaced.
+  #
+  # They had to go rather than being left as harmless: a memmap reservation is
+  # an ABSOLUTE physical address range. Against different silicon those
+  # addresses are not the old defects, they are eight arbitrary holes punched in
+  # working memory. Keeping them would have been carrying a dead stick's defect
+  # map onto a healthy one.
+  #
+  # If RAM is ever suspected again: run MemTest86, then
+  # scripts/scripts/badmem-from-memtest86.py to turn its logs back into a
+  # kernelParams list. Nothing else here depends on them.
 
   # 32-bit graphics libraries are only needed for Steam, which is desktop-only.
   hardware.graphics.enable32Bit = true;

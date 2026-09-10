@@ -2,6 +2,7 @@
 {
   imports = [
     ./machine.nix
+    ./impermanence.nix
     ./nixpkgs.nix
     ./bootloader.nix
     ./hardware.nix
