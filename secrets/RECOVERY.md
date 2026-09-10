@@ -8,58 +8,46 @@ to restore it in.
 Everything below was inventoried on 2026-09-10 against the live system. Keep it
 current — a runbook that has drifted is worse than none.
 
+Ranked by consequence, the state that is NOT recoverable from this repo is: the
+age key (§1, backed up off-machine), the Secure Boot PKI (§2, back it up), the
+Tailscale node identity (§3, non-reproducible by design), and browser/extension
+settings plus data partitions (§5, back up as data).
+
 > **This repository is public** (`github.com/Haroun-Trabelsi/nixos-config`).
 > Nothing secret goes in it beyond what is already age-encrypted, and the
 > Secure Boot PKI deliberately does **not** go in it at all. See §2.
 
 ---
 
-## 1. The age key — the one that can lose everything
+## 1. The age key
 
 **`~/.config/sops/age/keys.txt`** (public half `age1pv00slc…`, the recipient in
 `.sops.yaml`).
 
-Everything in `secrets/secrets.yaml` is encrypted to it: the GitHub SSH key, the
-GitHub PAT, the Spotify VPN key. **And so is `secrets/bitwarden_backup.age`** —
-verified, not assumed. That is a circular dependency: the backup you would reach
-for after losing this key is itself locked behind this key.
+Everything in `secrets/secrets.yaml` is encrypted to it — the GitHub SSH key, the
+GitHub PAT, the Spotify VPN key — and so is `secrets/bitwarden_backup.age`
+(verified, not assumed). It is not derivable from anything in this repo.
 
-Losing it means losing all of the above with no path back. It is not derivable
-from anything and not stored anywhere else on this machine.
+**Status: a copy is held off this machine.** That is the whole requirement, and
+it closes the one failure that would otherwise be unrecoverable. It also settles
+the `bitwarden_backup.age` question: that file being encrypted to the same key
+only mattered while the key existed nowhere but this disk. With an off-machine
+copy the key is retrievable independently of the disk, so the blob needs no
+re-encryption and there is no reason to add a second recipient.
 
-### Fix — two independent steps, do both
-
-**a. Add a second recipient whose private half is NOT on this disk.**
+The only thing left worth doing is confirming the copy actually works, since an
+untested backup is a hypothesis rather than a backup:
 
 ```bash
-# Generate an offline identity. Do this somewhere you control, NOT in the repo.
-nix shell nixpkgs#age -c age-keygen -o ~/age-recovery-key.txt
-chmod 600 ~/age-recovery-key.txt
-
-# Add its PUBLIC half to .sops.yaml as a second recipient under `keys:`,
-# and reference it in the creation_rules age list alongside &user, then:
-nix shell nixpkgs#sops -c sops updatekeys secrets/secrets.yaml
-
-# Re-encrypt the Bitwarden blob to BOTH recipients so it is no longer circular.
-# Plaintext stays in the pipe; it never touches disk.
-nix shell nixpkgs#age -c sh -c '
-  age -d -i ~/.config/sops/age/keys.txt secrets/bitwarden_backup.age |
-  age -r <PUBKEY_A> -r <PUBKEY_B> -o secrets/bitwarden_backup.age.new'
-mv secrets/bitwarden_backup.age.new secrets/bitwarden_backup.age
-
-# Verify BOTH identities can still read it before you commit anything.
+# Should print the same public key as .sops.yaml lists.
+nix shell nixpkgs#age -c age-keygen -y /path/to/your/backup/copy
 ```
 
-**b. Move `~/age-recovery-key.txt` off this machine and delete the local copy.**
-A password manager entry, a printed copy in a drawer, another machine — anything
-that does not die with this SSD. `age` identities are one short line, so paper is
-a legitimate medium.
+On restore, it goes back to `~/.config/sops/age/keys.txt`, mode 600.
 
 `sops.age.sshKeyPaths` is **not** an option here: it needs an SSH host key, and
 `services.openssh` is not enabled on either machine, so `/etc/ssh/ssh_host_*_key`
 does not exist.
-
----
 
 ## 2. Secure Boot PKI
 
@@ -123,9 +111,27 @@ sudo sgdisk -c 3:swap -c 4:ExtNix /dev/disk/by-id/ata-USSD_512GB_DTPP24097840000
 ls /dev/disk/by-partlabel/    # expect EFI, root, swap, ExtNix
 ```
 
-Note also that `disko.nix` describes a **fourth** partition, `ExtNix` (146.8 GB
-exfat). `disko --mode destroy,format` will format it. Nothing in this repo backs
-it up.
+### What a fresh install actually creates
+
+`disko.nix` defaults to the minimum: **a 1 GiB ESP and root across the rest of
+the disk.** Nothing else. Two switches at the top of the file turn the extras on,
+and both are off:
+
+- `enableSwap` — no swap partition by default. The laptop's `zramSwap` (50% of
+  RAM) covers routine paging without touching the USB link, and hibernation is
+  already ruled out on this hardware, so a swap partition buys nothing. The
+  current disk still has a 17 GiB one from before that reasoning; it is barely
+  touched. `swapDevices` in `hardware-shared.nix` carries `nofail`, and the
+  installer empties the list outright when the target disk has no swap, so a
+  swapless install boots cleanly with no hand-editing.
+- `enableDataPartition` — no exfat data partition by default. `ExtNix` on the
+  current disk is 146.8 GB of storage, not part of the system, and a destructive
+  installer should not carve a third of a new disk away without being asked. If
+  you do turn it on, note that `disko --mode destroy,format` formats it: it is
+  not a place to keep the only copy of anything.
+
+Turning `enableDataPartition` on also drops root from `100%` to `312G`, which is
+what the current disk looks like.
 
 ---
 
@@ -146,7 +152,8 @@ it up.
 
 1. Boot the ISO (`nix build .#iso`), run `install-nixos`. It runs disko, rewrites
    the mount UUIDs, and installs.
-2. Restore the age key (§1) to `~/.config/sops/age/keys.txt`, mode 600.
+2. Restore the age key (§1) from your off-machine copy to
+   `~/.config/sops/age/keys.txt`, mode 600.
 3. Restore `/var/lib/sbctl` (§2), or re-enroll in firmware.
 4. `sudo nixos-rebuild switch --flake .#portable` — secrets now materialize and
    Lanzaboote signs.
