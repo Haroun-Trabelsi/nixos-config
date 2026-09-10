@@ -1,3 +1,9 @@
 result
 result-*
 .direnv/
+
+# VM disk images. `nixos-rebuild build-vm` writes <hostname>.qcow2 into the
+# working directory, so running it from the repo root drops one here. They are
+# throwaway state for impermanence testing (modules/core/impermanence.nix) and
+# grow to virtualisation.diskSize as the VM is used.
+*.qcow2
