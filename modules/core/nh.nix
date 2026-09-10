@@ -2,11 +2,13 @@
 {
   programs.nh = {
     enable = true;
-    # TEMPORARILY DISABLED for the sway/power migration. `--keep 5` will happily
-    # garbage-collect the last known-good generation while we are relying on the
-    # boot menu to roll back. Re-enable once the migration has settled.
+    # Re-enabled: the sway/power migration it was switched off for has landed.
+    # `--keep-since 7d --keep 5` is the safe form for a machine whose rollback
+    # path is the boot menu — it keeps five generations AND everything from the
+    # last week, so a generation you might want to boot back into is never the
+    # one collected. Left off, the store grows without bound.
     clean = {
-      enable = false;
+      enable = true;
       extraArgs = "--keep-since 7d --keep 5";
     };
     flake = "/home/${username}/nixos-config";

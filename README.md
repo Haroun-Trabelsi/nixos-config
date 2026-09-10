@@ -37,21 +37,9 @@
 
 <details>
 <summary>
-   Waybar (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/waybar.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
    Swaylock (EXPAND)
 </summary>
    <img src="./.github/assets/screenshots/swaylock.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
-   Hyprlock (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/hyprlock.png" style="margin-bottom: 15px;" /> <br>
 </details>
 <details>
 <summary>
@@ -104,42 +92,50 @@ You can find my previous Catppuccin rice [here](https://github.com/Frost-Phoenix
 
 ## 📚 Layout
 
+One portable SSD boots two machines. There is a single system configuration:
+the **laptop is the base**, and the **AMD/NVIDIA tower is a NixOS
+`specialisation` inside it** with its own signed boot entry — you pick the
+machine from the boot menu, not by rebuilding. The base has to be the minimal
+machine because the module system adds cleanly but cannot remove.
+
 -   [flake.nix](flake.nix) Base of the configuration
--   [hosts](hosts) Per-host configurations that contain machine specific configurations
-    - [desktop](hosts/desktop/) Desktop specific configuration
-    - [laptop](hosts/laptop/) Laptop specific configuration
-    - [vm](hosts/vm/) VM specific configuration
+-   [hosts](hosts) Bootable configurations
+    -   [portable](hosts/portable/) The one real config: shared hardware, the disko layout, and the `desktop` specialisation
+    -   [iso](hosts/iso/) Installer ISO, with the install script baked in
+-   [machines](machines) Per-machine modules, gated on `machine.profile`
+    -   [laptop](machines/laptop/) ASUS Vivobook — TLP, Intel VA-API, audio quirk
+    -   [desktop](machines/desktop/) AMD tower — NVIDIA, Steam, OpenRGB/DDC, TV audio
 -   [modules](modules) Modularized NixOS configurations
-    -   [core](modules/core/) Core NixOS configuration
+    -   [core](modules/core/) Configuration shared by BOTH machines
     -   [homes](modules/home/) My [Home-Manager](https://github.com/nix-community/home-manager) configuration
 -   [pkgs](pkgs) Custom packages build from source
 -   [scripts](scripts) Custom shell scripts
--   [wallpapers](wallpapers/) Wallpapers collection
+-   [assets/wallpapers](assets/wallpapers/) The vendored wallpaper
 
 ## 🛠️ System Components & Applications
 
 | Component | Software |
 | --- | :---: |
-| **Window Manager**          | [Hyprland][Hyprland] |
-| **Bar**                     | [Waybar][Waybar] |
-| **Application Launcher**    | [Rofi][Rofi] |
-| **Notification Daemon**     | [swaync][swaync] |
-| **Terminal Emulator**       | [Ghostty][Ghostty] |
+| **Window Manager**          | [sway][sway] (laptop) / [Hyprland][Hyprland] (tower) |
+| **Bar**                     | swaybar + [i3status-rust][i3status-rust] (laptop) / [noctalia][noctalia] (tower) |
+| **Application Launcher**    | [fuzzel][fuzzel] (laptop) / [noctalia][noctalia] (tower) |
+| **Notification Daemon**     | [mako][mako] (laptop) / [noctalia][noctalia] (tower) |
+| **Terminal Emulator**       | [kitty][kitty] |
 | **Shell**                   | [zsh][zsh] + [powerlevel10k][powerlevel10k] |
 | **Text Editor**             | [VSCodium][VSCodium] + [Neovim][Neovim] |
 | **network management tool** | [NetworkManager][NetworkManager] + [network-manager-applet][network-manager-applet] |
 | **System resource monitor** | [Btop][Btop] |
-| **File Manager**            | [superfile][superfile] + [nemo][nemo] |
+| **File Manager**            | [Dolphin][Dolphin] |
 | **Fonts**                   | [Maple Mono][Maple Mono] |
-| **Color Scheme**            | [Gruvbox Dark Hard][Gruvbox] |
+| **Color Scheme**            | Eldritch, frozen at build time in [`modules/home/theme.nix`](modules/home/theme.nix) |
 | **GTK theme**               | [Colloid gtk theme][Colloid gtk theme] |
-| **Cursor**                  | [Bibata-Modern-Ice][Bibata-Modern-Ice] |
-| **Icons**                   | [Papirus-Dark][Papirus-Dark] |
-| **Lockscreen**              | [Hyprlock][Hyprlock] + [Swaylock-effects][Swaylock-effects] |
+| **Cursor**                  | Nordzy-catppuccin-macchiato-dark |
+| **Icons**                   | Tela-circle-purple-dark |
+| **Lockscreen**              | [swaylock][swaylock] (both machines, via ext-session-lock-v1) |
 | **Image Viewer**            | [imv][imv] |
 | **Media Player**            | [mpv][mpv] |
-| **Music Player**            | [audacious][audacious] |
-| **Screenshot Software**     | [grimblast][grimblast] |
+| **Music Player**            | [mpd][mpd] + [rmpc][rmpc] (laptop) / Spotify + [spicetify][spicetify] (tower) |
+| **Screenshot Software**     | [grimshot][grimshot] (sway) / [grimblast][grimblast] (Hyprland) |
 | **Screen Recording**        | [wf-recorder][wf-recorder] + [OBS][OBS] |
 | **Clipboard**               | [wl-clip-persist][wl-clip-persist] |
 | **Color Picker**            | [hyprpicker][hyprpicker] |
@@ -193,7 +189,7 @@ scripts/
 
 ## ⌨️ Keybinds
 
-Keybindings are defined in [`binds.nix`](./modules/home/hyprland/binds.nix). 
+Keybindings are defined per compositor: [`sway/binds.nix`](./modules/home/sway/binds.nix) on the laptop and [`hyprland/binds.nix`](./modules/home/hyprland/binds.nix) on the tower. 
 
 **Quick access:** Press `$mod F1` to view all keybinds.
 
@@ -217,7 +213,9 @@ Here are some of the main keybinds:
 
 ### Bootstrap procedure (fresh device)
 
-This fork is set up for one host in particular — `desktop` (AMD CPU + NVIDIA RTX 5060 Ti, Secure Boot via Lanzaboote, sops-nix for secrets). The vanilla `install.sh` is **not** enough on a fresh machine — there are a few host-specific gotchas you need to walk through manually. Read this section before running anything.
+This config is set up for two specific machines sharing one portable SSD (an Intel ASUS Vivobook and an AMD tower with an RTX 5060 Ti; Secure Boot via Lanzaboote, sops-nix for secrets). There are host-specific gotchas you have to walk through by hand. Read this section before running anything.
+
+The supported install path is the **ISO in this repo** (`nix build .#iso`), which bakes the flake in at `/etc/nixos-config` and ships an `install-nixos` script that runs disko, rewrites the mount UUIDs, and calls `nixos-install`. The old top-level `install.sh` was upstream fork cruft and has been removed: it offered hosts (`desktop`/`p14s`/`vm`) that are not configurations here, patched a `modules/home/aseprite/` module that does not exist, and copied `hardware-configuration.nix` into `hosts/$HOST/` — a path nothing imports under the current layout.
 
 #### 1. Install NixOS
 
@@ -233,25 +231,22 @@ cd ~/nixos-config
 
 The configuration expects the repo at `$HOME/nixos-config`.
 
-#### 3. Regenerate `hardware-configuration.nix`
+#### 3. Update the mount UUIDs
 
-The committed `hosts/desktop/hardware-configuration.nix` contains UUIDs and a disk layout from the previous install — those will not match a fresh machine. Replace it:
+There is no `hardware-configuration.nix`. The mounts live in [`hosts/portable/hardware-shared.nix`](hosts/portable/hardware-shared.nix) with the root / ESP / swap UUIDs of the **current** SSD hardcoded — one filesystem on one portable disk, so they are shared by both machines by definition. On a fresh disk they will not match, and the system will not boot.
+
+`install-nixos` (from the ISO) rewrites all three automatically after disko has formatted the target, and asks you to confirm them. If you are installing by hand instead:
 
 ```bash
-sudo nixos-generate-config --show-hardware-config > hosts/desktop/hardware-configuration.nix
+lsblk -o NAME,SIZE,TYPE,FSTYPE,UUID
+$EDITOR hosts/portable/hardware-shared.nix   # root, /boot and swap UUIDs
 ```
 
-Then re-apply the host-specific tweaks that aren't auto-generated:
-- `boot.kernelModules = [ ];` (intentionally empty — no KVM on this host)
-- `hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;` (the generator may emit `intel` on AMD; confirm it's `amd`)
-- The extra `/mnt/storage`, `/mnt/csgo`, `/mnt/nvme` NTFS mounts — re-add only if those drives are physically present on the new machine.
-
-> [!IMPORTANT]
-> `install.sh` will copy `/etc/nixos/hardware-configuration.nix` over the committed one automatically, but the script's copy does **not** strip the auto-generated `kvm-intel` / `intel.updateMicrocode` lines. Fix them by hand after running the script if you let it auto-copy.
+Everything else in that file is deliberate and does **not** come from `nixos-generate-config`: the `uas`/`usb_storage` initrd modules (root is on a USB 3.0 UAS enclosure), and **both** CPU microcodes, because the disk boots an Intel laptop and an AMD tower and the kernel picks by vendor at runtime. Do not let a generated file overwrite those.
 
 #### 4. (Optional) Update the disk path in `disko.nix`
 
-`hosts/desktop/disko.nix` pins `device = "/dev/disk/by-id/ata-USSD_512GB_..."` — the serial of the *current* SSD. If you want to use disko to partition a fresh disk, replace that value with the new disk's `by-id` path (`ls /dev/disk/by-id`). If you're not partitioning with disko, this file is unused at activation time.
+[`hosts/portable/disko.nix`](hosts/portable/disko.nix) pins `device = "/dev/disk/by-id/ata-USSD_512GB_..."` — the serial of the *current* SSD. To partition a fresh disk, replace that value with the new disk's `by-id` path (`ls /dev/disk/by-id`). If you are not partitioning with disko, this file is unused at activation time.
 
 #### 5. Bootstrap Secure Boot (Lanzaboote)
 
@@ -283,25 +278,36 @@ Without this file, `nixos-rebuild` will fail to materialize `/run/secrets/github
 
 If you don't have the age key, you can either re-encrypt `secrets/secrets.yaml` with a new key (`sops` + new recipient in `.sops.yaml`) or temporarily delete `secrets/secrets.yaml` — `modules/core/sops.nix` is wrapped in `lib.mkIf hasSecrets` and will no-op without it.
 
-#### 7. Run the install script
+#### 7. Build
+
+From the ISO, run `install-nixos`: it prompts for a username, shows the target disk, runs disko, rewrites the mount UUIDs (step 3) and calls `nixos-install`.
+
+On an already-running system, build the config directly:
 
 ```bash
-./install.sh
+sudo nixos-rebuild switch --flake .#portable
 ```
 
-It prompts for username + host, copies `/etc/nixos/hardware-configuration.nix` into the repo, sets up wallpaper dirs, and runs `nixos-rebuild switch --flake .#${HOST}`. Build time depends on your hardware — Aseprite alone takes ~20 min from source unless you opt out at the prompt.
+`.#desktop` is an alias for the same configuration — `networking.hostName` is `"desktop"` on both machines, and `nh os switch` resolves `.#<hostname>`.
 
 > [!NOTE]
-> If the build OOMs, edit the last line of `install.sh` to limit parallelism:
+> If the build OOMs, limit parallelism:
 >
-> ```diff
-> - sudo nixos-rebuild switch --flake .#${HOST}
-> + sudo nixos-rebuild switch --cores 4 --flake .#${HOST}
+> ```bash
+> sudo nixos-rebuild switch --cores 4 --flake .#portable
 > ```
+
+To check both machines build before you trust either:
+
+```bash
+nix flake check   # builds the laptop base, the desktop specialisation, and the ISO
+```
 
 #### 8. Reboot
 
-If everything succeeded, Hyprlock greets you on boot. If you see GRUB / systemd-boot instead of Lanzaboote, step 5 was skipped or the keys weren't enrolled — recover via the previous generation, redo step 5, then `nfs` again.
+Every generation produces **two** boot entries: the base (laptop) and `…-specialisation-desktop` (the tower). Pick the one matching the machine you are on; there is no rebuild needed when you move the disk. Lanzaboote signs both.
+
+If everything succeeded, greetd logs you straight into sway (laptop) or Hyprland (tower). If you see GRUB / systemd-boot instead of Lanzaboote, step 5 was skipped or the keys weren't enrolled — recover via the previous generation, redo step 5, then `nfs` again.
 
 #### 9. Post-install manual steps
 
@@ -309,19 +315,21 @@ A few things aren't (and can't be) automated by nix:
 
 - **Git identity** — edit `modules/home/git.nix` with your name + email, then `nfs`.
 - **claude-code** — `modules/home/zsh/zsh.nix` exports `CLAUDE_CODE_*` env vars but the binary itself is installed via npm (the nixpkgs version lags). Run `npm i -g @anthropic-ai/claude-code` after first login.
-- **Browser** — Zen / Thorium are launched at startup; extensions, profiles, and bookmarks are not managed by nix.
-- **Aseprite themes** — import from `modules/home/aseprite/themes/` if Aseprite is enabled.
-- **Hyprland monitors / workspaces** — `modules/home/hyprland/monitors.nix` sources `~/.config/hypr/{monitors,workspaces}.conf` (both wrapped with `noerror`). Drop in per-machine config files if you want monitor placement / workspace rules.
-- **Failing-DIMM `memmap` reservations** — `hosts/desktop/default.nix:97-105` reserves bad pages from a specific failing DIMM (RMA pending). If you build on a different machine, **delete the `memmap=` kernelParams** or you'll waste a tiny amount of RAM on nothing.
+- **Browser** — Thorium is launched at startup; extensions, profiles, and bookmarks are not managed by nix.
+- **Linear → Claude plan bookmarklet** — `modules/home/linear-plan.nix` registers the `claude-plan://` handler (`linear-plan` script, workspace 8 with overflow to 5) and drops the bookmarklet at `~/.local/share/linear-plan/bookmarklet.js`. Bookmarks aren't nix-managed, so add it by hand once: new bookmark on the bookmarks bar, paste the file's contents as the URL. Clipboard fallback is `$mod SHIFT P`.
+- **Hyprland monitors / workspaces** (tower only) — `modules/home/hyprland/monitors.nix` sources `~/.config/hypr/{monitors,workspaces}.conf` (both wrapped with `noerror`). Drop in per-machine config files if you want monitor placement / workspace rules.
+- **Failing-DIMM `memmap` reservations** — [`machines/desktop/default.nix`](machines/desktop/default.nix) reserves bad pages found by MemTest86 on the tower's RAM. They are desktop-only on purpose: applied on the laptop they would reserve addresses at random. If you build on different hardware, **delete the `memmap=` kernelParams**.
 
 ### Known fragile spots
 
 A non-exhaustive list of things that are tied to the current install and worth re-checking when you wipe:
 
-- `hosts/desktop/disko.nix:2` — disk `by-id` is hardware-specific.
-- `hosts/desktop/hardware-configuration.nix` — all `fileSystems` / `swapDevices` UUIDs.
-- `hosts/desktop/default.nix:55-74` — TLP battery + Intel-GPU keys are stale (desktop has no battery, GPU is NVIDIA). Harmless but produces boot-log warnings.
-- `modules/home/hyprland/variables.nix:9` — `SSH_AUTH_SOCK` hardcodes UID `1000`. Fine for the default user, latent bug if uid differs.
+- [`hosts/portable/disko.nix`](hosts/portable/disko.nix) — disk `by-id` is hardware-specific.
+- [`hosts/portable/hardware-shared.nix`](hosts/portable/hardware-shared.nix) — all `fileSystems` / `swapDevices` UUIDs.
+- [`modules/core/wayland.nix`](modules/core/wayland.nix) — `SSH_AUTH_SOCK` hardcodes UID `1000`. Fine for the single user here, latent bug if uid differs.
+- `pkiBundle = "/var/lib/sbctl"` in [`modules/core/bootloader.nix`](modules/core/bootloader.nix) — the Secure Boot keys live on the shared root, which is what lets a rebuild on the laptop still produce UKIs the tower accepts. Back them up; losing them means re-enrolling in firmware.
+- The age key at `~/.config/sops/age/keys.txt` is not in the repo and not derivable. Without it a fresh install has no secrets, and `modules/home/sops-env.nix` fails silently rather than loudly.
+- `boot.kernelPackages = pkgs.linuxPackages_latest` in [`modules/core/bootloader.nix`](modules/core/bootloader.nix) — a `nix flake update` can break the out-of-tree `ddcci-driver` or the NVIDIA open module, and only on the tower.
 
 # 👥 Credits
 
@@ -363,31 +371,32 @@ This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE
 <!-- Links -->
 
 [Hyprland]: https://github.com/hyprwm/Hyprland
-[Ghostty]: https://ghostty.org/
+[sway]: https://swaywm.org/
+[i3status-rust]: https://github.com/greshake/i3status-rust
+[noctalia]: https://github.com/noctalia-dev/noctalia-shell
+[fuzzel]: https://codeberg.org/dnkl/fuzzel
+[mako]: https://github.com/emersion/mako
+[kitty]: https://sw.kovidgoyal.net/kitty/
+[Dolphin]: https://apps.kde.org/dolphin/
+[swaylock]: https://github.com/swaywm/swaylock
+[mpd]: https://www.musicpd.org/
+[rmpc]: https://github.com/mierak/rmpc
+[spicetify]: https://github.com/spicetify/cli
+[grimshot]: https://github.com/OctopusET/sway-contrib
 [powerlevel10k]: https://github.com/romkatv/powerlevel10k
-[Waybar]: https://github.com/Alexays/Waybar
-[Rofi]: https://github.com/davatorium/rofi
 [Btop]: https://github.com/aristocratos/btop
-[nemo]: https://github.com/linuxmint/nemo/
 [zsh]: https://ohmyz.sh/
-[Swaylock-effects]: https://github.com/mortie/swaylock-effects
-[Hyprlock]: https://github.com/hyprwm/hyprlock
-[audacious]: https://audacious-media-player.org/
 [mpv]: https://github.com/mpv-player/mpv
 [VSCodium]:https://vscodium.com/
 [Neovim]: https://github.com/neovim/neovim
+[VSCodium]: https://vscodium.com/
 [grimblast]: https://github.com/hyprwm/contrib
 [imv]: https://sr.ht/~exec64/imv/
-[swaync]: https://github.com/ErikReider/SwayNotificationCenter
 [Maple Mono]: https://github.com/subframe7536/maple-font
 [NetworkManager]: https://wiki.gnome.org/Projects/NetworkManager
 [network-manager-applet]: https://gitlab.gnome.org/GNOME/network-manager-applet/
 [wl-clip-persist]: https://github.com/Linus789/wl-clip-persist
 [wf-recorder]: https://github.com/ammen99/wf-recorder
 [hyprpicker]: https://github.com/hyprwm/hyprpicker
-[Gruvbox]: https://github.com/morhetz/gruvbox
-[Papirus-Dark]: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
-[Bibata-Modern-Ice]: https://www.gnome-look.org/p/1197198
 [Colloid gtk theme]: https://github.com/vinceliuice/Colloid-gtk-theme
 [OBS]: https://obsproject.com/
-[superfile]: https://github.com/yorukot/superfile

@@ -3,7 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Pinned ONLY to supply zed-editor, overlaid in modules/core/nixpkgs.nix.
     # The main nixpkgs (nixos-unstable) currently carries Zed 0.229.0, and Zed's
@@ -46,8 +49,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    thorium.url = "github:Rishabh5321/thorium_flake";
-    nix-gaming.url = "github:fufexan/nix-gaming";
+    thorium = {
+      url = "github:Rishabh5321/thorium_flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
@@ -76,9 +81,6 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    catppuccin.url = "github:catppuccin/nix";
-    catppuccin.inputs.nixpkgs.follows = "nixpkgs";
-
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       # NOTE: do NOT make nixpkgs follow ours — nixpkgs 26.05 stdenv made
@@ -92,20 +94,13 @@
     let
       username = "fantasy";
       system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      lib = nixpkgs.lib;
 
       # The single system config. Both machines boot this; the tower is a
       # specialisation inside it (see hosts/portable/specialisations.nix).
       portable = nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [ ./hosts/portable ];
-        specialArgs = {
-          inherit self inputs username;
-        };
+        specialArgs = { inherit self inputs username; };
       };
     in
     {
@@ -130,6 +125,21 @@
         };
       };
 
-      packages.${system}.iso = self.nixosConfigurations.iso.config.system.build.isoImage;
+      packages.${system}.iso =
+        self.nixosConfigurations.iso.config.system.build.isoImage;
+
+      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
+
+      # `nix flake check` proves BOTH machines build, not just the base. The
+      # desktop is a specialisation, so its toplevel is not reachable from any
+      # nixosConfigurations attr — before this, the only way to build the tower
+      # was to remember the attribute path by hand, which meant the machine that
+      # cannot be tested from the laptop was also the one never checked in CI.
+      checks.${system} = {
+        laptop = self.nixosConfigurations.portable.config.system.build.toplevel;
+        desktop =
+          self.nixosConfigurations.portable.config.specialisation.desktop.configuration.system.build.toplevel;
+        iso = self.packages.${system}.iso;
+      };
     };
 }

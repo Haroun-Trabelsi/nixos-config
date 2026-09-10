@@ -1,6 +1,12 @@
-# Replace the placeholder below with your actual age public key.
-# Generate one with: nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
-# The public key is printed to stdout during generation.
+# The age recipient for everything under secrets/.
+#
+# The matching PRIVATE key lives at ~/.config/sops/age/keys.txt and is NOT in
+# this repo and not derivable from it — restore it from backup before a fresh
+# install, or modules/core/sops.nix decrypts nothing and
+# modules/home/sops-env.nix silently writes no environment file.
+#
+# To rotate: generate a key (`age-keygen -o ~/.config/sops/age/keys.txt`), put
+# its public half below, then `sops updatekeys secrets/secrets.yaml`.
 keys:
   - &user age1pv00slc6rneazp9efa8m283zag7w2cxkrh7ny5p2ukygxecxc33qtx7m00
 creation_rules:

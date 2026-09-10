@@ -50,17 +50,30 @@
       }
     ];
 
-    nameservers = [
-      "8.8.8.8"
-      "8.8.4.4"
-      "1.1.1.1"
-    ];
+    # No `nameservers` override. It used to hardcode 8.8.8.8/8.8.4.4/1.1.1.1,
+    # which takes precedence over whatever DHCP hands out — so on a captive
+    # portal the sign-in redirect never resolves, and on a LAN with
+    # split-horizon DNS internal names silently fail. That is the same
+    # "connected but nothing resolves" class of failure the dispatcher script
+    # above exists to prevent, just from the other direction.
+    #
+    # DHCP-provided DNS is used instead. If a network's resolver is genuinely
+    # bad, override it per-connection (`nmcli con mod <name> ipv4.dns ...`)
+    # rather than globally for every network this laptop ever joins.
+
     firewall = {
       enable = true;
+
+      # 22/80/443 were open with nothing behind them: services.openssh is not
+      # enabled anywhere in this config, and there is no web server. SSH here is
+      # outbound only (client + agent), which needs no inbound port, and remote
+      # nodes are reached over the tailnet — tailscale0 is a trusted interface in
+      # modules/core/tailscale.nix, so enabling sshd later would still be
+      # reachable there without reopening 22 to every coffee-shop network.
+      #
+      # 59010/59011 are SoundWire (pkgs.soundwireserver, packages/gui.nix),
+      # which does need them inbound on both protocols.
       allowedTCPPorts = [
-        22
-        80
-        443
         59010
         59011
       ];
