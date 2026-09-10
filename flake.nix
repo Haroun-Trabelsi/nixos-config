@@ -136,8 +136,47 @@
         };
       };
 
-      packages.${system}.iso =
-        self.nixosConfigurations.iso.config.system.build.isoImage;
+      packages.${system} =
+        let
+          base = self.nixosConfigurations.portable.config;
+          desktop = base.specialisation.desktop.configuration;
+          # `nix run` looks for meta.mainProgram; the vm derivation is called
+          # "nixos-vm" but its binary is run-<hostname>-vm, so without this the
+          # run fails looking for bin/nixos-vm.
+          runnable =
+            vm:
+            vm.overrideAttrs (o: {
+              meta = (o.meta or { }) // {
+                mainProgram = "run-${base.networking.hostName}-vm";
+              };
+            });
+        in
+        {
+          iso = self.nixosConfigurations.iso.config.system.build.isoImage;
+
+          # Boot either machine in a VM.
+          #
+          # `nixos-rebuild build-vm --flake .#desktop` does NOT give you the
+          # desktop. `.#desktop` is a literal alias for `.#portable` — it exists
+          # so `nh os switch` can resolve .#<hostname> — and that config's BASE
+          # is the laptop. The tower is a specialisation inside it, which no
+          # nixosConfigurations attribute can reach, so it needs its own output.
+          #
+          # Both runners are named run-desktop-vm, because networking.hostName
+          # is "desktop" on both machines by design. Trust the attribute you
+          # built, not the script name.
+          #
+          #   nix run .#vm-laptop
+          #   nix run .#vm-desktop
+          #
+          # Caveat for vm-desktop: machines/desktop sets
+          # services.xserver.videoDrivers = [ "nvidia" ] and a VM has no NVIDIA
+          # GPU, so the graphical session will not come up. It is still the right
+          # way to test everything that is not the compositor — filesystems,
+          # services, impermanence.
+          vm-laptop = runnable base.system.build.vm;
+          vm-desktop = runnable desktop.system.build.vm;
+        };
 
       formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
 
