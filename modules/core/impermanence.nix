@@ -64,7 +64,17 @@ let
     "/persist" = {
       device = "/dev/vda";
       fsType = "ext4";
+
+      # autoFormat is implemented by `x-systemd.makefs`, which ONLY works in a
+      # systemd initrd. This config uses the scripted one, where the option is
+      # silently ignored — so the disk was never formatted, and then stage 1 ran
+      # fsck against a raw device and died with "fsck on /dev/vda failed".
+      #
+      # The vmVariant therefore switches the VM (and only the VM) to a systemd
+      # initrd, below. noCheck as well: there is nothing to check on a disk that
+      # is about to be created, and systemd orders makefs before fsck anyway.
       autoFormat = true;
+      noCheck = true;
       neededForBoot = true;
     };
   };
@@ -104,6 +114,16 @@ in
         virtualisation.memorySize = 4096;
         virtualisation.cores = 4;
         virtualisation.diskSize = 8192;
+
+        # Required for autoFormat on /persist to do anything at all — see the
+        # note on that mount above. Scoped to the VM so the real machines keep
+        # the scripted initrd they boot with today.
+        boot.initrd.systemd.enable = true;
+
+        # The VM inherits the real disk's swap UUID, which does not exist here.
+        # `nofail` keeps it from failing the boot, but dropping it outright
+        # saves waiting on the device at all.
+        swapDevices = lib.mkForce [ ];
       };
     }
 
