@@ -57,7 +57,16 @@
   swapDevices = [
     {
       device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9";
-      options = [ "nofail" ];
+      # `nofail` alone is not enough. It stops a missing swap device FAILING the
+      # boot, but systemd still creates a device dependency and blocks on it for
+      # its default 90 s timeout — observed exactly that in a VM which inherited
+      # this UUID: "Timed out waiting for device /dev/disk/by-uuid/43d2cec0...".
+      # The short device-timeout is what makes a swapless disk boot promptly
+      # rather than merely eventually.
+      options = [
+        "nofail"
+        "x-systemd.device-timeout=5s"
+      ];
     }
   ];
 
