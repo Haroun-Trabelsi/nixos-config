@@ -1,5 +1,5 @@
 <h1 align="center">
-   <img src="./.github/assets/logo/nixos-logo.png" width="100px" /> 
+   <img src="./.github/assets/logo/nixos-logo.png" width="100px" />
    <br>
       Haroun's Flakes 
    <br>
@@ -9,18 +9,42 @@
 # 🗃️ Overview
 
 > [!IMPORTANT]
-> This is my **personal** NixOS configuration, shared for reference and inspiration.
+> This is my **personal** NixOS configuration, shared for reference.
 >
-> **Please be aware:**
-> - This configuration is constantly evolving - expect breaking changes
-> - The README and documentation are most likely outdated
-> - Features may be partially implemented or broken
-> - I provide **no guarantees** of stability
+> - It changes constantly — expect breaking changes.
+> - Features may be partially implemented or broken.
+> - No guarantees of stability.
 >
-> **Before using any part of this configuration:**
-> 1. Review the code thoroughly
-> 2. Understand what each module does
-> 3. And adapt it to your specific needs
+> Read it, understand what a module does, and adapt it — do not copy it whole.
+
+### The unusual part
+
+Most multi-machine Nix configs give each machine its own `nixosConfiguration`.
+This one cannot, and the reason drives the whole layout.
+
+There is **one** portable SSD, **one** ESP, and therefore **one** bootloader
+install. Under [Lanzaboote](https://github.com/nix-community/lanzaboote) a
+rebuild that omitted the bootloader would drop an unsigned `systemd-bootx64.efi`
+over the signed one, and the other machine would then fail Secure Boot and need
+a firmware trip to recover.
+
+So the **laptop is the base config**, and the **tower is a NixOS
+`specialisation` inside it** — its own signed UKI and boot-menu entry per
+generation, chosen at boot with no rebuild before physically moving the disk.
+The base has to be the minimal machine, because the module system adds cleanly
+but cannot remove: a specialisation can append kernel parameters, but it cannot
+un-set `services.xserver.videoDrivers` or delete a `fileSystems` entry.
+
+Machine-specific modules gate on `config.machine.profile` (`"laptop"` /
+`"desktop"`), and home-manager modules read it as `osConfig.machine.profile`.
+This replaced a `host` specialArg, which could not work: specialArgs are fixed
+per `nixosConfiguration` and cannot vary per specialisation.
+
+**Consequence worth knowing:** a specialisation is invisible to anything that
+iterates `nixosConfigurations`, so the tower needs explicit attributes.
+`nix flake check` and the `vm-*` packages below both exist for that reason —
+`.#desktop` is only an alias for `.#portable`, and building it gives you the
+*laptop*.
 
 ## 📚 Layout
 
@@ -127,130 +151,192 @@ Keybindings are defined per compositor: [`sway/binds.nix`](./modules/home/sway/b
 
 Here are some of the main keybinds:
 
-| Category | Key Examples | Purpose |
-|----------|--------------|---------|
-| **Navigation** | `$mod + 0-9/arrow keys` | workspace & window navigation |
-| **Applications** | `$mod + return/d/b/e` | terminal, launcher, browser, file manager |
-| **Window Control** | `$mod + q/f/space` | close, fullscreen, float windows |
-| **Media & Tools** | `Print`, `$mod + c/w` | screenshots, color picker, wallpaper picker |
-| **System** | `$mod + escape/shift escape` | lockscreen, power menu |
+| Category | Keys | Purpose |
+|---|---|---|
+| **Navigation** | `$mod + 0-9`, `$mod + arrows/hjkl` | workspace & window navigation |
+| **Navigation** | `$mod + Tab` | last workspace |
+| **Launch** | `$mod + Return` / `$mod + T` | kitty (shared instance / new process) |
+| **Launch** | `$mod + Shift + D` | fuzzel launcher (laptop; noctalia's on the tower) |
+| **Launch** | `$mod + E` / `$mod + B` | dolphin / browser |
+| **Launch** | `$mod + D` / `$mod + S` | Discord / music |
+| **Launch** | `$mod + C` / `$mod + Shift + V` | VS Code in the browser (Coder) / zed |
+| **Window** | `$mod + Q/F/Space` | close, fullscreen, toggle float |
+| **Tools** | `$mod + Print` / `$mod + V` | screenshot / clipboard history |
+| **Tools** | `$mod + W` | restore last notification (mako) |
+| **System** | `$mod + Escape` / `$mod + Shift + Escape` | swaylock / power menu |
+| **System** | `$mod + F1` | full keybind list |
 
 # 🚀 Installation
 
-> [!CAUTION]
-> This is a **personal** configuration. Use at your own risk. Always review and adapt the configuration to your needs before installation.
+## Getting this onto another disk
 
-> [!WARNING]
-> **VM Usage Notice:** Hyprland does **not** officially support virtual machines. While it often works, you may encounter graphical issues or performance problems depending on your VM configuration. See Hyprland's [VM guide](https://wiki.hypr.land/Getting-Started/Master-Tutorial/#vm).
+Three routes, fastest first.
 
-### Bootstrap procedure (fresh device)
+### 1. From this running system — the fast path
 
-This config is set up for two specific machines sharing one portable SSD (an Intel ASUS Vivobook and an AMD tower with an RTX 5060 Ti; Secure Boot via Lanzaboote, sops-nix for secrets). There are host-specific gotchas you have to walk through by hand. Read this section before running anything.
-
-The supported install path is the **ISO in this repo** (`nix build .#iso`), which bakes the flake in at `/etc/nixos-config` and ships an `install-nixos` script that runs disko, rewrites the mount UUIDs, and calls `nixos-install`. The old top-level `install.sh` was upstream fork cruft and has been removed: it offered hosts (`desktop`/`p14s`/`vm`) that are not configurations here, patched a `modules/home/aseprite/` module that does not exist, and copied `hardware-configuration.nix` into `hosts/$HOST/` — a path nothing imports under the current layout.
-
-#### 1. Install NixOS
-
-Boot any official [NixOS ISO](https://nixos.org/download.html#nixos-iso). The graphical installer's "No desktop" option works fine. Complete the install and reboot into the base system before continuing.
-
-#### 2. Clone the repo
+If the machine is alive and booted, this is by far the quickest: the local
+`/nix/store` already holds the whole closure, so most of the "build" is a local
+copy rather than a download.
 
 ```bash
-nix-shell -p git
-git clone https://github.com/Haroun-Trabelsi/nixos-config ~/nixos-config
-cd ~/nixos-config
+sudo ./scripts/recovery/install-to-disk.sh --dry-run /dev/sdX   # review the plan
+sudo ./scripts/recovery/install-to-disk.sh /dev/sdX             # do it
 ```
 
-The configuration expects the repo at `$HOME/nixos-config`.
+It partitions with disko, **reads the new filesystem UUIDs and writes them into
+its own copy of `hardware-shared.nix`** before installing, copies
+`/var/lib/sbctl` so Lanzaboote can sign on the new disk, and drops the repo at
+`~/nixos-config`. It refuses to target the disk you are running from.
 
-#### 3. Update the mount UUIDs
+`--swap` and `--data` add the optional partitions (both off by default).
 
-There is no `hardware-configuration.nix`. The mounts live in [`hosts/portable/hardware-shared.nix`](hosts/portable/hardware-shared.nix) with the root / ESP / swap UUIDs of the **current** SSD hardcoded — one filesystem on one portable disk, so they are shared by both machines by definition. On a fresh disk they will not match, and the system will not boot.
+> [!NOTE]
+> The UUID rewrite is not a nicety. Installing the config verbatim would give the
+> new disk a `hardware-shared.nix` naming the **old** disk's UUIDs — a non-boot,
+> or worse, silently mounting the old disk if both are attached.
 
-`install-nixos` (from the ISO) rewrites all three automatically after disko has formatted the target, and asks you to confirm them. If you are installing by hand instead:
+The one thing it deliberately does not copy is the age key. Put your off-machine
+copy at `~/.config/sops/age/keys.txt` (mode 600) on the new root, or every secret
+stays unavailable.
+
+### 2. From the ISO — when this machine is dead
 
 ```bash
-lsblk -o NAME,SIZE,TYPE,FSTYPE,UUID
-$EDITOR hosts/portable/hardware-shared.nix   # root, /boot and swap UUIDs
+nix build .#iso        # ~1.4 GB, flake baked in at /etc/nixos-config
 ```
 
-Everything else in that file is deliberate and does **not** come from `nixos-generate-config`: the `uas`/`usb_storage` initrd modules (root is on a USB 3.0 UAS enclosure), and **both** CPU microcodes, because the disk boots an Intel laptop and an AMD tower and the kernel picks by vendor at runtime. Do not let a generated file overwrite those.
+Write it to a USB stick, boot it, and run `install-nixos`. Same idea as above —
+disko, then UUID rewriting, then `nixos-install` — but it fetches the closure
+from the network, so it is much slower. Use it when there is no working system to
+install *from*.
 
-#### 4. (Optional) Update the disk path in `disko.nix`
+### 3. Not a clone
 
-[`hosts/portable/disko.nix`](hosts/portable/disko.nix) pins `device = "/dev/disk/by-id/ata-USSD_512GB_..."` — the serial of the *current* SSD. To partition a fresh disk, replace that value with the new disk's `by-id` path (`ls /dev/disk/by-id`). If you are not partitioning with disko, this file is unused at activation time.
+`dd` copies every used byte and duplicates every filesystem UUID. Two disks
+claiming the same root UUID is exactly the ambiguity `by-uuid` mounts exist to
+prevent, and you would then have to regenerate them and edit
+`hardware-shared.nix` by hand — which is the step route 1 automates.
 
-#### 5. Bootstrap Secure Boot (Lanzaboote)
-
-This config force-disables `systemd-boot` and uses [Lanzaboote](https://github.com/nix-community/lanzaboote) for Secure Boot. **The system will not boot after activation unless keys are enrolled first.**
-
-In your firmware UI, put Secure Boot into **Setup Mode** (clear factory keys), then:
+## Trying it without touching a disk
 
 ```bash
-# generate keys
+nix run .#vm-laptop     # sway, Intel VA-API, TLP, zram
+nix run .#vm-desktop    # the tower specialisation
+```
+
+`nixos-rebuild build-vm --flake .#desktop` does **not** give you the desktop —
+`.#desktop` is an alias for `.#portable`, whose base is the laptop. Use the
+attributes above.
+
+`vm-desktop` will not reach a graphical session: `machines/desktop` sets
+`videoDrivers = [ "nvidia" ]` and a VM has no NVIDIA GPU. It is still the right
+way to exercise filesystems, services and units.
+
+## Checking both machines build
+
+```bash
+nix flake check     # laptop + desktop specialisation + ISO
+```
+
+Worth running before you trust either. The tower's toplevel is not reachable
+from any `nixosConfigurations` attribute, so this is the only command that
+proves the machine you may not be sitting at still builds.
+
+## Knowing what is not reproducible
+
+```bash
+./scripts/recovery/audit-undeclared-state.sh     # mutable state this config does not declare
+```
+
+See **[secrets/RECOVERY.md](./secrets/RECOVERY.md)** for the inventory of state
+that lives outside git — the age key, the Secure Boot PKI, the Tailscale node
+identity — and the order to restore it in.
+
+## Bootstrapping the things nix cannot do
+
+Both install routes above leave three things for you. None can be automated,
+and skipping the first two means the machine does not boot the way you expect.
+
+### Secure Boot (Lanzaboote)
+
+This config force-disables `systemd-boot` and signs with
+[Lanzaboote](https://github.com/nix-community/lanzaboote). **A machine with
+Secure Boot enabled will not boot the result unless keys are enrolled first.**
+
+`install-to-disk.sh` copies the existing `/var/lib/sbctl` across, so a second
+disk inherits working keys. Starting from nothing, put the firmware into **Setup
+Mode** (clear factory keys), then:
+
+```bash
 sudo nix run nixpkgs#sbctl -- create-keys
-
-# enroll Microsoft + your keys (Microsoft keys are needed for OptionROMs)
-sudo nix run nixpkgs#sbctl -- enroll-keys --microsoft
+sudo nix run nixpkgs#sbctl -- enroll-keys --microsoft   # Microsoft keys for OptionROMs
 ```
 
-After enrollment, re-enable Secure Boot in firmware. The first `nixos-rebuild switch` after this step will sign the bootloader and kernel.
+Re-enable Secure Boot afterwards; the next `nixos-rebuild switch` signs the
+bootloader and kernel. Check with `sbctl status`.
 
-#### 6. Bootstrap sops age key
+Signing is a no-op where Secure Boot is off, which is why Lanzaboote lives in
+the *shared* layer ([`modules/core/bootloader.nix`](modules/core/bootloader.nix))
+rather than in a machine module — see the comment there.
 
-Secrets in `secrets/secrets.yaml` are encrypted with [sops-nix](https://github.com/Mic92/sops-nix). The age private key is **not** in the repo — restore it from your backup:
+Back the keys up, because losing them invalidates the signature on every
+existing generation, and the boot menu is the rollback path:
+
+```bash
+sudo ./scripts/recovery/backup-secure-boot-keys.sh ~/somewhere-outside-the-repo
+```
+
+### The sops age key
+
+Secrets in `secrets/secrets.yaml` are encrypted with
+[sops-nix](https://github.com/Mic92/sops-nix). The private key is **not** in the
+repo and not derivable from it:
 
 ```bash
 mkdir -p ~/.config/sops/age
-# copy your existing age key into:
-#   ~/.config/sops/age/keys.txt   (chmod 600)
+# restore your off-machine copy to ~/.config/sops/age/keys.txt, then:
+chmod 600 ~/.config/sops/age/keys.txt
 ```
 
-Without this file, `nixos-rebuild` will fail to materialize `/run/secrets/github_personal_access_token` and `/run/secrets/ssh_id_github`. The shell will still boot, but GitHub SSH and any tooling that reads the PAT will silently fail.
+Without it `/run/secrets/*` never materialises: GitHub SSH breaks and
+`modules/home/sops-env.nix` silently writes no environment file.
+`modules/core/sops.nix` declares only the secrets actually present in the file,
+so an absent optional secret does not break a rebuild.
 
-If you don't have the age key, you can either re-encrypt `secrets/secrets.yaml` with a new key (`sops` + new recipient in `.sops.yaml`) or temporarily delete `secrets/secrets.yaml` — `modules/core/sops.nix` is wrapped in `lib.mkIf hasSecrets` and will no-op without it.
+`sops.age.sshKeyPaths` is deliberately **not** used: it needs an SSH host key,
+and `services.openssh` is enabled on neither machine.
 
-#### 7. Build
+### Everything else
 
-From the ISO, run `install-nixos`: it prompts for a username, shows the target disk, runs disko, rewrites the mount UUIDs (step 3) and calls `nixos-install`.
+- **Git identity** — edit [`modules/home/git.nix`](modules/home/git.nix), then `nfs`.
+- **claude-code** — `modules/home/zsh/zsh.nix` exports `CLAUDE_CODE_*`, but the
+  binary comes from npm (nixpkgs lags): `npm i -g @anthropic-ai/claude-code`.
+- **Tailscale** — `tailscale up`, or put a reusable auth key in
+  `secrets/secrets.yaml` as `tailscale_auth_key` and
+  `services.tailscale.authKeyFile` joins on first boot.
+- **Coder** — `coder login`. The CLI itself is packaged
+  ([`pkgs/coder`](pkgs/coder), pinned to the deployment's version).
+- **Browser** — extensions are force-installed by policy
+  ([`modules/core/browser-policies.nix`](modules/core/browser-policies.nix)), but
+  their *settings* are profile state and are not reproducible.
+- **Linear → Claude plan bookmarklet** —
+  [`modules/home/linear-plan.nix`](modules/home/linear-plan.nix) registers the
+  `claude-plan://` handler and writes the bookmarklet to
+  `~/.local/share/linear-plan/bookmarklet.js`. Bookmarks are not nix-managed;
+  add it once by hand. Clipboard fallback is `$mod SHIFT P`.
+- **Hyprland monitors / workspaces** (tower only) —
+  `modules/home/hyprland/monitors.nix` sources
+  `~/.config/hypr/{monitors,workspaces}.conf`, both with `noerror`.
 
-On an already-running system, build the config directly:
+### Booting it
 
-```bash
-sudo nixos-rebuild switch --flake .#portable
-```
+Every generation produces **two** boot entries: the base (laptop) and
+`…-specialisation-desktop` (the tower). Pick the one matching the machine you are
+on; moving the disk needs no rebuild. Lanzaboote signs both.
 
-`.#desktop` is an alias for the same configuration — `networking.hostName` is `"desktop"` on both machines, and `nh os switch` resolves `.#<hostname>`.
-
-> [!NOTE]
-> If the build OOMs, limit parallelism:
->
-> ```bash
-> sudo nixos-rebuild switch --cores 4 --flake .#portable
-> ```
-
-To check both machines build before you trust either:
-
-```bash
-nix flake check   # builds the laptop base, the desktop specialisation, and the ISO
-```
-
-#### 8. Reboot
-
-Every generation produces **two** boot entries: the base (laptop) and `…-specialisation-desktop` (the tower). Pick the one matching the machine you are on; there is no rebuild needed when you move the disk. Lanzaboote signs both.
-
-If everything succeeded, greetd logs you straight into sway (laptop) or Hyprland (tower). If you see GRUB / systemd-boot instead of Lanzaboote, step 5 was skipped or the keys weren't enrolled — recover via the previous generation, redo step 5, then `nfs` again.
-
-#### 9. Post-install manual steps
-
-A few things aren't (and can't be) automated by nix:
-
-- **Git identity** — edit `modules/home/git.nix` with your name + email, then `nfs`.
-- **claude-code** — `modules/home/zsh/zsh.nix` exports `CLAUDE_CODE_*` env vars but the binary itself is installed via npm (the nixpkgs version lags). Run `npm i -g @anthropic-ai/claude-code` after first login.
-- **Browser** — Thorium is launched at startup; extensions, profiles, and bookmarks are not managed by nix.
-- **Linear → Claude plan bookmarklet** — `modules/home/linear-plan.nix` registers the `claude-plan://` handler (`linear-plan` script, workspace 8 with overflow to 5) and drops the bookmarklet at `~/.local/share/linear-plan/bookmarklet.js`. Bookmarks aren't nix-managed, so add it by hand once: new bookmark on the bookmarks bar, paste the file's contents as the URL. Clipboard fallback is `$mod SHIFT P`.
-- **Hyprland monitors / workspaces** (tower only) — `modules/home/hyprland/monitors.nix` sources `~/.config/hypr/{monitors,workspaces}.conf` (both wrapped with `noerror`). Drop in per-machine config files if you want monitor placement / workspace rules.
-- **Failing-DIMM `memmap` reservations** — [`machines/desktop/default.nix`](machines/desktop/default.nix) reserves bad pages found by MemTest86 on the tower's RAM. They are desktop-only on purpose: applied on the laptop they would reserve addresses at random. If you build on different hardware, **delete the `memmap=` kernelParams**.
+greetd logs straight into sway (laptop) or Hyprland (tower). Seeing
+GRUB/systemd-boot instead of Lanzaboote means the keys were never enrolled —
+boot the previous generation, redo the enrolment, then `nfs`.
 
 ### Known fragile spots
 
@@ -259,16 +345,25 @@ A non-exhaustive list of things that are tied to the current install and worth r
 - [`hosts/portable/disko.nix`](hosts/portable/disko.nix) — disk `by-id` is hardware-specific.
 - [`hosts/portable/hardware-shared.nix`](hosts/portable/hardware-shared.nix) — all `fileSystems` / `swapDevices` UUIDs.
 - [`modules/core/wayland.nix`](modules/core/wayland.nix) — `SSH_AUTH_SOCK` hardcodes UID `1000`. Fine for the single user here, latent bug if uid differs.
+- `boot.kernelPackages = linuxPackages_latest` in [`modules/core/bootloader.nix`](modules/core/bootloader.nix) — a `nix flake update` can break the out-of-tree `ddcci-driver` or the NVIDIA open module, and only on the tower. `nix flake check` will catch it before you reboot.
+- The Secure Boot PKI in `/var/lib/sbctl` and the age key are not in the repo, and this repository is **public** — see [secrets/RECOVERY.md](./secrets/RECOVERY.md).
 - `pkiBundle = "/var/lib/sbctl"` in [`modules/core/bootloader.nix`](modules/core/bootloader.nix) — the Secure Boot keys live on the shared root, which is what lets a rebuild on the laptop still produce UKIs the tower accepts. Back them up; losing them means re-enrolling in firmware.
 - The age key at `~/.config/sops/age/keys.txt` is not in the repo and not derivable. Without it a fresh install has no secrets, and `modules/home/sops-env.nix` fails silently rather than loudly.
 - `boot.kernelPackages = pkgs.linuxPackages_latest` in [`modules/core/bootloader.nix`](modules/core/bootloader.nix) — a `nix flake update` can break the out-of-tree `ddcci-driver` or the NVIDIA open module, and only on the tower.
 
 # 👥 Credits
 
-Other dotfiles that I ~~copied~~ learned from:
+This repository began as a fork of
+**[Frost-Phoenix/nixos-config](https://github.com/Frost-Phoenix/nixos-config)**,
+whose structure (`hosts` / `modules/core` / `modules/home`, the script
+auto-discovery in `scripts/scripts.nix`, and this README's shape) is still
+visible throughout. The two-machine specialisation layout, the power work, the
+sway session and the reproducibility tooling are mine; the bones are theirs.
+
+Other dotfiles learned from along the way:
 
 - Nix Flakes
-  - [nomadics9/NixOS-Flake](https://github.com/nomadics9/NixOS-Flake): This is where I start my nixos / hyprland journey.
+  - [nomadics9/NixOS-Flake](https://github.com/nomadics9/NixOS-Flake)
   - [samiulbasirfahim/Flakes](https://github.com/samiulbasirfahim/Flakes): General flake / files structure
   - [justinlime/dotfiles](https://github.com/justinlime/dotfiles): Mainly waybar (old design)
   - [skiletro/nixfiles](https://github.com/skiletro/nixfiles): Vscodium config (that prevent it to crash)

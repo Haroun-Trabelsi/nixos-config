@@ -10,6 +10,18 @@
 # exfat data partition without mentioning it. It now defaults to the MINIMUM
 # useful layout and everything beyond that is opt-in, because a destructive
 # installer should never create a partition you did not ask for.
+# Takes an optional `device` so the same layout can target another disk without
+# editing this file:
+#
+#   disko --mode destroy,format,mount --argstr device /dev/sdX \
+#     ./hosts/portable/disko.nix
+#
+# The `...` is required: this file is also in the nixosConfiguration's imports
+# (see ./default.nix), where the module system calls it with its own arguments.
+{
+  device ? "/dev/disk/by-id/ata-USSD_512GB_DTPP2409784000001014",
+  ...
+}:
 let
   # ── Fresh-install switches ───────────────────────────────────────────────
   #
@@ -42,11 +54,10 @@ let
   # FORMATS it, so it is not a place to keep the only copy of anything.
   enableDataPartition = false;
 
-  # Resolves to /dev/sdb today. Deliberately by-id and not by-path or a bare
-  # /dev/sd?: this enclosure used to enumerate as sda and now comes up as sdb,
-  # because there is a second USB disk in the machine. Anything positional would
-  # have silently retargeted to the wrong drive.
-  device = "/dev/disk/by-id/ata-USSD_512GB_DTPP2409784000001014";
+  # The default above resolves to /dev/sdb today. Deliberately by-id rather than
+  # by-path or a bare /dev/sd?: this enclosure used to enumerate as sda and now
+  # comes up as sdb, because there is a second USB disk in the machine. Anything
+  # positional would have silently retargeted to the wrong drive.
 
   # `priority` fixes the partition NUMBERS. Without it disko walks the attrset,
   # which Nix sorts alphabetically (ESP, data, root, swap), and the numbering

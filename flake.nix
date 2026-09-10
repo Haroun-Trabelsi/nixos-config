@@ -176,6 +176,12 @@
           # services, impermanence.
           vm-laptop = runnable base.system.build.vm;
           vm-desktop = runnable desktop.system.build.vm;
+
+          # Re-exported so scripts/recovery/install-to-disk.sh can reach the
+          # exact disko this flake is locked to, rather than whatever
+          # `nix run github:nix-community/disko` resolves to today.
+          disko = inputs.disko.packages.${system}.disko;
+          disko-install = inputs.disko.packages.${system}.disko-install;
         };
 
       formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
