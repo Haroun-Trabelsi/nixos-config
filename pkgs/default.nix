@@ -6,6 +6,7 @@
 }:
 {
   _2048 = pkgs.callPackage ./2048 { stdenv = pkgs.gcc14Stdenv; };
+  agentsview = pkgs.callPackage ./agentsview { };
   maple-mono-custom = pkgs.callPackage ./maple-mono { inherit inputs; };
   pixelitos = pkgs.callPackage ./pixelitos { };
   pomo = pkgs.callPackage ./pomo { };

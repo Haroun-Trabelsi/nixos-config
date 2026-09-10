@@ -1,4 +1,10 @@
-{ pkgs, config, osConfig, ... }:
+{
+  pkgs,
+  config,
+  osConfig,
+  lib,
+  ...
+}:
 let
   c = config.theme.colors;
 in
@@ -17,7 +23,7 @@ in
 
     config = {
       modifier = "Mod4";
-      terminal = "ghostty";
+      terminal = "kitty";
       menu = "fuzzel";
 
       gaps = {
@@ -79,21 +85,18 @@ in
     '';
   };
 
-  home.packages = with pkgs; [
-    # screenshots: grimblast is Hyprland-only, grimshot is its sway counterpart
-    sway-contrib.grimshot
-    grim
-    slurp
-    swappy
-    wl-clipboard
-    wl-clip-persist
-    cliphist
-    wf-recorder
-    hyprpicker # compositor-agnostic colour picker despite the name
-    tesseract # OCR
-    wlsunset # night light, replacing noctalia's
-    brightnessctl
-    playerctl
-    nwg-displays
-  ];
+  # Laptop only. This list was previously OUTSIDE the gate, so the tower was
+  # carrying grimshot and wlsunset for a compositor it never runs. Everything
+  # compositor-agnostic moved to modules/home/wayland-tools.nix (nwg-displays
+  # included — hyprland/monitors.nix was adding it a second time); swappy and
+  # playerctl are in packages/cli.nix and brightnessctl is in
+  # machines/laptop/default.nix, so all three are dropped as duplicates.
+  home.packages = lib.mkIf (osConfig.machine.profile == "laptop") (
+    with pkgs;
+    [
+      # screenshots: grimblast is Hyprland-only, grimshot is its sway counterpart
+      sway-contrib.grimshot
+      wlsunset # night light, replacing noctalia's — driven by sway/startup.nix
+    ]
+  );
 }

@@ -14,6 +14,7 @@
   imports = [
     ./power.nix
     ./graphics.nix
+    ./audio.nix
   ];
 
   config = lib.mkIf (config.machine.profile == "laptop") {

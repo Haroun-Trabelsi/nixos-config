@@ -67,8 +67,6 @@
       flake = false;
     };
 
-    superfile.url = "github:yorukot/superfile";
-
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";

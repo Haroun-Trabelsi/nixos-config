@@ -1,40 +1,31 @@
+{ pkgs, ... }:
+# Only what is true of BOTH machines. Anything vendor-specific belongs in
+# machines/<machine>/, because a specialisation can add but never remove: a
+# driver enabled here is enabled on the tower too, whether or not the hardware
+# exists.
 {
-  pkgs,
-  config,
-  ...
-}:
-{
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
+  hardware.graphics.enable = true;
 
-  hardware.enableRedistributableFirmware = true;
+  # enable32Bit is NOT set here. It exists for Steam, which is desktop-only, and
+  # machines/desktop/default.nix sets it. It used to be `true` in this file as
+  # well, which made the desktop's line a no-op and its "desktop-only" comment
+  # false — the laptop was carrying the whole 32-bit graphics stack for nothing.
 
-  # VA-API for the Intel iGPU. There was previously no VA-API driver installed
-  # at all — /run/opengl-driver/lib/dri had iris_dri.so and nvidia_drv_video.so
-  # but no iHD_drv_video.so — so all browser video decode ran in software. On
-  # Raptor Lake-P that is 6-12 W for 1080p60; the fixed-function VDBOX does the
-  # same work at 1-2 W. LIBVA_DRIVER_NAME is still "nvidia" and gets switched to
-  # "iHD" in the power-tuning phase; this only makes the driver exist.
-  hardware.graphics.extraPackages = with pkgs; [
-    intel-media-driver
-    vpl-gpu-rt
-  ];
+  # intel-media-driver / vpl-gpu-rt (VA-API) and intel-gpu-tools moved to
+  # machines/laptop/graphics.nix. They were here, so the AMD/NVIDIA tower was
+  # installing an Intel media driver and `intel_gpu_top`.
+  #
+  # libva-utils stays: `vainfo` is the verification tool for BOTH VA-API stacks
+  # (iHD on the laptop, nvidia-vaapi-driver on the tower).
+  environment.systemPackages = with pkgs; [ libva-utils ];
 
-  # iwlwifi and i2c-dev are auto-loaded by udev when the hardware is detected,
-  # so we don't eagerly load them here. Saves time in systemd-modules-load.
-  boot.kernelModules = [ ];
-
-  # hardware.i2c + the out-of-tree ddcci-driver + ddcutil were here for DDC/CI
-  # brightness control of an external desktop monitor. This laptop drives only
-  # eDP, where brightness goes through the backlight class instead, so the
-  # module was polling I2C for a bus with nothing on it. They move to the
-  # desktop-only module in the specialisation phase.
-  boot.extraModulePackages = [ ];
-
-  environment.systemPackages = with pkgs; [
-    libva-utils # vainfo — verify hardware decode is actually being used
-    intel-gpu-tools # intel_gpu_top — RC6 residency and video engine busy%
-  ];
+  # hardware.enableRedistributableFirmware is set once, in
+  # hosts/portable/hardware-shared.nix, next to the microcode selection it
+  # belongs with. It was defined in both files.
+  #
+  # boot.kernelModules and boot.extraModulePackages are not declared empty here
+  # either — [] is already the default, and declaring it in two files made
+  # "where is this set?" ambiguous. iwlwifi and i2c-dev are auto-loaded by udev
+  # when the hardware is detected, so nothing needs eager loading; the tower's
+  # ddcci-driver is added in machines/desktop/peripherals.nix.
 }

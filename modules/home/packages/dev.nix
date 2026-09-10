@@ -43,6 +43,7 @@
 
     ## terminal
     tmux
+    direnv # per-project env; was parked in the Hyprland module
 
     ## C / C++
     gcc

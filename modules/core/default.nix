@@ -5,7 +5,7 @@
     ./nixpkgs.nix
     ./bootloader.nix
     ./hardware.nix
-    ./xserver.nix
+    ./session.nix
     ./network.nix
     ./tailscale.nix
     ./bluetooth.nix

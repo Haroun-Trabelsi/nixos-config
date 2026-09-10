@@ -15,7 +15,7 @@ in
     enable = osConfig.machine.profile == "laptop";
     settings = {
       main = {
-        terminal = "ghostty -e";
+        terminal = "kitty -e";
         layer = "overlay";
         width = 45;
         lines = 12;

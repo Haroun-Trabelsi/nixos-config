@@ -11,9 +11,9 @@
       "$mod, F1, exec, show-keybinds"
 
       # keybindings
-      "$mod, Return, exec, ghostty --gtk-single-instance=true"
-      "ALT, Return, exec, [float; size 1111 700] ghostty"
-      "$mod SHIFT, Return, exec, [fullscreen] ghostty"
+      "$mod, Return, exec, kitty --single-instance"
+      "ALT, Return, exec, [float; size 1111 700] kitty"
+      "$mod SHIFT, Return, exec, [fullscreen] kitty"
       "$mod, B, exec, [workspace 1 silent] thorium"
       "$mod, Q, killactive,"
       "$mod, F, fullscreen, 0"

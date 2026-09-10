@@ -17,6 +17,7 @@
     # config. Disabling a compositor makes its whole settings tree inert.
     ./sway # laptop compositor
     ./hyprland # desktop compositor
+    ./wayland-tools.nix # grim/slurp/cliphist/... shared by both compositors
     ./noctalia.nix # desktop shell
     ./lock.nix # swaylock + swayidle, shared by both compositors
     ./tmux.nix # gpakosz/.tmux ("Oh my tmux!")
@@ -41,7 +42,7 @@
 
     ./swayosd.nix # brightness / volume wiget
     ./vscodium # vscode fork
-    # ./waypaper.nix # replaced by noctalia wallpaper
+    ./wallpaper.nix # vendored wallpaper, installed to ~/Pictures/Wallpapers
     ./sops-env.nix # expose sops secrets as systemd session env vars
     ./xdg-mimes.nix # xdg config
     ./zsh # shell

@@ -4,9 +4,23 @@
   username,
   ...
 }:
+# Login and session plumbing: greetd, libinput, the TTY keymap, shutdown timeout.
+#
+# Renamed from xserver.nix, which was actively misleading — there is no X server
+# here and `services.xserver.enable` is deliberately unset (see below).
 let
   # Hyprland on the tower, sway on the laptop.
-  compositor = if config.machine.profile == "desktop" then "Hyprland" else "sway";
+  #
+  # Hyprland is launched via `start-hyprland`, NOT the `Hyprland` binary
+  # directly. start-hyprland is upstream's watchdog: it forks the compositor and
+  # restarts it if it dies uncleanly, so an NVIDIA driver hiccup costs you your
+  # windows instead of your whole session. Launching Hyprland bare logs
+  # "WARNING: Hyprland is being launched without start-hyprland" and gives up the
+  # watchdog entirely. nixpkgs' own hyprland.desktop session file execs
+  # start-hyprland for exactly this reason; greetd was bypassing it.
+  # A clean exit (logout) still exits cleanly, so greetd re-runs default_session
+  # and the autologin loop below is unchanged.
+  compositor = if config.machine.profile == "desktop" then "start-hyprland" else "sway";
 in
 {
   # services.xserver.enable is deliberately GONE. It was set with
@@ -48,7 +62,6 @@ in
   # rules are what let a non-root user (not in `video`) write to
   # /sys/class/backlight at all.
   services.udev.packages = [ pkgs.brightnessctl ];
-  services.upower.enable = true;
 
   # Make the virtual-console (TTY) keymap match the French/AZERTY layout used in
   # the graphical session. Without this the TTY defaults to US/QWERTY, so console

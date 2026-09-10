@@ -22,11 +22,13 @@ in
         "${mod}+F1" = "exec show-keybinds";
 
         # --- launching ---
-        "${mod}+Return" = "exec ghostty --gtk-single-instance=true";
+        "${mod}+Return" = "exec kitty --single-instance";
         # Hyprland could attach window rules to an exec; sway cannot, so the
         # floating variant launches with its own app_id and rules.nix matches it.
-        "Alt+Return" = "exec ghostty --gtk-single-instance=false --class=ghostty-float";
-        "${mod}+Shift+Return" = "exec ghostty --gtk-single-instance=false --class=ghostty-full";
+        # `--class` sets the Wayland app_id, which is what rules.nix matches on.
+        "Alt+Return" = "exec kitty --class=kitty-float";
+        "${mod}+Shift+Return" = "exec kitty --class=kitty-full";
+        # A separate kitty process rather than another window of the shared one.
         "${mod}+t" = "exec kitty";
         "${mod}+e" = "exec dolphin";
         "Alt+e" = "exec dolphin --qwindowgeometry 1111x700";

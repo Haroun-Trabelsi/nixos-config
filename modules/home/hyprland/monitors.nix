@@ -1,4 +1,4 @@
-{ pkgs, osConfig, ... }:
+{ osConfig, ... }:
 {
   wayland.windowManager.hyprland = {
     settings.monitor =
@@ -32,6 +32,4 @@
       # hyprlang noerror false
     '';
   };
-
-  home.packages = with pkgs; [ nwg-displays ];
 }

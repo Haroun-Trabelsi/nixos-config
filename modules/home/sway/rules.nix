@@ -17,7 +17,7 @@
       { app_id = "^org\\.gnome\\.Calculator$"; }
       { app_id = "^org\\.gnome\\.FileRoller$"; }
       { app_id = "^org\\.pulseaudio\\.pavucontrol$"; }
-      { app_id = "^ghostty-float$"; }
+      { app_id = "^kitty-float$"; }
       { class = "^SoundWireServer$"; }
       { class = "^openrgb$"; }
       { class = "^\\.sameboy-wrapped$"; }
@@ -27,11 +27,11 @@
     window.commands = [
       # sizes / placement
       {
-        criteria.app_id = "^ghostty-float$";
+        criteria.app_id = "^kitty-float$";
         command = "resize set 1111 700, move position center";
       }
       {
-        criteria.app_id = "^ghostty-full$";
+        criteria.app_id = "^kitty-full$";
         command = "fullscreen enable";
       }
       {
@@ -89,7 +89,7 @@
         command = "move container to workspace number 8";
       }
       {
-        criteria.class = "^Spotify$";
+        criteria.class = "^[Ss]potify$";
         command = "move container to workspace number 9";
       }
       {

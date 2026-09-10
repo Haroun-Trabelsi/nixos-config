@@ -57,8 +57,6 @@
     initrd.verbose = false;
 
     kernelPackages = pkgs.linuxPackages_latest;
-    extraModulePackages = [ ];
-    kernelModules = [ ];
 
     # Kept even though the four hardcoded NTFS mounts are gone, so udisks2 can
     # still mount NTFS drives on demand when they are plugged in.

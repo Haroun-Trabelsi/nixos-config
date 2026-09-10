@@ -8,6 +8,7 @@
     ./nvidia.nix
     ./peripherals.nix
     ./steam.nix
+    ./tv-audio.nix
   ];
 
   # Flips machines/laptop off (it is inherited from the parent config) and lets
