@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 {
   # home-manager normally symlinks ~/.ssh/config into the Nix store, where the
   # file is owned by root. OpenSSH accepts that (it explicitly allows uid 0 as
@@ -12,9 +17,11 @@
   # avoids it fighting the copy and littering .hm-backup files on every switch.
   home.file.".ssh/config".target = ".ssh/config.hm";
 
-  home.activation.sshConfigRealFile = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    run install -m600 -T "$HOME/.ssh/config.hm" "$HOME/.ssh/config"
-  '';
+  home.activation.sshConfigRealFile =
+    lib.hm.dag.entryAfter [ "linkGeneration" ]
+      ''
+        run install -m600 -T "$HOME/.ssh/config.hm" "$HOME/.ssh/config"
+      '';
 
   programs.ssh = {
     enable = true;
@@ -58,6 +65,43 @@
         port = 443;
         identityFile = "~/.ssh/id_github";
         identitiesOnly = true;
+      };
+
+      # Coder workspaces. These blocks were written into ~/.ssh/config.d/coder by
+      # `coder config-ssh` — untracked state that hardcoded
+      # /usr/local/bin/coder, the imperatively-installed binary. Declared here
+      # they point at pkgs.coder instead, so the ProxyCommand resolves to a store
+      # path that is actually part of this system's closure.
+      #
+      # `coder config-ssh` will happily rewrite its own file again and shadow
+      # these (config.d/* is included ABOVE the "*" block and ssh is
+      # first-match-wins). Don't run it; if you must, delete
+      # ~/.ssh/config.d/coder afterwards.
+      #
+      # StrictHostKeyChecking/UserKnownHostsFile are upstream's own settings:
+      # workspaces are ephemeral and their host keys change on every rebuild, so
+      # pinning them would mean a warning every time. Scoped to coder hosts only.
+      coder-prefixed = {
+        host = "coder.*";
+        extraOptions = {
+          ConnectTimeout = "0";
+          StrictHostKeyChecking = "no";
+          UserKnownHostsFile = "/dev/null";
+          LogLevel = "ERROR";
+        };
+        proxyCommand =
+          "${pkgs.coder}/bin/coder --global-config ${config.xdg.configHome}/coderv2 "
+          + "ssh --stdio --ssh-host-prefix coder. %h";
+      };
+
+      coder-suffixed = {
+        host = "*.coder";
+        extraOptions = {
+          ConnectTimeout = "0";
+          StrictHostKeyChecking = "no";
+          UserKnownHostsFile = "/dev/null";
+          LogLevel = "ERROR";
+        };
       };
     };
   };
