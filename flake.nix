@@ -81,6 +81,17 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Root-on-tmpfs with an explicit persist list. Wired up in
+    # modules/core/impermanence.nix and OFF by default — see the long comment
+    # there for why adopting it on this machine is non-destructive.
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      # It ships its own nixpkgs AND home-manager; both follow ours so the lock
+      # does not regrow the extra trees that were just taken out of it.
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       # NOTE: do NOT make nixpkgs follow ours — nixpkgs 26.05 stdenv made

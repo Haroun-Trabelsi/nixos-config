@@ -23,9 +23,17 @@
   ];
   boot.initrd.kernelModules = [ ];
 
-  fileSystems."/" = {
+  # The one ext4 partition. Where it MOUNTS depends on whether root-on-tmpfs is
+  # enabled (modules/core/impermanence.nix): normally it is /, and under
+  # impermanence it is /persist with / becoming a tmpfs. The UUID is stated once
+  # here either way — this file owns disk facts, that module owns the policy.
+  fileSystems.${if config.impermanence.enable then "/persist" else "/"} = {
     device = "/dev/disk/by-uuid/b430a1af-2909-46ad-a25a-968cf448b3f1";
     fsType = "ext4";
+    # Under impermanence everything else is bind-mounted out of here, and
+    # sops-nix reads the age key from it during activation, so it has to be up
+    # before the switch runs.
+    neededForBoot = config.impermanence.enable;
   };
 
   fileSystems."/boot" = {
