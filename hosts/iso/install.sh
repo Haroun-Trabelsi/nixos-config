@@ -66,9 +66,13 @@ nixos-generate-config --root /mnt --no-filesystems
 HW="hosts/$HOST/hardware-shared.nix"
 root_uuid=$(findmnt -no UUID /mnt)
 boot_uuid=$(findmnt -no UUID /mnt/boot)
+
+# Swap is OPTIONAL. hosts/portable/disko.nix defaults to ESP + root only, so a
+# fresh install normally has no swap partition at all — and the laptop's zram
+# covers routine paging anyway. Only look for one; do not require it.
 swap_uuid=$(lsblk -no UUID,FSTYPE | awk '$2 == "swap" { print $1; exit }')
 
-for pair in "root:$root_uuid" "boot:$boot_uuid" "swap:$swap_uuid"; do
+for pair in "root:$root_uuid" "boot:$boot_uuid"; do
   if [ -z "${pair#*:}" ]; then
     echo "FAILED to discover the ${pair%%:*} UUID. Refusing to install a config"
     echo "that would point at the wrong filesystem. Fix $HW by hand."
@@ -78,7 +82,7 @@ done
 
 echo "  root: $root_uuid"
 echo "  boot: $boot_uuid"
-echo "  swap: $swap_uuid"
+echo "  swap: ${swap_uuid:-<none — swapDevices will be emptied>}"
 
 # Each UUID appears exactly once in that file, on its own device/UUID line.
 sed -i \
@@ -86,8 +90,36 @@ sed -i \
   "$HW"
 sed -i \
   -e "/fileSystems.\"\/boot\"/,/};/{s|/dev/disk/by-uuid/[0-9A-Fa-f-]*|/dev/disk/by-uuid/$boot_uuid|}" \
-  -e "/swapDevices/,/];/{s|/dev/disk/by-uuid/[0-9a-fA-F-]*|/dev/disk/by-uuid/$swap_uuid|}" \
   "$HW"
+
+if [ -n "$swap_uuid" ]; then
+  sed -i \
+    -e "/swapDevices/,/];/{s|/dev/disk/by-uuid/[0-9a-fA-F-]*|/dev/disk/by-uuid/$swap_uuid|}" \
+    "$HW"
+else
+  # No swap partition on this disk. Empty the list rather than leaving it
+  # pointing at a UUID from the machine this repo was last installed on — with
+  # `nofail` that would boot, but it would be a lie in the config.
+  python3 - "$HW" <<'PYEOF'
+import re, sys
+path = sys.argv[1]
+src = open(path).read()
+# Anchor the terminator to a line that is exactly two spaces + "];". A
+# non-greedy .*? alone stops at the FIRST "];", which is the one closing the
+# inner `options = [ "nofail" ];` and leaves broken Nix behind.
+out, n = re.subn(
+    r"^  swapDevices = \[.*?^  \];$",
+    "  swapDevices = [ ];",
+    src,
+    count=1,
+    flags=re.S | re.M,
+)
+if n != 1:
+    sys.exit("could not rewrite swapDevices in " + path)
+open(path, "w").write(out)
+print("emptied swapDevices (no swap partition on this disk)")
+PYEOF
+fi
 
 echo "Rewrote the mount UUIDs in $HW:"
 grep -n "by-uuid" "$HW"

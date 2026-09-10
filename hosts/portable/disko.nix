@@ -4,84 +4,118 @@
 #
 # This file is NOT imported by the system configuration. It is a one-shot
 # installer input; the running system's mounts live in ./hardware-shared.nix.
-# See the note at the bottom on why those are still two places.
 #
-# It was previously an `import ../../modules/disko-layout.nix { ... }` describing
-# THREE partitions in the order ESP -> swap -> root, with root at 100%. That did
-# not describe this disk. The real layout is four partitions, and root is not
-# 100% — so running the old file would have produced a different disk AND
-# destroyed the 146.8 GB exfat data partition without mentioning it.
-#
-# The indirection through modules/disko-layout.nix is gone with it: there is one
-# host, so a parameterised "shared layout" was abstraction over a single caller,
-# and it could not express partition labels or a fourth partition anyway.
-#
-# Captured from the live disk on 2026-09-10 (lsblk -o NAME,PARTLABEL,LABEL,UUID).
+# It previously described THREE partitions in the order ESP -> swap -> root with
+# root at 100%, which did not describe this disk and would have destroyed the
+# exfat data partition without mentioning it. It now defaults to the MINIMUM
+# useful layout and everything beyond that is opt-in, because a destructive
+# installer should never create a partition you did not ask for.
+let
+  # ── Fresh-install switches ───────────────────────────────────────────────
+  #
+  # Both default to false. A new install therefore gets exactly two partitions:
+  # a 1 GiB ESP and root across the rest of the disk.
+
+  # A dedicated swap partition.
+  #
+  # Off by default: not necessary here. The laptop runs zramSwap at 50% of RAM
+  # (machines/laptop/power.nix), which handles routine paging in compressed RAM
+  # and never touches the USB link — and hibernation is already ruled out on
+  # this hardware, so the one thing a real swap partition would buy is unused
+  # (see the criticalPowerAction note in machines/laptop/default.nix).
+  #
+  # The disk this config currently runs on DOES have a 17 GiB swap partition,
+  # from before that reasoning. Nothing needs it: at the time of writing the
+  # tower was using 209 MiB of it against 22 GiB of RAM.
+  #
+  # Turn it on if you add hibernation (which also needs `resume=` on the
+  # cmdline and swap >= RAM), or if you want a disk backstop on the tower,
+  # which has no zram.
+  enableSwap = false;
+
+  # A general-purpose exfat data partition ("ExtNix" on the current disk,
+  # 146.8 GiB, mounted on demand by udisks2 rather than from fstab).
+  #
+  # Off by default: it is storage, not part of the system, and a fresh install
+  # should not silently carve a third of the disk away from root. Turn it on
+  # when you actually want it — and note that `disko --mode destroy,format`
+  # FORMATS it, so it is not a place to keep the only copy of anything.
+  enableDataPartition = false;
+
+  # Resolves to /dev/sdb today. Deliberately by-id and not by-path or a bare
+  # /dev/sd?: this enclosure used to enumerate as sda and now comes up as sdb,
+  # because there is a second USB disk in the machine. Anything positional would
+  # have silently retargeted to the wrong drive.
+  device = "/dev/disk/by-id/ata-USSD_512GB_DTPP2409784000001014";
+
+  # `priority` fixes the partition NUMBERS. Without it disko walks the attrset,
+  # which Nix sorts alphabetically (ESP, data, root, swap), and the numbering
+  # would not match a disk built from an earlier run of this file.
+  espPartition = {
+    ESP = {
+      priority = 1;
+      label = "EFI"; # matches the existing partlabel, not disko's default
+      size = "1G";
+      type = "EF00";
+      content = {
+        type = "filesystem";
+        format = "vfat";
+        mountpoint = "/boot";
+        mountOptions = [
+          "fmask=0077"
+          "dmask=0077"
+        ];
+      };
+    };
+  };
+
+  rootPartition = {
+    root = {
+      priority = 2;
+      label = "root";
+      # Root takes the whole disk unless the data partition is claiming a slice.
+      size = if enableDataPartition then "312G" else "100%";
+      content = {
+        type = "filesystem";
+        format = "ext4";
+        mountpoint = "/";
+      };
+    };
+  };
+
+  swapPartition = {
+    swap = {
+      priority = 3;
+      label = "swap";
+      size = "17G";
+      content.type = "swap";
+    };
+  };
+
+  dataPartition = {
+    data = {
+      priority = 4;
+      label = "ExtNix";
+      size = "100%";
+      content = {
+        type = "filesystem";
+        format = "exfat";
+        mountpoint = null; # mounted on demand by udisks2, not from fstab
+      };
+    };
+  };
+in
 {
   disko.devices.disk.main = {
-    # Resolves to /dev/sdb today. Deliberately by-id and not by-path or a bare
-    # /dev/sd?: this enclosure used to enumerate as sda and now comes up as sdb,
-    # because there is a second USB disk in the machine. Anything positional
-    # would have silently retargeted to the wrong drive.
-    device = "/dev/disk/by-id/ata-USSD_512GB_DTPP2409784000001014";
+    inherit device;
     type = "disk";
     content = {
       type = "gpt";
-      partitions = {
-        # `priority` fixes the partition NUMBERS. Without it disko walks the
-        # attrset, which Nix sorts alphabetically (ESP, data, root, swap), and
-        # the numbering would not match the disk it is meant to reproduce.
-        ESP = {
-          priority = 1;
-          label = "EFI"; # matches the existing partlabel, not disko's default
-          size = "1G";
-          type = "EF00";
-          content = {
-            type = "filesystem";
-            format = "vfat";
-            mountpoint = "/boot";
-            mountOptions = [
-              "fmask=0077"
-              "dmask=0077"
-            ];
-          };
-        };
-        root = {
-          priority = 2;
-          label = "root";
-          size = "312G";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/";
-          };
-        };
-        swap = {
-          priority = 3;
-          # The live partition carries NO partlabel — only the swap area's own
-          # label. Declared here so a reinstall gains one; see the note below.
-          label = "swap";
-          size = "17G";
-          content.type = "swap";
-        };
-        # The ExtNix data partition. Included so this file describes the whole
-        # disk rather than three quarters of it.
-        #
-        # WARNING: `disko --mode destroy,format` FORMATS THIS TOO. 146.8 GB of
-        # data lives here and it is not backed up by anything in this repo. On a
-        # reinstall where you want to keep it, run disko against a layout without
-        # this partition, or back it up first.
-        data = {
-          priority = 4;
-          label = "ExtNix";
-          size = "100%";
-          content = {
-            type = "filesystem";
-            format = "exfat";
-            mountpoint = null; # mounted on demand by udisks2, not by fstab
-          };
-        };
-      };
+      partitions =
+        espPartition
+        // rootPartition
+        // (if enableSwap then swapPartition else { })
+        // (if enableDataPartition then dataPartition else { });
     };
   };
 }

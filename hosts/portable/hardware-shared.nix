@@ -37,8 +37,20 @@
     ];
   };
 
+  # The disk this config currently runs on has a 17 GiB swap partition, from
+  # before zram. It is barely used — 209 MiB against 22 GiB of RAM on the tower
+  # at the time of writing — and hosts/portable/disko.nix no longer creates one
+  # on a fresh install (`enableSwap = false`).
+  #
+  # `nofail` so a swapless disk boots cleanly regardless: without it systemd
+  # blocks on a swap unit whose device does not exist. The ISO installer also
+  # empties this list outright when the target disk has no swap partition, so
+  # this is belt and braces rather than the primary mechanism.
   swapDevices = [
-    { device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9"; }
+    {
+      device = "/dev/disk/by-uuid/43d2cec0-faf6-4aa8-8977-c0ea90a6a5b9";
+      options = [ "nofail" ];
+    }
   ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
