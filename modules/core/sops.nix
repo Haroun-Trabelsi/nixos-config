@@ -50,6 +50,18 @@ let
     tailscale_auth_key = {
       mode = "0400";
     };
+
+    # Bitwarden CLI personal API key, exported into the session by
+    # modules/home/sops-env.nix for `bw login --apikey` and the noctalia
+    # bitwarden plugin. Owned by the user: `bw` runs as them, not as root.
+    bw_clientid = {
+      owner = username;
+      mode = "0400";
+    };
+    bw_clientsecret = {
+      owner = username;
+      mode = "0400";
+    };
   };
 in
 {
