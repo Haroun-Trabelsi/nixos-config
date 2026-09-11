@@ -40,6 +40,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Noctalia plugins, PINNED. noctalia installs plugins by `git clone`-ing this
+    # repo at runtime (Services/Noctalia/PluginService.qml), which would mean the
+    # tower's bar widgets are whatever was on main the day they were installed,
+    # tracked by nothing. Pinning it here and placing the files declaratively
+    # keeps them in flake.lock like every other input.
+    noctalia-plugins = {
+      url = "github:noctalia-dev/noctalia-plugins";
+      flake = false;
+    };
+
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix/2bfdf55faf76fed12950b17d4af501e5a463607f";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -129,6 +139,16 @@
         # .#<hostname>, so this alias keeps nh and `--flake .#desktop` working.
         desktop = portable;
 
+        # The Vivobook's OWN install, on its internal NVMe. A single machine
+        # with a single profile — no specialisation, so no NVIDIA closure — and
+        # its own hostname, because it is a separate node from the portable
+        # disk. See hosts/vivobook/default.nix.
+        vivobook = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [ ./hosts/vivobook ];
+          specialArgs = { inherit self inputs username; };
+        };
+
         iso = nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [ ./hosts/iso ];
@@ -193,6 +213,7 @@
       # cannot be tested from the laptop was also the one never checked in CI.
       checks.${system} = {
         laptop = self.nixosConfigurations.portable.config.system.build.toplevel;
+        vivobook = self.nixosConfigurations.vivobook.config.system.build.toplevel;
         desktop =
           self.nixosConfigurations.portable.config.specialisation.desktop.configuration.system.build.toplevel;
         iso = self.packages.${system}.iso;

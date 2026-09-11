@@ -13,13 +13,26 @@
 # script automates.
 #
 # Usage:
-#   sudo ./scripts/recovery/install-to-disk.sh /dev/sdX
-#   sudo ./scripts/recovery/install-to-disk.sh --dry-run /dev/sdX
+#   # the Vivobook's internal NVMe, replacing Windows — run ON the Vivobook,
+#   # booted from the portable SSD:
+#   sudo ./scripts/recovery/install-to-disk.sh --host vivobook /dev/nvme0n1
 #
-#   --dry-run  print each step without touching anything
-#   --swap     also create the 17G swap partition (off by default; zram covers
-#              paging and hibernation is not used here)
-#   --data     also create the exfat data partition (off by default)
+#   # another copy of the portable two-machine disk:
+#   sudo ./scripts/recovery/install-to-disk.sh --host portable /dev/sdX
+#
+#   --host NAME       which hosts/<NAME> to install. Default: portable
+#   --dry-run         print each step without touching anything
+#   --swap / --data   portable only: also create the optional swap / exfat
+#                     partitions (both off by default)
+#   --force-machine   skip the DMI check. You will be asked to justify this to
+#                     yourself when the wrong disk is gone.
+#
+# THE DMI CHECK: hosts/<NAME>/expect-dmi, when present, holds a pattern that
+# must appear in this machine's DMI strings. It exists because "the Windows
+# disk" is not a unique thing — the tower has two NTFS disks of its own, and
+# /dev/nvme0n1 is the internal drive on nearly every machine including that one.
+# Running the vivobook install from the tower would have formatted the tower.
+# The check fails CLOSED.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -27,6 +40,8 @@ MNT=/mnt
 DRY=0
 WANT_SWAP=0
 WANT_DATA=0
+FORCE_MACHINE=0
+HOST=portable
 DEVICE=""
 
 while [ $# -gt 0 ]; do
@@ -34,6 +49,11 @@ while [ $# -gt 0 ]; do
         --dry-run) DRY=1 ;;
         --swap) WANT_SWAP=1 ;;
         --data) WANT_DATA=1 ;;
+        --force-machine) FORCE_MACHINE=1 ;;
+        --host)
+            HOST="${2:?--host needs a name}"
+            shift
+            ;;
         -h | --help)
             sed -n '2,24p' "${BASH_SOURCE[0]}"
             exit 0
@@ -59,6 +79,34 @@ run() { if [ "$DRY" -eq 1 ]; then printf 'would run:'; printf ' %q' "$@"; echo; 
 [ "$DRY" -eq 1 ] || [ "$(id -u)" -eq 0 ] ||
     die "run with sudo (partitions disks, writes the target store)"
 [ -b "$DEVICE" ] || die "$DEVICE is not a block device"
+[ -d "$REPO_ROOT/hosts/$HOST" ] || die "no such host: hosts/$HOST"
+[ -f "$REPO_ROOT/hosts/$HOST/disko.nix" ] || die "hosts/$HOST has no disko.nix"
+
+# ── Is this even the right computer? ────────────────────────────────────────
+EXPECT_FILE="$REPO_ROOT/hosts/$HOST/expect-dmi"
+if [ -f "$EXPECT_FILE" ]; then
+    pattern=$(tr -d '\n' < "$EXPECT_FILE")
+    dmi=""
+    for f in product_name product_family board_name sys_vendor; do
+        dmi="$dmi $(cat "/sys/class/dmi/id/$f" 2>/dev/null || true)"
+    done
+    if printf '%s' "$dmi" | grep -qi -- "$pattern"; then
+        echo "Machine check: DMI matches '$pattern' — this is a hosts/$HOST machine."
+    elif [ "$FORCE_MACHINE" -eq 1 ]; then
+        echo "Machine check: DMI does NOT match '$pattern', overridden with --force-machine."
+        echo "               DMI here:$dmi"
+    else
+        echo "error: this does not look like a hosts/$HOST machine." >&2
+        echo "       hosts/$HOST/expect-dmi wants:  $pattern" >&2
+        echo "       this machine reports:         $dmi" >&2
+        echo "" >&2
+        echo "       Refusing. \"The Windows disk\" is not unique — /dev/nvme0n1 is" >&2
+        echo "       the internal drive on nearly every machine, and formatting the" >&2
+        echo "       wrong one is not recoverable. Run this on the target machine," >&2
+        echo "       or pass --force-machine if you are certain." >&2
+        exit 1
+    fi
+fi
 
 # Refuse to eat the disk we are running from.
 running_disk=$(lsblk -no PKNAME "$(findmnt -no SOURCE /)" 2>/dev/null | head -1)
@@ -66,7 +114,14 @@ target_disk=$(basename "$(readlink -f "$DEVICE")")
 [ "$running_disk" != "$target_disk" ] ||
     die "$DEVICE (/dev/$target_disk) is the disk this system is running from. Pick the other one."
 
-echo "Target: $DEVICE"
+# hosts/portable shares its hardware file with the tower, hence the name.
+case "$HOST" in
+    portable) HW_FILE=hardware-shared.nix ;;
+    *) HW_FILE=hardware.nix ;;
+esac
+[ -f "$REPO_ROOT/hosts/$HOST/$HW_FILE" ] || die "hosts/$HOST/$HW_FILE not found"
+
+echo "Installing hosts/$HOST onto $DEVICE"
 lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MOUNTPOINT "$DEVICE" || true
 echo
 
@@ -77,7 +132,7 @@ echo
 # if both are attached. Formatting first means the real UUIDs are knowable
 # before the config is installed.
 DISKO_ARGS=(--mode destroy,format,mount --argstr device "$DEVICE"
-    --root-mountpoint "$MNT" "$REPO_ROOT/hosts/portable/disko.nix")
+    --root-mountpoint "$MNT" "$REPO_ROOT/hosts/$HOST/disko.nix")
 [ "$WANT_SWAP" -eq 1 ] && DISKO_ARGS+=(--arg enableSwap true)
 [ "$WANT_DATA" -eq 1 ] && DISKO_ARGS+=(--arg enableDataPartition true)
 
@@ -108,7 +163,7 @@ trap 'rm -rf "$WORK"' EXIT
 run cp -a "$REPO_ROOT/." "$WORK/"
 
 if [ "$DRY" -eq 0 ]; then
-    HW="$WORK/hosts/portable/hardware-shared.nix"
+    HW="$WORK/hosts/$HOST/$HW_FILE"
     sed -i "0,/by-uuid/{s|/dev/disk/by-uuid/[0-9a-fA-F-]*|/dev/disk/by-uuid/$root_uuid|}" "$HW"
     sed -i "/fileSystems.\"\/boot\"/,/};/{s|/dev/disk/by-uuid/[0-9A-Fa-f-]*|/dev/disk/by-uuid/$boot_uuid|}" "$HW"
     if [ -n "$swap_uuid" ]; then
@@ -118,6 +173,14 @@ if [ "$DRY" -eq 0 ]; then
 import re, sys
 path = sys.argv[1]
 src = open(path).read()
+
+# Already empty (hosts/vivobook declares `swapDevices = [ ];` outright, since
+# that layout never creates a swap partition) — nothing to do. Without this the
+# multi-line pattern below fails to match and aborts the install.
+if re.search(r"^  swapDevices = \[ *\];$", src, flags=re.M):
+    print("swapDevices already empty, leaving it")
+    sys.exit(0)
+
 # Anchor the terminator to a line of exactly two spaces + "];" — a bare
 # non-greedy match stops at the "];" closing the inner options list and leaves
 # broken Nix behind.
@@ -138,7 +201,7 @@ PYEOF
 fi
 
 # ── Phase 4: install ────────────────────────────────────────────────────────
-run nixos-install --root "$MNT" --flake "$WORK#portable" --no-root-password --no-channel-copy
+run nixos-install --root "$MNT" --flake "$WORK#$HOST" --no-root-password --no-channel-copy
 
 # ── Phase 5: the things nix cannot carry ────────────────────────────────────
 # Lanzaboote signs with pkiBundle = /var/lib/sbctl, resolved on the TARGET. A
