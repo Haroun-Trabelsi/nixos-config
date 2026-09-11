@@ -19,21 +19,21 @@
       "$mod, F, fullscreen, 0"
       "$mod SHIFT, F, fullscreen, 1"
       "$mod, Space, exec, toggle-float"
-      "$mod SHIFT, D, exec, noctalia-shell ipc call launcher toggle"
+      "$mod SHIFT, D, exec, noctalia msg panel-toggle launcher"
       "$mod, D, exec, toggle-discord"
       "$mod, S, exec, toggle-music"
       "$mod SHIFT, S, exec, screenshot --copy"
       "$mod, Escape, exec, swaylock -f"
-      "$mod SHIFT, Escape, exec, noctalia-shell ipc call sessionMenu toggle"
+      "$mod SHIFT, Escape, exec, noctalia msg panel-toggle session"
       "$mod, P, pseudo,"
       "$mod, T, exec, kitty"
       "$mod, E, exec, dolphin"
       "ALT, E, exec, hyprctl dispatch exec '[float; size 1111 700] dolphin'"
-      "$mod SHIFT, B, exec, noctalia-shell ipc call bar toggle"
+      "$mod SHIFT, B, exec, noctalia msg bar-toggle"
       "$mod, C, exec, toggle-codium"
       "$mod, G, exec, toggle-github-desktop"
       # "$mod, W, exec, caelestia shell drawers toggle sidebar"
-      "$mod, W, exec, noctalia-shell ipc call notifications toggleHistory"
+      "$mod, W, exec, noctalia msg panel-toggle control-center notifications"
       "$mod, N, exec, pavucontrol"
       "CTRL SHIFT, Escape, exec, hyprctl dispatch exec '[workspace 9] missioncenter'"
       "$mod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
@@ -137,13 +137,13 @@
       "$mod, mouse_up, workspace, e+1"
 
       # clipboard manager (noctalia built-in)
-      "$mod, V, exec, noctalia-shell ipc call launcher clipboard"
+      "$mod, V, exec, noctalia msg panel-toggle clipboard"
 
       # noctalia shell features
-      "$mod, O, exec, noctalia-shell ipc call controlCenter toggle"
-      "$mod SHIFT, O, exec, noctalia-shell ipc call settings toggle"
-      "$mod SHIFT, N, exec, noctalia-shell ipc call nightLight toggle"
-      "$mod SHIFT, M, exec, noctalia-shell ipc call darkMode toggle"
+      "$mod, O, exec, noctalia msg panel-toggle control-center"
+      "$mod SHIFT, O, exec, noctalia msg settings-toggle"
+      "$mod SHIFT, N, exec, noctalia msg nightlight-toggle"
+      "$mod SHIFT, M, exec, noctalia msg theme-mode-toggle"
     ];
 
     # mouse binding

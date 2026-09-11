@@ -13,7 +13,23 @@
     "wl-paste --watch cliphist store &"
     "udiskie --automount --notify --smart-tray &"
     "hyprctl setcursor Nordzy-catppuccin-macchiato-dark 24 &"
-    "noctalia-shell &"
+    # `noctalia`, not `noctalia-shell`: 5.x ships a single binary under the
+    # shorter name, so the old line was simply command-not-found.
+    #
+    # Still exec-once rather than programs.noctalia.systemd.enable, which does
+    # exist in 5.x. The unit is ordered After/WantedBy graphical-session.target,
+    # and home-manager's own hyprland integration imports WAYLAND_DISPLAY and
+    # HYPRLAND_INSTANCE_SIGNATURE and starts hyprland-session.target before any
+    # of these run — so the ordering is probably fine now. But "systemd crashes
+    # before Wayland is ready" is exactly what the 4.x note here recorded, and
+    # this is the process that draws the bar, the launcher and notifications.
+    # Switching is a one-line change to try deliberately, not to bundle into a
+    # migration that already changed everything else.
+    #
+    # What the systemd path would buy: Restart=on-failure, and
+    # X-Restart-Triggers on config.toml so a rebuild restarts the shell instead
+    # of needing a re-login.
+    "noctalia &"
 
     # (the old `host != "vm"` guard went away with the vm host)
     "monitor-watcher &"
