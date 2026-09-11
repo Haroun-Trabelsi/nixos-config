@@ -1,10 +1,16 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   networking = {
-    # Deliberately constant across both machines. The disk moves between them,
-    # and a hostname that changed per machine would churn SSH known_hosts and
-    # break `nh os switch`, which resolves .#<hostname>.
-    hostName = "desktop";
+    # Deliberately constant across the two machines that share the PORTABLE
+    # disk. That disk moves between them, and a hostname that changed per
+    # machine would churn SSH known_hosts and break `nh os switch`, which
+    # resolves .#<hostname>.
+    #
+    # mkDefault so a host that is NOT the portable disk can override it. An
+    # independent install needs its own name: two machines both called "desktop"
+    # on the same tailnet get one of them silently renamed to desktop-1 by
+    # Tailscale, and `nh os switch` would resolve the wrong flake attribute.
+    hostName = lib.mkDefault "desktop";
     networkmanager.enable = true;
 
     # Wired and WiFi are on the SAME LAN, so having both active at once gives the

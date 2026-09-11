@@ -221,6 +221,22 @@
         "type": "github"
       }
     },
+    "noctalia-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784742359,
+        "narHash": "sha256-M+7SLW+wI3KvDMj8dSrW/uUmpPiYhsXA2jpbbgL5imk=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia-plugins",
+        "rev": "ea21cb63d063075bc0acd72d8b946ce2c5eef00d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "noctalia-plugins",
+        "type": "github"
+      }
+    },
     "noctalia-qs": {
       "inputs": {
         "nixpkgs": [
@@ -335,6 +351,7 @@
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-zed": "nixpkgs-zed",
+        "noctalia-plugins": "noctalia-plugins",
         "noctalia-shell": "noctalia-shell",
         "nur": "nur",
         "oh-my-tmux": "oh-my-tmux",
