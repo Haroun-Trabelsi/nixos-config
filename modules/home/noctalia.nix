@@ -119,16 +119,31 @@
       # plugin's own comment warns about ("Prefer stable by-id/by-path entries
       # over /dev/input/eventN because event numbers can change"). Matching all
       # keyboards by path also means the same line works on the laptop.
-      # NOTE the key: plugin_settings, keyed by PLUGIN id
-      # ("noctalia/bongocat"), not widget id ("noctalia/bongocat:cat") and not
-      # the [widget.*] table that built-in widgets use. From
-      # src/config/config_export.cpp, which writes
-      # root.insert_or_assign("plugin_settings", ...) over a map the header
-      # documents as "keyed by plugin id then setting key".
+      # bongocat watches nothing by default: its input_devices setting is
+      # declared `default = []` and the Luau does no auto-detection, so the cat
+      # draws and never animates.
       #
-      # Worth knowing: checkConfig accepted the wrong key without complaint, so
-      # a build passing is not evidence that a setting is being read.
-      plugin_settings."noctalia/bongocat".input_devices = [
+      # THE KEY IS [widget."<widget id>"], not [plugin_settings."<plugin id>"].
+      # Both tables exist and both feed plugin settings, but they are not
+      # interchangeable — from src/shell/bar/widget_factory.cpp:
+      #
+      #     overrides = wc->settings;                  // the [widget.*] table
+      #     seeded    = seedEntrySettings(entry, overrides);
+      #     mergePluginSettings(manifest, plugin_settings[id], seeded);
+      #
+      # and mergePluginSettings skips any key already in `seeded`
+      # ("entry-level setting declared the same key — entry wins").
+      # input_devices is declared under [[widget.setting]] WITH a default, so
+      # seedEntrySettings always fills it and the plugin_settings table can
+      # never override it. Only [widget.*] reaches it.
+      #
+      # checkConfig accepts either spelling, so a green build proves nothing
+      # here — the evidence is whether an `evtest` child appears under noctalia.
+      #
+      # A glob, not a device path: this tower has four *-event-kbd nodes and the
+      # plugin's own comment warns that event numbers move between boots. It
+      # also makes the same line work on the laptop.
+      widget."noctalia/bongocat:cat".input_devices = [
         "/dev/input/by-path/*-event-kbd"
       ];
 
