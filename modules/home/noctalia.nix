@@ -57,15 +57,22 @@
         #   Launcher -> launcher              MediaMini    -> media
         #   Clock -> clock                    Workspace    -> workspaces
         #   SystemMonitor -> sysmon           Tray         -> tray
-        #   ActiveWindow -> active-window     ControlCenter-> control-center
+        #   ActiveWindow -> active_window     ControlCenter-> control-center
         #   NotificationHistory -> notifications
+        #
+        # Note the inconsistency, which is not a typo here: most ids use
+        # UNDERSCORES (active_window, theme_mode, power_profile) but
+        # control-center uses a hyphen. Taken from the authoritative list in
+        # src/shell/bar/widget_factory.cpp, after the shell logged
+        # `widget factory: unknown widget "active-window"` for the hyphenated
+        # guess.
         #
         # Plugin widgets are "author/plugin:entry" — see noctalia-plugins.nix.
         start = [
           "launcher"
           "clock"
           "sysmon"
-          "active-window"
+          "active_window"
           "media"
           "noctalia/bongocat:cat" # reacts to typing, so it sits near the text
         ];
