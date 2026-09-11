@@ -47,26 +47,45 @@ in
         # displayMode = "always_visible"; # "always_visible" | "auto_hide"
         mouseWheelAction = "workspace"; # scroll bar to switch workspaces
         # rightClickAction = "controlCenter";
-        # widgets = {
-        #   left = [
-        #     { id = "Launcher"; }
-        #     { id = "Clock"; }
-        #     { id = "SystemMonitor"; }
-        #     { id = "ActiveWindow"; }
-        #     { id = "MediaMini"; }
-        #   ];
-        #   center = [
-        #     { id = "Workspace"; }
-        #   ];
-        #   right = [
-        #     { id = "Tray"; }
-        #     { id = "NotificationHistory"; }
-        #     { id = "Battery"; }
-        #     { id = "Volume"; }
-        #     { id = "Brightness"; }
-        #     { id = "ControlCenter"; }
-        #   ];
-        # };
+        # Declared in full, because a plugin's bar widget does NOT appear on its
+        # own here.
+        #
+        # noctalia only auto-places a widget in the code path that DOWNLOADS a
+        # plugin (PluginService.qml calls addWidgetToBar right after the git
+        # clone succeeds). These plugins are placed from the store instead, so
+        # the files are already present, that path never runs, and the widget is
+        # installed and enabled but shown nowhere.
+        #
+        # It cannot be fixed from the UI either: settings.json is a read-only
+        # symlink into the store because this block manages it, so dragging a
+        # widget onto the bar has nothing to save to. The layout has to be here.
+        #
+        # These are noctalia's own defaults (Commons/Settings.qml) plus the three
+        # plugin widgets. Plugin widget ids are "plugin:" + the plugin id — plain,
+        # not hashed, because the source is the main registry
+        # (PluginRegistry.generateCompositeKey returns the bare id for it).
+        widgets = {
+          left = [
+            { id = "Launcher"; }
+            { id = "Clock"; }
+            { id = "SystemMonitor"; }
+            { id = "ActiveWindow"; }
+            { id = "MediaMini"; }
+            # Reacts to typing, so it belongs near where text happens.
+            { id = "plugin:slowbongo"; }
+          ];
+          center = [ { id = "Workspace"; } ];
+          right = [
+            { id = "plugin:update-count"; }
+            { id = "plugin:screen-recorder"; }
+            { id = "Tray"; }
+            { id = "NotificationHistory"; }
+            { id = "Battery"; }
+            { id = "Volume"; }
+            { id = "Brightness"; }
+            { id = "ControlCenter"; }
+          ];
+        };
       };
 
       # ── General ─────────────────────────────────────────────────
