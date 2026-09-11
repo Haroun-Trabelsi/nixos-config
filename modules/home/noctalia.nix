@@ -110,6 +110,28 @@
         ];
       };
 
+      # Per-widget settings. The bongocat plugin watches nothing by default —
+      # its input_devices setting is declared with `default = []` and the Luau
+      # does no auto-detection, so out of the box the cat simply never moves.
+      #
+      # A glob rather than a fixed path: this tower has four *-event-kbd nodes
+      # and event numbers are not stable across boots, which is exactly what the
+      # plugin's own comment warns about ("Prefer stable by-id/by-path entries
+      # over /dev/input/eventN because event numbers can change"). Matching all
+      # keyboards by path also means the same line works on the laptop.
+      # NOTE the key: plugin_settings, keyed by PLUGIN id
+      # ("noctalia/bongocat"), not widget id ("noctalia/bongocat:cat") and not
+      # the [widget.*] table that built-in widgets use. From
+      # src/config/config_export.cpp, which writes
+      # root.insert_or_assign("plugin_settings", ...) over a map the header
+      # documents as "keyed by plugin id then setting key".
+      #
+      # Worth knowing: checkConfig accepted the wrong key without complaint, so
+      # a build passing is not evidence that a setting is being read.
+      plugin_settings."noctalia/bongocat".input_devices = [
+        "/dev/input/by-path/*-event-kbd"
+      ];
+
       # was location.name
       location.address = "Menzel Bou Zelfa, Tunisia";
 
