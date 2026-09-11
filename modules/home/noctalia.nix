@@ -47,7 +47,25 @@
 
       bar.main = {
         position = "top";
-        background_opacity = 0.0; # fully transparent bar background
+        # NOT transparent any more. The bar sits at the top, and the top of
+        # assets/wallpapers/wallpaper.jpg is its lightest region — pale cyan sky
+        # across most of the width, with blossom only at the right edge.
+        # Measured against that strip, Eldritch's #ebfafa text on the bare
+        # wallpaper gives:
+        #
+        #     pale sky        1.28:1     <- effectively invisible
+        #     strip average   1.86:1
+        #     purple blossom  6.02:1     <- the only readable part
+        #
+        # WCAG AA wants 4.5:1 for normal text. Blending the Eldritch base
+        # (#212337) behind it at this opacity gives 5.66:1, which passes while
+        # still letting the wallpaper through. 0.95 gives 9.51:1 and 1.0 gives
+        # 14.40:1 if you would rather have contrast than translucency.
+        #
+        # The palette was never the problem — a fully transparent bar means the
+        # background is whatever the wallpaper happens to be, and no single text
+        # colour works against both a pale sky and a dark tree.
+        background_opacity = 0.85;
         radius = 24; # was frameRadius
         margin_edge = 10; # was marginVertical
         margin_ends = 10; # was marginHorizontal
@@ -95,6 +113,28 @@
         enabled = true;
         directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
         fill_mode = "crop"; # was fillMode
+
+        # The wallpaper, pinned. Without this noctalia picks for itself — on the
+        # first 5.x start it set its own bundled asset out of the package's
+        # share/noctalia/assets.
+        #
+        # This is modules/home/wallpaper.nix's vendored file, reached through the
+        # stable ~/Pictures path rather than the store path it resolves to, so
+        # the value does not churn on every rebuild.
+        #
+        # CAVEAT worth knowing: runtime state OUTRANKS this. noctalia's own
+        # tests/config_wallpaper_precedence_test.cpp asserts "sidecar path did
+        # not win once set" — ~/.local/state/noctalia/settings.toml is read
+        # last. So this is the default for fresh state, and picking a different
+        # wallpaper in the UI still wins, which is the behaviour you want. To
+        # force this one back, delete the [wallpaper.*] tables from that file,
+        # or run: noctalia msg wallpaper-set <path>
+        default.path = "${config.home.homeDirectory}/Pictures/Wallpapers/wallpaper.jpg";
+
+        # Never rotate. The directory above holds more than one image, and the
+        # point of vendoring a wallpaper into the repo was that the desktop
+        # looks the same on both machines and after a reinstall.
+        automation.enabled = false;
       };
 
       # was brightness.enableDdcSupport. The tower drives external monitors over
