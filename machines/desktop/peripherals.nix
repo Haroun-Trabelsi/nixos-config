@@ -1,4 +1,9 @@
-{ pkgs, config, username, ... }:
+{
+  pkgs,
+  config,
+  username,
+  ...
+}:
 # Hardware that only exists on the tower. All of this used to live in
 # modules/core, so the laptop ran an OpenRGB server and an out-of-tree I2C
 # module for devices that were not physically present.
@@ -37,5 +42,17 @@
   # polling an I2C bus with nothing on it.
   hardware.i2c.enable = true;
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
-  users.users.${username}.extraGroups = [ "i2c" ];
+  # i2c: DDC/CI brightness, above.
+  # input: the noctalia bongocat plugin reads key events via evtest to animate
+  #   on keystrokes (modules/home/noctalia-plugins.nix); /dev/input/event* is
+  #   root:input, so without this it silently never reacts. Worth knowing what
+  #   this grants: membership means read access to every input device, i.e. the
+  #   ability to keylog. It is a single-user machine and the alternative is the
+  #   plugin not working, but it is a real privilege and should not be granted
+  #   absent-mindedly. Drop bongocat and this line together if that trade stops
+  #   being worth a cat.
+  users.users.${username}.extraGroups = [
+    "i2c"
+    "input"
+  ];
 }

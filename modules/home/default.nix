@@ -19,6 +19,7 @@
     ./hyprland # desktop compositor
     ./wayland-tools.nix # grim/slurp/cliphist/... shared by both compositors
     ./noctalia.nix # desktop shell
+    ./noctalia-plugins.nix # bitwarden / bongocat / screen recorder, pinned
     ./lock.nix # swaylock + swayidle, shared by both compositors
     ./tmux.nix # gpakosz/.tmux ("Oh my tmux!")
     ./theme.nix # frozen palette, single source of truth for colours
