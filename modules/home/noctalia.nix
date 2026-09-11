@@ -1,4 +1,22 @@
-{ osConfig, ... }:
+{
+  config,
+  osConfig,
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  pluginSourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
+
+  # Plugins to install and enable. Each must be a directory in
+  # inputs.noctalia-plugins containing a manifest.json.
+  enabledPlugins = [
+    "slowbongo" # bongo cat in the bar, slaps when you type
+    "screen-recorder" # official; hardware-accelerated via gpu-screen-recorder
+    "update-count" # taught about Nix via pluginSettings below
+  ];
+in
 {
   programs.noctalia-shell = {
     # desktop shell
@@ -54,8 +72,25 @@
       # ── General ─────────────────────────────────────────────────
       general = {
         # avatarImage = "";
-        animationSpeed = 2; # TEST: slowed from 1 to 2
-        # animationDisabled = false;
+
+        # animationSpeed is a DIVISOR of every duration in Commons/Style.qml:
+        #   animationNormal = round(300 / animationSpeed)  (ms)
+        # so HIGHER = FASTER, not slower. The old value of 2 was committed as
+        # "slowed from 1 to 2" and did the exact opposite: 300/2 = 150 ms, i.e.
+        # double speed, which is why the shell barely looked animated at all.
+        # 1 is upstream's default (300 ms). Drop to 0.5 for genuinely slower,
+        # more visible motion (600 ms); the settings GUI shows this as a
+        # percentage, so 1 reads as "100%".
+        animationSpeed = 1;
+
+        # Explicit, not implicit: this is the master switch, and both it and
+        # noctaliaPerformance mode short-circuit every duration to 0.
+        animationDisabled = false;
+
+        # Was off, so the lock screen appeared/dismissed as a hard cut while
+        # the rest of the shell animated. On for consistency.
+        lockScreenAnimations = true;
+
         # enableShadows = true;
         # enableBlurBehind = true;
         # lockOnSuspend = true;
@@ -95,10 +130,24 @@
         enableWindowsSearch = true;
       };
 
-      # ── Noctalia Performance ──────────────────────────────────────
-      # Enabled by default via exec-once IPC call.
-      noctaliaPerformance = {
-        disableWallpaper = false;
+      # ── Wallpaper ───────────────────────────────────────────────
+      # The directory was previously left undeclared, so noctalia fell back to
+      # its built-in default of ~/Pictures/Wallpapers. Same path, but stated
+      # here so it is a decision rather than a coincidence.
+      #
+      # wallpaper.nix installs assets/wallpapers/wallpaper.jpg into this
+      # directory. Note noctalia CANNOT persist a wallpaper choice back to
+      # settings.json (home-manager owns it as a read-only store symlink) — it
+      # remembers the current pick in ~/.cache/noctalia/wallpapers.json instead.
+      wallpaper = {
+        enabled = true;
+        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+        # 3840x2160 source on a 1920x1080 primary and a 1080p TV: crop rather
+        # than stretch, and paint both outputs.
+        fillMode = "crop";
+        setWallpaperOnAllMonitors = true;
+        # No slideshow: one wallpaper, deliberately.
+        automationEnabled = false;
       };
 
       # ── Control Center ──────────────────────────────────────────
@@ -280,11 +329,70 @@
     # user-templates = {};
 
     # ── Plugins ───────────────────────────────────────────────────
-    # Written to ~/.config/noctalia/plugins.json
-    # plugins = {};
+    # Written to ~/.config/noctalia/plugins.json. This marks plugins ENABLED;
+    # the code itself is placed below from the pinned inputs.noctalia-plugins,
+    # so noctalia never reaches the network for it.
+    plugins = {
+      version = 2;
+      sources = [
+        {
+          enabled = true;
+          name = "Noctalia Plugins";
+          url = pluginSourceUrl;
+        }
+      ];
+      states = lib.genAttrs enabledPlugins (_: {
+        enabled = true;
+        sourceUrl = pluginSourceUrl;
+      });
+    };
 
     # ── Per-plugin settings ───────────────────────────────────────
     # Each key becomes ~/.config/noctalia/plugins/<name>/settings.json
-    # pluginSettings = {};
+    pluginSettings = {
+      # update-count ships with pacman/apt/dnf detection and no idea what Nix
+      # is. It does support a CUSTOM updater, which is the hook used here.
+      #
+      # "Number of updates" does not mean the same thing on NixOS: there is no
+      # per-package upgrade list, there is one input revision everything follows.
+      # nix-update-count reports 1 when the flake's locked nixpkgs differs from
+      # the current nixos-unstable channel revision, 0 when it matches — see
+      # scripts/scripts/nix-update-count.sh for why that is the honest answer.
+      update-count = {
+        customCmdGetNumUpdates = "nix-update-count";
+        # `nh os switch` rather than a bare nixos-rebuild: it is what this config
+        # uses everywhere else, and programs.nh.flake already points at the repo.
+        customCmdDoSystemUpdate = "nix flake update --flake $HOME/nixos-config && nh os switch";
+        updateIntervalMinutes = 180;
+        updateTerminalCommand = "kitty -e";
+        hideOnZero = true;
+      };
+    };
   };
+
+  # ── Plugin code, pinned ─────────────────────────────────────────────────
+  # noctalia installs plugins by `git clone`-ing the registry repo at runtime
+  # (Services/Noctalia/PluginService.qml). That would make the bar's widgets
+  # whatever was on main the day they happened to be installed, recorded
+  # nowhere. These come from inputs.noctalia-plugins instead, so they are in
+  # flake.lock like everything else.
+  #
+  # `recursive = true` matters: it symlinks each FILE rather than the directory,
+  # leaving ~/.config/noctalia/plugins/<id>/ itself writable. The plugin dir is
+  # also where a plugin's own settings.json lives, and a read-only store symlink
+  # for the directory would make that unwritable — the same trap that bit
+  # ~/.ssh/config and ~/.tmux.conf.local in this config.
+  xdg.configFile = lib.mkIf (osConfig.machine.profile == "desktop") (
+    lib.genAttrs (map (id: "noctalia/plugins/${id}") enabledPlugins) (name: {
+      source = "${inputs.noctalia-plugins}/${lib.removePrefix "noctalia/plugins/" name}";
+      recursive = true;
+    })
+  );
+
+  # gpu-screen-recorder is what the screen-recorder plugin drives; without it the
+  # widget loads and every recording fails. wl-clipboard/grim etc. are already in
+  # modules/home/wayland-tools.nix.
+  home.packages = lib.mkIf (osConfig.machine.profile == "desktop") [
+    pkgs.gpu-screen-recorder
+  ];
 }
