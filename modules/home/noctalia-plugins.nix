@@ -17,9 +17,10 @@
 # make the bar's widgets whatever was on main that day, recorded nowhere.
 # inputs.noctalia-official-plugins pins the repo into flake.lock instead.
 #
-# OFFICIAL vs COMMUNITY: these come from noctalia-dev/official-plugins, which is
-# a SEPARATE repo from noctalia-dev/noctalia-plugins. The community registry has
-# no bitwarden plugin at all, which is easy to mistake for "it does not exist".
+# OFFICIAL vs COMMUNITY: 5.x plugins live in TWO repos —
+# noctalia-dev/official-plugins and noctalia-dev/community-plugins — and neither
+# is the 4.x noctalia-dev/noctalia-plugins. Searching only one of the three is
+# how a plugin comes to look like it "does not exist".
 #
 # `recursive = true` symlinks each FILE rather than the directory, leaving the
 # plugin directory itself writable — plugins keep their own state beside their
@@ -27,19 +28,33 @@
 let
   isDesktop = osConfig.machine.profile == "desktop";
 
+  # dir = the directory inside the source repo; src = which pinned repo it is in.
   plugins = [
-    "bongocat" # widget noctalia/bongocat:cat — slaps when you type
-    "screen_recorder" # widget noctalia/screen_recorder:recorder
-    "bitwarden" # NO bar widget: launcher-only, "/bw" prefix, plus panels
+    {
+      dir = "bongocat";
+      src = inputs.noctalia-official-plugins;
+    } # widget noctalia/bongocat:cat — slaps when you type
+    {
+      dir = "screen_recorder";
+      src = inputs.noctalia-official-plugins;
+    } # widget noctalia/screen_recorder:recorder
+    {
+      dir = "bitwarden";
+      src = inputs.noctalia-official-plugins;
+    } # NO bar widget: launcher-only, "/bw" prefix, plus panels
+    {
+      dir = "nix-monitor";
+      src = inputs.noctalia-community-plugins;
+    } # widget avivbintangaringga/nix-monitor:nix-monitor
   ];
 in
 {
   xdg.dataFile = lib.mkIf isDesktop (
     lib.listToAttrs (
       map (p: {
-        name = "noctalia/plugins/${p}";
+        name = "noctalia/plugins/${p.dir}";
         value = {
-          source = "${inputs.noctalia-official-plugins}/${p}";
+          source = "${p.src}/${p.dir}";
           recursive = true;
         };
       }) plugins
@@ -54,6 +69,9 @@ in
       gpu-screen-recorder # screen_recorder does the actual capture with this
       bitwarden-cli # bitwarden drives `bw serve`; the plugin needs `bw` on PATH
       evtest # bongocat reads key events through this for typing reactivity
+      # nix-monitor shells out to nix, nixos-version, nixos-rebuild, nix-store,
+      # git and coreutils. All of those are already in this system's closure —
+      # checked, not assumed — so it needs nothing added here.
     ]
   );
 }

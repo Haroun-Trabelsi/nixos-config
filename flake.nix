@@ -43,22 +43,25 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Noctalia plugins, PINNED. noctalia installs plugins by `git clone`-ing this
-    # repo at runtime (Services/Noctalia/PluginService.qml), which would mean the
-    # tower's bar widgets are whatever was on main the day they were installed,
-    # tracked by nothing. Pinning it here and placing the files declaratively
-    # keeps them in flake.lock like every other input.
-    noctalia-plugins = {
-      url = "github:noctalia-dev/noctalia-plugins";
+    # Noctalia plugins come from THREE different repos and it is easy to
+    # conclude a plugin "does not exist" by searching the wrong one:
+    #
+    #   noctalia-dev/noctalia-plugins   community, 4.x QML + manifest.json.
+    #                                   DROPPED — nothing loads QML plugins
+    #                                   since the 5.x migration.
+    #   noctalia-dev/official-plugins   official, 5.x Luau + plugin.toml
+    #   noctalia-dev/community-plugins  community, 5.x Luau + plugin.toml
+    #
+    # Both are pinned rather than fetched: noctalia clones a plugin source
+    # itself on enable, which would make the bar's widgets whatever was on main
+    # that day, recorded nowhere.
+    noctalia-official-plugins = {
+      url = "github:noctalia-dev/official-plugins";
       flake = false;
     };
 
-    # OFFICIAL plugins live in a SEPARATE repo from the community ones above.
-    # noctalia-plugins carries the community registry.json; anything shown under
-    # noctalia.dev/plugins/official/ comes from here instead. Easy to miss —
-    # searching only the community registry says a plugin "does not exist".
-    noctalia-official-plugins = {
-      url = "github:noctalia-dev/official-plugins";
+    noctalia-community-plugins = {
+      url = "github:noctalia-dev/community-plugins";
       flake = false;
     };
 

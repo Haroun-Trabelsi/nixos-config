@@ -96,6 +96,10 @@
         ];
         center = [ "workspaces" ];
         end = [
+          # Nixpkgs update status: click for local vs remote revision, NixOS and
+          # home-manager generations, store size. Replaces the update-count
+          # workaround that was here under 4.x, which had no idea what Nix was.
+          "avivbintangaringga/nix-monitor:nix-monitor"
           "noctalia/screen_recorder:recorder"
           "tray"
           "notifications"
