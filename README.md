@@ -6,16 +6,6 @@
       <img src="./.github/assets/pallet/pallet-0.png" width="600px" /> <br>
 </h1>
 
-### 🖼️ Gallery
-
-<p align="center">
-   <img src="./.github/assets/screenshots/1.png" style="margin-bottom: 15px;"/> <br>
-   <img src="./.github/assets/screenshots/2.png" style="margin-bottom: 15px;"/> <br>
-   <img src="./.github/assets/screenshots/3.png" style="margin-bottom: 15px;"/> <br>
-   <img src="./.github/assets/screenshots/4.png" style="margin-bottom: 15px;"/> <br>
-   Screenshots last updated <b>2025-12-25</b>
-</p>
-
 <details>
 <summary>
    Swaylock (EXPAND)
