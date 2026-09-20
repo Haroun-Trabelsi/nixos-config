@@ -46,6 +46,10 @@
       # workspace 9, but the same capital-S assumption in toggle-music.sh was
       # silently broken, so match both rather than depend on which one wins.
       "match:class ^([Ss]potify)$, workspace 9"
+      # No StartupWMClass upstream, so match both spellings (see the Spotify
+      # note above and toggle-bitwarden.sh).
+      "match:class ^([Bb]itwarden)$, workspace 2"
+
       "match:class ^(discord)$, workspace 10"
       "match:class ^(WebCord)$, workspace 10"
       "match:class ^(vesktop)$, workspace 10"

@@ -25,6 +25,32 @@
 # `recursive = true` symlinks each FILE rather than the directory, leaving the
 # plugin directory itself writable — plugins keep their own state beside their
 # code, and a read-only directory symlink would break that.
+#
+# PLACING A PLUGIN HERE DOES NOT TURN IT ON. Being in the data dir makes a
+# plugin AVAILABLE; a separate enabled list decides whether it loads, and it
+# lives in runtime state that config.toml cannot express — there is no
+# [plugins] section in noctalia's example.toml:
+#
+#     ~/.local/state/noctalia/settings.toml
+#     [plugins]
+#     enabled = [ "noctalia/bongocat", ... ]
+#
+# So every plugin added here needs a ONE-TIME, per-machine:
+#
+#     noctalia msg plugins enable <author/plugin>     # PLUGIN id, no :entry
+#     noctalia msg plugins list                       # verify: enabled/disabled
+#
+# This is why a plugin can be linked, correctly configured, present in the
+# bar's widget list AND still render nothing — which is exactly how nix-monitor
+# shipped, silently disabled from the commit that added it until 2026-09-15.
+# `noctalia msg plugins list` is the check that would have caught it; a green
+# build never will.
+#
+# Note also that noctalia loads config.toml at STARTUP and nothing restarts it
+# on a home-manager switch (it is a Hyprland exec-once, not a user unit), so a
+# switch alone changes nothing on the running shell. Follow one with:
+#
+#     noctalia msg config-reload
 let
   isDesktop = osConfig.machine.profile == "desktop";
 
@@ -39,13 +65,13 @@ let
       src = inputs.noctalia-official-plugins;
     } # widget noctalia/screen_recorder:recorder
     {
-      dir = "bitwarden";
-      src = inputs.noctalia-official-plugins;
-    } # NO bar widget: launcher-only, "/bw" prefix, plus panels
-    {
       dir = "nix-monitor";
       src = inputs.noctalia-community-plugins;
     } # widget avivbintangaringga/nix-monitor:nix-monitor
+    {
+      dir = "obsidian";
+      src = inputs.noctalia-community-plugins;
+    } # widget davemhammer/obsidian:status, panel :manager, "/ob" launcher
   ];
 in
 {
@@ -67,11 +93,15 @@ in
     with pkgs;
     [
       gpu-screen-recorder # screen_recorder does the actual capture with this
-      bitwarden-cli # bitwarden drives `bw serve`; the plugin needs `bw` on PATH
       evtest # bongocat reads key events through this for typing reactivity
       # nix-monitor shells out to nix, nixos-version, nixos-rebuild, nix-store,
       # git and coreutils. All of those are already in this system's closure —
       # checked, not assumed — so it needs nothing added here.
+      #
+      # obsidian declares obsidian, git, xdg-open, find, sort, head, realpath.
+      # obsidian comes from modules/home/obsidian.nix, xdg-open from xdg-utils
+      # in the user profile, the rest from coreutils/findutils — all already
+      # on PATH, likewise checked, so nothing to add.
     ]
   );
 }

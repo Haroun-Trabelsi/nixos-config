@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec toggle-app thorium-browser thorium
+exec toggle-app microsoft-edge microsoft-edge

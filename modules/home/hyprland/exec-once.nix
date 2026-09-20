@@ -54,7 +54,7 @@
     #                           550 MHz against an RPn of 100) and defeated panel
     #                           self-refresh entirely. Est. 3-6 W.
     #
-    #   ghostty x2, thorium,    the autostart zoo. Five apps (four of them
+    #   ghostty x2, chromium,   the autostart zoo. Five apps (four of them
     #   openrgb, spotify,       Electron/Chromium) launched at login whether or
     #   vesktop, twin kitty     not they were wanted, each holding memory and
     #                           waking the CPU forever. Launch them on demand

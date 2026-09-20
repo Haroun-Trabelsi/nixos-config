@@ -70,6 +70,10 @@
         margin_edge = 10; # was marginVertical
         margin_ends = 10; # was marginHorizontal
 
+        # Gap between adjacent widgets. Default is 6; this is a nudge, not a
+        # redesign — enough to stop the bar reading as one run-on block.
+        widget_spacing = 8;
+
         # Widget ids are all renamed in 5.x: lowercase and kebab-case, and the
         # left/center/right keys are start/center/end.
         #   Launcher -> launcher              MediaMini    -> media
@@ -89,6 +93,7 @@
         start = [
           "launcher"
           "clock"
+          "weather"
           "sysmon"
           "active_window"
           "media"
@@ -100,6 +105,7 @@
           # home-manager generations, store size. Replaces the update-count
           # workaround that was here under 4.x, which had no idea what Nix was.
           "avivbintangaringga/nix-monitor:nix-monitor"
+          "davemhammer/obsidian:status"
           "noctalia/screen_recorder:recorder"
           "tray"
           "notifications"
@@ -147,8 +153,71 @@
         "/dev/input/by-path/*-event-kbd"
       ];
 
-      # was location.name
+      # The obsidian plugin's vault_path goes in the OTHER table, and the reason
+      # is the merge order quoted above rather than inconsistency:
+      #
+      #   seedEntrySettings  iterates entry.settings  — the [[widget.setting]] block
+      #   mergePluginSettings iterates manifest.settings — the [[setting]] block,
+      #                       skipping any key seedEntrySettings already filled
+      #
+      # bongocat declares input_devices as a [[widget.setting]], so it is always
+      # seeded and only [widget.*] can reach it. obsidian declares vault_path as
+      # a top-level [[setting]] and its status widget declares only show_dirty —
+      # so vault_path is never seeded, and [plugin_settings.*] is what reaches
+      # it. Using [widget.*] here would silently do nothing.
+      #
+      # plugin_settings is keyed by PLUGIN id, with no ":entry" suffix. It also
+      # feeds the service entry (plugin_service_host.cpp does the same seed-then-
+      # merge), which is the half that actually polls git.
+      #
+      # The default is ~/Documents/Obsidian Vault, which does not exist here.
+      # The vault root is the directory holding .obsidian, so it is notes/ and
+      # not its parent. vault_name is left empty on purpose: empty means "use the
+      # folder name", and "notes" is what Obsidian itself registered the vault
+      # as, so obsidian:// URIs resolve.
+      plugin_settings."davemhammer/obsidian".vault_path = "${config.home.homeDirectory}/vault/notes";
+
+      # nix-monitor's action buttons. Same [plugin_settings.*] reasoning as
+      # above: both of these are top-level [[setting]] keys, not widget ones.
+      plugin_settings."avivbintangaringga/nix-monitor" = {
+        # update_command defaults to "" and panel.luau refuses to run an empty
+        # one ("update command is empty"), so the Update button is dead until
+        # this is set. The widget compares LOCAL vs REMOTE nixpkgs revision, so
+        # the matching action is update-then-switch rather than switch alone —
+        # this is the `nfu` alias from zsh_alias.nix spelled out, because the
+        # plugin runs the string in a terminal that never sources zsh aliases.
+        #
+        # nixpkgs AND home-manager, never nixpkgs alone. home-manager's input
+        # is `inputs.nixpkgs.follows = "nixpkgs"`, so bumping nixpkgs by itself
+        # drags a home-manager that was written against the OLD nixpkgs onto
+        # the new one. That is not theoretical: it broke eval outright on
+        # 2026-09-15, when nixpkgs changed neovim's userPluginViml from a list
+        # to `nullOr lines` and a seven-month-old home-manager still did
+        # `concatStringsSep "\n"` over it — "expected a list but found null",
+        # from a nvim.nix that sets four options and no plugins.
+        # nh needs no flake path: programs.nh.flake is set in modules/core/nh.nix.
+        update_command = "nix flake update --flake ${config.home.homeDirectory}/nixos-config nixpkgs home-manager && nh-notify nh os switch";
+
+        # NOT the plugin default of `nix-collect-garbage -d`, which deletes
+        # every old generation. modules/core/nh.nix deliberately keeps 5 and
+        # everything from the last week so the boot-menu rollback path always
+        # has something to roll back TO — one click of a -d button throws
+        # exactly that away. Same retention as nh.clean.extraArgs.
+        clean_command = "nh clean all --keep-since 7d --keep 5";
+      };
+
+      # was location.name. [location] is the single "where am I", feeding
+      # weather, night light and theme auto mode — geocoded because
+      # auto_locate is left off (no IP lookup).
       location.address = "Menzel Bou Zelfa, Tunisia";
+
+      # Weather defaults to enabled = false, so the bar's "weather" widget
+      # renders nothing until this is set — having [location] is not enough,
+      # which is what made the widget look broken rather than off.
+      weather = {
+        enabled = true;
+        unit = "celsius";
+      };
 
       wallpaper = {
         enabled = true;

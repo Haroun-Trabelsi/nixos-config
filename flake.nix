@@ -65,17 +65,16 @@
       flake = false;
     };
 
+    # Unpinned. It was frozen at 2bfdf55 (2026-03-29) with no recorded reason,
+    # and that rev predates upstream's move off the deprecated `stdenv.isLinux`,
+    # so it was the source of an evaluation warning on every rebuild.
     spicetify-nix = {
-      url = "github:Gerg-L/spicetify-nix/2bfdf55faf76fed12950b17d4af501e5a463607f";
+      url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    thorium = {
-      url = "github:Rishabh5321/thorium_flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

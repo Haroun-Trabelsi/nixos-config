@@ -32,7 +32,10 @@
       nc = "nh-notify nh clean all --keep 5";
       nft = "nh-notify nh os test";
       nfs = "nh-notify nh os switch";
-      nfu = "nix flake update --flake ~/nixos-config nixpkgs && nh-notify nh os switch";
+      # nixpkgs AND home-manager together: home-manager follows nixpkgs, so
+      # bumping nixpkgs alone puts an old home-manager on a new nixpkgs and
+      # breaks eval. See the update_command comment in noctalia.nix.
+      nfu = "nix flake update --flake ~/nixos-config nixpkgs home-manager && nh-notify nh os switch";
       nsearch = "nh search";
 
       # python

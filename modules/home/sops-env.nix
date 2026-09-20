@@ -9,18 +9,6 @@ let
   # does nothing until `sops secrets/secrets.yaml` grows the key.
   exports = {
     github_personal_access_token = "GITHUB_PERSONAL_ACCESS_TOKEN";
-
-    # Bitwarden CLI personal API key, used by `bw login --apikey` and therefore
-    # by the noctalia bitwarden plugin, which drives `bw serve`.
-    #
-    # These belong here rather than in a shell rc: the plugin runs under the
-    # shell's service host, not under an interactive zsh, so an `export` in
-    # .zshrc is invisible to it — and an `export` typed into a terminal lasts
-    # exactly as long as that terminal.
-    #
-    # Get them from the web vault: Settings -> Security -> Keys -> View API key.
-    bw_clientid = "BW_CLIENTID";
-    bw_clientsecret = "BW_CLIENTSECRET";
   };
 
   writeOne = name: var: ''

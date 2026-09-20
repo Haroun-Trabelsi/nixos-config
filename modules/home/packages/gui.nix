@@ -7,6 +7,10 @@
     media-downloader
     obs-studio
     pavucontrol
+    # GNOME Camera. Goes through the PipeWire camera portal rather than opening
+    # /dev/video0 directly, so it shares the webcam with OBS/Discord instead of
+    # locking them out of it.
+    snapshot
     soundwireserver
     video-trimmer
     vlc

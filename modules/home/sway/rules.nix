@@ -109,11 +109,11 @@
         command = "inhibit_idle focus";
       }
       {
-        criteria.app_id = "^thorium-browser$";
+        criteria.app_id = "^microsoft-edge$";
         command = "inhibit_idle fullscreen";
       }
       {
-        criteria.class = "^thorium-browser$";
+        criteria.class = "^microsoft-edge$";
         command = "inhibit_idle fullscreen";
       }
 
