@@ -7,7 +7,7 @@ let
     "--ozone-platform=wayland"
 
     # Hardware video decode for calls and embedded video, via the iGPU's
-    # fixed-function VDBOX. Same reasoning as thorium: software decode of a
+    # fixed-function VDBOX. Same reasoning as chromium: software decode of a
     # 1080p stream is several watts on this part. Needs intel-media-driver and
     # LIBVA_DRIVER_NAME=iHD, both set up in the power phase.
     "--enable-features=VaapiVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxGL"
@@ -34,7 +34,7 @@ in
 {
   home.packages = [ vesktopWrapped ];
 
-  # Same containment pattern as thorium: Discord is an Electron app with a
+  # Same containment pattern as chromium: Discord is an Electron app with a
   # renderer that leaks over long sessions. Lower ceilings than the browser
   # because it is a chat client, not the main workload.
   #   MemoryHigh 1.5G — soft ceiling, kernel starts reclaiming here

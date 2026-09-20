@@ -4,8 +4,12 @@
     inputs.noctalia-shell.homeModules.default
     # inputs.caelestia-shell.homeManagerModules.default
     ./bat.nix # better cat command
+    ./bitwarden.nix # password manager (desktop app)
+    ./claude-notify-bridge.nix # desktop notifications for Claude Code in Coder
+    ./claude-chrome-bridge.nix # claude-in-chrome TCP<->NMH bridge for Claude Code in Coder
     ./btop.nix # resouces monitor
     ./discord.nix # discord
+    ./discord-rpc.nix # static OS-wide Discord Rich Presence, via vesktop's arRPC
     ./fastfetch/fastfetch.nix # fetch tool
     ./fzf.nix # fuzzy finder
     ./kitty.nix # terminal
@@ -19,6 +23,7 @@
     ./hyprland # desktop compositor
     ./wayland-tools.nix # grim/slurp/cliphist/... shared by both compositors
     ./noctalia.nix # desktop shell
+    ./noctalia-plugins.nix # bongocat / screen recorder / nix-monitor / obsidian, pinned
     ./lock.nix # swaylock + swayidle, shared by both compositors
     ./tmux.nix # gpakosz/.tmux ("Oh my tmux!")
     ./theme.nix # frozen palette, single source of truth for colours
@@ -29,9 +34,8 @@
     ./dolphin.nix # file manager
     ./nvim.nix # neovim editor
     ./obsidian.nix
-    ./thorium.nix
+    ./edge.nix # Microsoft Edge (was chromium.nix; before that, Thorium)
     ./p10k/p10k.nix
-    ./slack.nix
     ./packages # other packages
     ./pomo/pomo.nix # TUI Pomodoro timer
     # ./rofi/rofi.nix # launcher (replaced by noctalia launcher)

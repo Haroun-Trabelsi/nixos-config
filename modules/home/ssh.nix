@@ -42,29 +42,22 @@
     #   coder config-ssh --ssh-config-file ~/.ssh/config.d/coder
     includes = [ "config.d/*" ];
 
-    matchBlocks = {
-      "*" = {
-        addKeysToAgent = "1h";
-
-        controlMaster = "auto";
-        controlPath = "~/.ssh/control-%r@%h:%p";
-        controlPersist = "10m";
-
-        forwardAgent = false;
-        compression = false;
-        serverAliveInterval = 0;
-        serverAliveCountMax = 3;
-        hashKnownHosts = false;
-        userKnownHostsFile = "~/.ssh/known_hosts";
-      };
-
+    # Upstream ssh_config directive names (HostName, IdentityFile, ...), not the
+    # old camelCase aliases: `programs.ssh.matchBlocks` and its `extraOptions`
+    # escape hatch are both deprecated in favour of `settings`, which takes the
+    # real directives directly. Booleans still render as yes/no.
+    #
+    # The attribute name is used as the `Host` pattern unless `header` is given.
+    # These blocks keep short stable names and set `header` explicitly, because
+    # the names are what any DAG ordering would refer to.
+    settings = {
       github = {
-        host = "github.com";
-        hostname = "ssh.github.com";
-        user = "git";
-        port = 443;
-        identityFile = "~/.ssh/id_github";
-        identitiesOnly = true;
+        header = "Host github.com";
+        HostName = "ssh.github.com";
+        User = "git";
+        Port = 443;
+        IdentityFile = "~/.ssh/id_github";
+        IdentitiesOnly = true;
       };
 
       # Coder workspaces. These blocks were written into ~/.ssh/config.d/coder by
@@ -82,26 +75,39 @@
       # workspaces are ephemeral and their host keys change on every rebuild, so
       # pinning them would mean a warning every time. Scoped to coder hosts only.
       coder-prefixed = {
-        host = "coder.*";
-        extraOptions = {
-          ConnectTimeout = "0";
-          StrictHostKeyChecking = "no";
-          UserKnownHostsFile = "/dev/null";
-          LogLevel = "ERROR";
-        };
-        proxyCommand =
+        header = "Host coder.*";
+        ConnectTimeout = "0";
+        StrictHostKeyChecking = "no";
+        UserKnownHostsFile = "/dev/null";
+        LogLevel = "ERROR";
+        ProxyCommand =
           "${pkgs.coder}/bin/coder --global-config ${config.xdg.configHome}/coderv2 "
           + "ssh --stdio --ssh-host-prefix coder. %h";
       };
 
       coder-suffixed = {
-        host = "*.coder";
-        extraOptions = {
-          ConnectTimeout = "0";
-          StrictHostKeyChecking = "no";
-          UserKnownHostsFile = "/dev/null";
-          LogLevel = "ERROR";
-        };
+        header = "Host *.coder";
+        ConnectTimeout = "0";
+        StrictHostKeyChecking = "no";
+        UserKnownHostsFile = "/dev/null";
+        LogLevel = "ERROR";
+      };
+
+      # Last on purpose: ssh_config is first-match-wins, and home-manager emits
+      # the "*" block after every other one for exactly that reason.
+      "*" = {
+        AddKeysToAgent = "1h";
+
+        ControlMaster = "auto";
+        ControlPath = "~/.ssh/control-%r@%h:%p";
+        ControlPersist = "10m";
+
+        ForwardAgent = false;
+        Compression = false;
+        ServerAliveInterval = 0;
+        ServerAliveCountMax = 3;
+        HashKnownHosts = false;
+        UserKnownHostsFile = "~/.ssh/known_hosts";
       };
     };
   };

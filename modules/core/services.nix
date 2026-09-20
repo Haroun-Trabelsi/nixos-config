@@ -17,7 +17,10 @@
 
     # needed for GNOME services outside of GNOME Desktop
     dbus.packages = with pkgs; [
-      gcr
+      # gcr_4, not gcr: the unversioned alias was removed in 26.11 ("use a
+      # 'gcr_*' attribute with an explicit ABI version instead"). 4 is the
+      # GTK4-era ABI, which is what gnome-keyring here wants.
+      gcr_4
       gnome-settings-daemon
     ];
 
@@ -51,8 +54,8 @@
   # password could work. Disabling the rate limit lets it settle instead.
   systemd.services.nscd.startLimitIntervalSec = 0;
 
-  # limit journal size so journal-flush is fast
-  services.journald.extraConfig = ''
-    SystemMaxUse=100M
-  '';
+  # limit journal size so journal-flush is fast.
+  # extraConfig was removed in 26.11 ("no longer has any effect"); the drop-in
+  # is now a structured attrset that serialises to the same Journal section.
+  services.journald.settings.Journal.SystemMaxUse = "100M";
 }

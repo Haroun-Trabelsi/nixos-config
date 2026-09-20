@@ -25,7 +25,7 @@ in
     XDG_SESSION_DESKTOP = if isDesktop then "Hyprland" else "sway";
     XDG_SESSION_TYPE = "wayland";
 
-    # Electron/Chromium (VS Code, vesktop, thorium) as native Wayland clients
+    # Electron/Chromium (VS Code, vesktop, chromium) as native Wayland clients
     # rather than XWayland. This ALSO decides whether they match on app_id or
     # class in the sway window rules — which is why it has to be here and not in
     # home.sessionVariables.

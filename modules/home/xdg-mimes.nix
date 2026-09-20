@@ -13,7 +13,7 @@ let
     terminal = [ "kitty.desktop" ];
     archive = [ "org.gnome.FileRoller.desktop" ];
     discord = [ "webcord.desktop" ];
-    browser = [ "thorium.desktop" ];
+    browser = [ "microsoft-edge.desktop" ];
     # our own scheme: claude-plan://ENG-123 from the Linear bookmarklet
     claudePlan = [ "linear-plan.desktop" ];
   };
@@ -95,11 +95,7 @@ let
   associations =
     with lists;
     listToAttrs (
-      flatten (
-        mapAttrsToList (
-          key: map (type: attrsets.nameValuePair type defaultApps."${key}")
-        ) mimeMap
-      )
+      flatten (mapAttrsToList (key: map (type: attrsets.nameValuePair type defaultApps."${key}")) mimeMap)
     );
 in
 {

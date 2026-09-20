@@ -45,4 +45,4 @@ if ! ss -tln 2>/dev/null | grep -q ":${LOCAL_PORT} "; then
 fi
 
 # 4. Focus an existing tab's window if the browser is already up, else open it.
-exec thorium --app="$URL"
+exec microsoft-edge --app="$URL"

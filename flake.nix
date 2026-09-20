@@ -20,47 +20,61 @@
     # Revisit (and drop this input) once nixos-unstable catches up past 1.9.0.
     nixpkgs-zed.url = "github:NixOS/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea";
 
-    # Restored for the desktop specialisation, which runs Hyprland + noctalia.
+    # UNPINNED, deliberately — and this was not a version bump.
     #
-    # PINNED to the exact revisions this desktop last ran (from the pre-migration
-    # lock), NOT the latest. Four months of upstream drift had already renamed
-    # `programs.noctalia-shell` to `programs.noctalia`, and Hyprland changes its
-    # config syntax often — tracking HEAD would mean rewriting a 289-line shell
-    # config and 400 lines of compositor settings to chase upstream, when the
-    # goal here is simply to reproduce a desktop that worked.
+    # It was frozen at 4.7.7 (rev 761869a) to reproduce a desktop that worked.
+    # Between that and 5.1.0 the project was REWRITTEN: 4.x was QML on
+    # Quickshell/Qt, 5.x is native C++ on Wayland + OpenGL ES with no Qt or GTK
+    # dependency. Config moved from settings.json to config.toml with a
+    # different schema, the home-manager module renamed from
+    # programs.noctalia-shell to programs.noctalia and lost its colors /
+    # user-templates / plugins / pluginSettings options, and plugins went from
+    # QML + manifest.json to Luau + plugin.toml. There is no migration tool.
     #
-    # Unpin deliberately, one at a time, when you actually want to update.
+    # The binary comes from noctalia.cachix.org (already a substituter in
+    # modules/core/system.nix), so this is a download rather than a C++ build.
     #
     # No hyprland flake input: nixpkgs' hyprland is used instead. The flake
     # input built from source (no usable binary cache for a non-trusted user),
     # which froze the machine. nixpkgs' build comes from cache.nixos.org.
 
     noctalia-shell = {
-      url = "github:noctalia-dev/noctalia-shell/761869a561548874fe7e293b157fd7841576b367";
+      url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Noctalia plugins, PINNED. noctalia installs plugins by `git clone`-ing this
-    # repo at runtime (Services/Noctalia/PluginService.qml), which would mean the
-    # tower's bar widgets are whatever was on main the day they were installed,
-    # tracked by nothing. Pinning it here and placing the files declaratively
-    # keeps them in flake.lock like every other input.
-    noctalia-plugins = {
-      url = "github:noctalia-dev/noctalia-plugins";
+    # Noctalia plugins come from THREE different repos and it is easy to
+    # conclude a plugin "does not exist" by searching the wrong one:
+    #
+    #   noctalia-dev/noctalia-plugins   community, 4.x QML + manifest.json.
+    #                                   DROPPED — nothing loads QML plugins
+    #                                   since the 5.x migration.
+    #   noctalia-dev/official-plugins   official, 5.x Luau + plugin.toml
+    #   noctalia-dev/community-plugins  community, 5.x Luau + plugin.toml
+    #
+    # Both are pinned rather than fetched: noctalia clones a plugin source
+    # itself on enable, which would make the bar's widgets whatever was on main
+    # that day, recorded nowhere.
+    noctalia-official-plugins = {
+      url = "github:noctalia-dev/official-plugins";
       flake = false;
     };
 
+    noctalia-community-plugins = {
+      url = "github:noctalia-dev/community-plugins";
+      flake = false;
+    };
+
+    # Unpinned. It was frozen at 2bfdf55 (2026-03-29) with no recorded reason,
+    # and that rev predates upstream's move off the deprecated `stdenv.isLinux`,
+    # so it was the source of an evaluation warning on every rebuild.
     spicetify-nix = {
-      url = "github:Gerg-L/spicetify-nix/2bfdf55faf76fed12950b17d4af501e5a463607f";
+      url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    thorium = {
-      url = "github:Rishabh5321/thorium_flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

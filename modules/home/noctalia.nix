@@ -1,417 +1,264 @@
 {
   config,
   osConfig,
-  inputs,
   lib,
-  pkgs,
   ...
 }:
-let
-  pluginSourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-
-  # Plugins to install and enable. Each must be a directory in
-  # inputs.noctalia-plugins containing a manifest.json.
-  enabledPlugins = [
-    "slowbongo" # bongo cat in the bar, slaps when you type
-    "screen-recorder" # official; hardware-accelerated via gpu-screen-recorder
-    "update-count" # taught about Nix via pluginSettings below
-  ];
-in
+# Noctalia 5.x — the desktop shell on the tower.
+#
+# MIGRATED from 4.7.7, which was not a version bump: 4.x was QML on
+# Quickshell/Qt, 5.x is native C++ on Wayland + OpenGL ES with no Qt or GTK.
+# Consequences that shaped this file:
+#
+#   * programs.noctalia-shell -> programs.noctalia
+#   * settings.json -> config.toml, with a different schema throughout
+#     (bar.backgroundOpacity -> bar.main.background_opacity, and so on)
+#   * the module lost its `colors`, `user-templates`, `plugins` and
+#     `pluginSettings` options. Palettes are `customPalettes`; the Eldritch
+#     scheme this config uses is now a BUILT-IN (theme.builtin = "Eldritch"),
+#     so modules/home/theme.nix no longer has to feed it a colour list.
+#   * plugins went from QML + manifest.json to Luau + plugin.toml, so the three
+#     community plugins that were here (slowbongo, screen-recorder,
+#     update-count) do not load any more. Their official replacements are wired
+#     up in modules/home/noctalia-plugins.nix.
+#
+# `checkConfig` defaults to true and validates config.toml at BUILD time, which
+# is what makes this safe to change: a bad key fails the build rather than
+# leaving the tower with no bar.
 {
-  programs.noctalia-shell = {
-    # desktop shell
+  programs.noctalia = {
     enable = osConfig.machine.profile == "desktop";
 
-    # systemd crashes before Wayland is ready — launch from hyprland exec-once instead
-    systemd.enable = false;
-
-    # ── Shell settings ──────────────────────────────────────────────
-    # Written to ~/.config/noctalia/settings.json
-    # Tip: run `noctalia-shell ipc call state all | jq .settings`
-    #      to dump live settings after tweaking via the GUI,
-    #      then paste them here for a permanent declarative config.
     settings = {
+      shell = {
+        settings_show_advanced = true;
+        # Was appLauncher.enableClipboardHistory.
+        clipboard_enabled = true;
 
-      # ── Bar ─────────────────────────────────────────────────────
-      bar = {
-        position = "top"; # TEST: moved from top to bottom
-        # barType = "simple";
-        # density = "default"; # "default" | "compact" | "spacious"
-        # showCapsule = true;
-        # capsuleOpacity = 1;
-        backgroundOpacity = 0; # fully transparent bar background
-        marginVertical = 10; # TEST: bumped from 4 to 10
-        marginHorizontal = 10; # TEST: bumped from 4 to 10
-        frameRadius = 24; # TEST: doubled from 12 to 24
-        # outerCorners = true;
-        # displayMode = "always_visible"; # "always_visible" | "auto_hide"
-        mouseWheelAction = "workspace"; # scroll bar to switch workspaces
-        # rightClickAction = "controlCenter";
-        # Declared in full, because a plugin's bar widget does NOT appear on its
-        # own here.
-        #
-        # noctalia only auto-places a widget in the code path that DOWNLOADS a
-        # plugin (PluginService.qml calls addWidgetToBar right after the git
-        # clone succeeds). These plugins are placed from the store instead, so
-        # the files are already present, that path never runs, and the widget is
-        # installed and enabled but shown nowhere.
-        #
-        # It cannot be fixed from the UI either: settings.json is a read-only
-        # symlink into the store because this block manages it, so dragging a
-        # widget onto the bar has nothing to save to. The layout has to be here.
-        #
-        # These are noctalia's own defaults (Commons/Settings.qml) plus the three
-        # plugin widgets. Plugin widget ids are "plugin:" + the plugin id — plain,
-        # not hashed, because the source is the main registry
-        # (PluginRegistry.generateCompositeKey returns the bare id for it).
-        widgets = {
-          left = [
-            { id = "Launcher"; }
-            { id = "Clock"; }
-            { id = "SystemMonitor"; }
-            { id = "ActiveWindow"; }
-            { id = "MediaMini"; }
-            # Reacts to typing, so it belongs near where text happens.
-            { id = "plugin:slowbongo"; }
-          ];
-          center = [ { id = "Workspace"; } ];
-          right = [
-            { id = "plugin:update-count"; }
-            { id = "plugin:screen-recorder"; }
-            { id = "Tray"; }
-            { id = "NotificationHistory"; }
-            { id = "Battery"; }
-            { id = "Volume"; }
-            { id = "Brightness"; }
-            { id = "ControlCenter"; }
-          ];
+        animation = {
+          enabled = true; # was general.animationDisabled = false
+          speed = 1.0; # was general.animationSpeed = 1
+        };
+
+        launcher = {
+          sort_by_usage = true; # was appLauncher.sortByMostUsed
         };
       };
 
-      # ── General ─────────────────────────────────────────────────
-      general = {
-        # avatarImage = "";
+      bar.main = {
+        position = "top";
+        # NOT transparent any more. The bar sits at the top, and the top of
+        # assets/wallpapers/wallpaper.jpg is its lightest region — pale cyan sky
+        # across most of the width, with blossom only at the right edge.
+        # Measured against that strip, Eldritch's #ebfafa text on the bare
+        # wallpaper gives:
+        #
+        #     pale sky        1.28:1     <- effectively invisible
+        #     strip average   1.86:1
+        #     purple blossom  6.02:1     <- the only readable part
+        #
+        # WCAG AA wants 4.5:1 for normal text. Blending the Eldritch base
+        # (#212337) behind it at this opacity gives 5.66:1, which passes while
+        # still letting the wallpaper through. 0.95 gives 9.51:1 and 1.0 gives
+        # 14.40:1 if you would rather have contrast than translucency.
+        #
+        # The palette was never the problem — a fully transparent bar means the
+        # background is whatever the wallpaper happens to be, and no single text
+        # colour works against both a pale sky and a dark tree.
+        background_opacity = 0.85;
+        radius = 24; # was frameRadius
+        margin_edge = 10; # was marginVertical
+        margin_ends = 10; # was marginHorizontal
 
-        # animationSpeed is a DIVISOR of every duration in Commons/Style.qml:
-        #   animationNormal = round(300 / animationSpeed)  (ms)
-        # so HIGHER = FASTER, not slower. The old value of 2 was committed as
-        # "slowed from 1 to 2" and did the exact opposite: 300/2 = 150 ms, i.e.
-        # double speed, which is why the shell barely looked animated at all.
-        # 1 is upstream's default (300 ms). Drop to 0.5 for genuinely slower,
-        # more visible motion (600 ms); the settings GUI shows this as a
-        # percentage, so 1 reads as "100%".
-        animationSpeed = 1;
+        # Gap between adjacent widgets. Default is 6; this is a nudge, not a
+        # redesign — enough to stop the bar reading as one run-on block.
+        widget_spacing = 8;
 
-        # Explicit, not implicit: this is the master switch, and both it and
-        # noctaliaPerformance mode short-circuit every duration to 0.
-        animationDisabled = false;
-
-        # Was off, so the lock screen appeared/dismissed as a hard cut while
-        # the rest of the shell animated. On for consistency.
-        lockScreenAnimations = true;
-
-        # enableShadows = true;
-        # enableBlurBehind = true;
-        # lockOnSuspend = true;
-        # showSessionButtonsOnLockScreen = true;
-        # telemetryEnabled = false;
-      };
-
-      # ── UI ──────────────────────────────────────────────────────
-      ui = {
-        # fontDefault = "";
-        # fontFixed = "";
-        # fontDefaultScale = 1;
-        # fontFixedScale = 1;
-        # tooltipsEnabled = true;
-        # panelBackgroundOpacity = 0.93;
-        # panelsAttachedToBar = true;
-      };
-
-      # ── Location & Weather ──────────────────────────────────────
-      location = {
-        name = "Menzel Bou Zelfa, Tunisia";
-        # weatherEnabled = true;
-        # useFahrenheit = false;
-        # use12hourFormat = false;
-        # showWeekNumberInCalendar = false;
-        # firstDayOfWeek = -1; # -1 = locale default, 0 = Sunday, 1 = Monday
-      };
-
-      # ── App Launcher ────────────────────────────────────────────
-      appLauncher = {
-        # position = "center"; # "center" | "top" | "bottom"
-        terminalCommand = "kitty -e";
-        sortByMostUsed = true;
-        # viewMode = "list"; # "list" | "grid"
-        enableClipboardHistory = true;
-        enableSettingsSearch = true;
-        enableWindowsSearch = true;
-      };
-
-      # ── Wallpaper ───────────────────────────────────────────────
-      # The directory was previously left undeclared, so noctalia fell back to
-      # its built-in default of ~/Pictures/Wallpapers. Same path, but stated
-      # here so it is a decision rather than a coincidence.
-      #
-      # wallpaper.nix installs assets/wallpapers/wallpaper.jpg into this
-      # directory. Note noctalia CANNOT persist a wallpaper choice back to
-      # settings.json (home-manager owns it as a read-only store symlink) — it
-      # remembers the current pick in ~/.cache/noctalia/wallpapers.json instead.
-      wallpaper = {
-        enabled = true;
-        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
-        # 3840x2160 source on a 1920x1080 primary and a 1080p TV: crop rather
-        # than stretch, and paint both outputs.
-        fillMode = "crop";
-        setWallpaperOnAllMonitors = true;
-        # No slideshow: one wallpaper, deliberately.
-        automationEnabled = false;
-      };
-
-      # ── Control Center ──────────────────────────────────────────
-      # controlCenter = {
-      #   position = "close_to_bar_button";
-      #   shortcuts = {
-      #     left = [
-      #       { id = "Network"; }
-      #       { id = "Bluetooth"; }
-      #       { id = "WallpaperSelector"; }
-      #       { id = "NoctaliaPerformance"; }
-      #     ];
-      #     right = [
-      #       { id = "Notifications"; }
-      #       { id = "PowerProfile"; }
-      #       { id = "KeepAwake"; }
-      #       { id = "NightLight"; }
-      #     ];
-      #   };
-      # };
-
-      # ── Dock ────────────────────────────────────────────────────
-      dock = {
-        # enabled = true;
-        # position = "bottom"; # "top" | "bottom" | "left" | "right"
-        # displayMode = "auto_hide"; # "auto_hide" | "always_visible" | "intellihide"
-        # dockType = "floating"; # "floating" | "panel"
-        # pinnedApps = [];
-        # groupApps = false;
-        # animationSpeed = 1;
-      };
-
-      # ── Notifications ───────────────────────────────────────────
-      notifications = {
-        # enabled = true;
-        # location = "top_right";
-        # lowUrgencyDuration = 3;
-        # normalUrgencyDuration = 8;
-        # criticalUrgencyDuration = 15;
-        # sounds.enabled = false;
-        # enableBatteryToast = true;
-      };
-
-      # ── OSD (on-screen display) ─────────────────────────────────
-      # osd = {
-      #   enabled = true;
-      #   location = "top_right";
-      #   autoHideMs = 2000;
-      # };
-
-      # ── Audio / Media ───────────────────────────────────────────
-      audio = {
-        # volumeStep = 5;
-        # volumeOverdrive = false;
-        preferredPlayer = "spotify";
-        # visualizerType = "linear"; # "linear" | "circular"
-      };
-
-      # ── Brightness ──────────────────────────────────────────────
-      brightness = {
-        # brightnessStep = 5;
-        enableDdcSupport = true;
-      };
-
-      # ── Color Scheme ────────────────────────────────────────────
-      colorSchemes = {
-        predefinedScheme = "Eldritch";
-        # useWallpaperColors = false;
-        # darkMode = true;
-        # schedulingMode = "off"; # "off" | "manual" | "auto"
-        # generationMethod = "tonal-spot";
-        # syncGsettings = true;
-      };
-
-      # ── Templates (auto-theme installed programs) ──────────────
-      templates = {
-        enableUserTheming = true;
-        activeTemplates = [
-          "kitty" # terminal colors
-          "btop" # system monitor theme
-          "code" # vscode editor theme
-          "discord" # vesktop midnight + material css
-          "spicetify" # spotify catppuccin theme colors
-          "hyprland" # compositor border/accent colors
-          "gtk" # gtk3 + gtk4 theming
-          "qt" # qt5ct + qt6ct color scheme
-          "kcolorscheme" # kde color scheme (dolphin etc)
-          "steam" # steam material theme css
+        # Widget ids are all renamed in 5.x: lowercase and kebab-case, and the
+        # left/center/right keys are start/center/end.
+        #   Launcher -> launcher              MediaMini    -> media
+        #   Clock -> clock                    Workspace    -> workspaces
+        #   SystemMonitor -> sysmon           Tray         -> tray
+        #   ActiveWindow -> active_window     ControlCenter-> control-center
+        #   NotificationHistory -> notifications
+        #
+        # Note the inconsistency, which is not a typo here: most ids use
+        # UNDERSCORES (active_window, theme_mode, power_profile) but
+        # control-center uses a hyphen. Taken from the authoritative list in
+        # src/shell/bar/widget_factory.cpp, after the shell logged
+        # `widget factory: unknown widget "active-window"` for the hyphenated
+        # guess.
+        #
+        # Plugin widgets are "author/plugin:entry" — see noctalia-plugins.nix.
+        start = [
+          "launcher"
+          "clock"
+          "weather"
+          "sysmon"
+          "active_window"
+          "media"
+          "noctalia/bongocat:cat" # reacts to typing, so it sits near the text
+        ];
+        center = [ "workspaces" ];
+        end = [
+          # Nixpkgs update status: click for local vs remote revision, NixOS and
+          # home-manager generations, store size. Replaces the update-count
+          # workaround that was here under 4.x, which had no idea what Nix was.
+          "avivbintangaringga/nix-monitor:nix-monitor"
+          "davemhammer/obsidian:status"
+          "noctalia/screen_recorder:recorder"
+          "tray"
+          "notifications"
+          "battery"
+          "volume"
+          "brightness"
+          "control-center"
         ];
       };
 
-      # ── Idle ────────────────────────────────────────────────────
-      idle = {
-        # enabled = false;
-        # screenOffTimeout = 600;
-        # lockTimeout = 660;
-        # suspendTimeout = 1800;
-        # lockCommand = "";
-        # suspendCommand = "";
-      };
-
-      # ── Session Menu ────────────────────────────────────────────
-      # sessionMenu = {
-      #   enableCountdown = true;
-      #   position = "center";
-      #   showKeybinds = true;
-      # };
-
-      # ── Night Light ─────────────────────────────────────────────
-      # nightLight = {
-      #   enabled = false;
-      #   nightTemp = "4000";
-      #   dayTemp = "6500";
-      # };
-
-      # ── Hooks (run shell commands on events) ────────────────────
-      # hooks = {
-      #   enabled = false;
-      #   wallpaperChange = "";
-      #   darkModeChange = "";
-      #   screenLock = "";
-      #   screenUnlock = "";
-      #   startup = "";
-      # };
-
-      # ── Desktop Widgets ─────────────────────────────────────────
-      # desktopWidgets = {
-      #   enabled = false;
-      # };
-    };
-
-    # ── Color scheme (Material 3) ─────────────────────────────────
-    # Written to ~/.config/noctalia/colors.json — overrides predefinedScheme
-    # on startup, so values must match the active scheme. Eldritch palette
-    # mirrored from noctalia's Assets/ColorScheme/Eldritch/Eldritch.json.
-    colors = {
-      dark = {
-        mPrimary = "#37f499";
-        mOnPrimary = "#171928";
-        mSecondary = "#04d1f9";
-        mOnSecondary = "#171928";
-        mTertiary = "#a48cf2";
-        mOnTertiary = "#171928";
-        mError = "#f16c75";
-        mOnError = "#171928";
-        mSurface = "#212337";
-        mOnSurface = "#ebfafa";
-        mSurfaceVariant = "#292e42";
-        mOnSurfaceVariant = "#ABB4DA";
-        mOutline = "#3b4261";
-        mShadow = "#414868";
-        mHover = "#a48cf2";
-        mOnHover = "#171928";
-      };
-      light = {
-        mPrimary = "#37f499";
-        mOnPrimary = "#171928";
-        mSecondary = "#04d1f9";
-        mOnSecondary = "#171928";
-        mTertiary = "#a48cf2";
-        mOnTertiary = "#171928";
-        mError = "#f16c75";
-        mOnError = "#171928";
-        mSurface = "#ffffff";
-        mOnSurface = "#171928";
-        mSurfaceVariant = "#f2f4f8";
-        mOnSurfaceVariant = "#3b4261";
-        mOutline = "#3b4261";
-        mShadow = "#414868";
-        mHover = "#a48cf2";
-        mOnHover = "#171928";
-      };
-    };
-
-    # ── User templates (application theming) ──────────────────────
-    # Written to ~/.config/noctalia/user-templates.toml
-    # Use this to auto-generate theme files for other apps when
-    # the color scheme changes.
-    # user-templates = {};
-
-    # ── Plugins ───────────────────────────────────────────────────
-    # Written to ~/.config/noctalia/plugins.json. This marks plugins ENABLED;
-    # the code itself is placed below from the pinned inputs.noctalia-plugins,
-    # so noctalia never reaches the network for it.
-    plugins = {
-      version = 2;
-      sources = [
-        {
-          enabled = true;
-          name = "Noctalia Plugins";
-          url = pluginSourceUrl;
-        }
-      ];
-      states = lib.genAttrs enabledPlugins (_: {
-        enabled = true;
-        sourceUrl = pluginSourceUrl;
-      });
-    };
-
-    # ── Per-plugin settings ───────────────────────────────────────
-    # Each key becomes ~/.config/noctalia/plugins/<name>/settings.json
-    pluginSettings = {
-      # update-count ships with pacman/apt/dnf detection and no idea what Nix
-      # is. It does support a CUSTOM updater, which is the hook used here.
+      # Per-widget settings. The bongocat plugin watches nothing by default —
+      # its input_devices setting is declared with `default = []` and the Luau
+      # does no auto-detection, so out of the box the cat simply never moves.
       #
-      # "Number of updates" does not mean the same thing on NixOS: there is no
-      # per-package upgrade list, there is one input revision everything follows.
-      # nix-update-count reports 1 when the flake's locked nixpkgs differs from
-      # the current nixos-unstable channel revision, 0 when it matches — see
-      # scripts/scripts/nix-update-count.sh for why that is the honest answer.
-      update-count = {
-        customCmdGetNumUpdates = "nix-update-count";
-        # `nh os switch` rather than a bare nixos-rebuild: it is what this config
-        # uses everywhere else, and programs.nh.flake already points at the repo.
-        customCmdDoSystemUpdate = "nix flake update --flake $HOME/nixos-config && nh os switch";
-        updateIntervalMinutes = 180;
-        updateTerminalCommand = "kitty -e";
-        hideOnZero = true;
+      # A glob rather than a fixed path: this tower has four *-event-kbd nodes
+      # and event numbers are not stable across boots, which is exactly what the
+      # plugin's own comment warns about ("Prefer stable by-id/by-path entries
+      # over /dev/input/eventN because event numbers can change"). Matching all
+      # keyboards by path also means the same line works on the laptop.
+      # bongocat watches nothing by default: its input_devices setting is
+      # declared `default = []` and the Luau does no auto-detection, so the cat
+      # draws and never animates.
+      #
+      # THE KEY IS [widget."<widget id>"], not [plugin_settings."<plugin id>"].
+      # Both tables exist and both feed plugin settings, but they are not
+      # interchangeable — from src/shell/bar/widget_factory.cpp:
+      #
+      #     overrides = wc->settings;                  // the [widget.*] table
+      #     seeded    = seedEntrySettings(entry, overrides);
+      #     mergePluginSettings(manifest, plugin_settings[id], seeded);
+      #
+      # and mergePluginSettings skips any key already in `seeded`
+      # ("entry-level setting declared the same key — entry wins").
+      # input_devices is declared under [[widget.setting]] WITH a default, so
+      # seedEntrySettings always fills it and the plugin_settings table can
+      # never override it. Only [widget.*] reaches it.
+      #
+      # checkConfig accepts either spelling, so a green build proves nothing
+      # here — the evidence is whether an `evtest` child appears under noctalia.
+      #
+      # A glob, not a device path: this tower has four *-event-kbd nodes and the
+      # plugin's own comment warns that event numbers move between boots. It
+      # also makes the same line work on the laptop.
+      widget."noctalia/bongocat:cat".input_devices = [
+        "/dev/input/by-path/*-event-kbd"
+      ];
+
+      # The obsidian plugin's vault_path goes in the OTHER table, and the reason
+      # is the merge order quoted above rather than inconsistency:
+      #
+      #   seedEntrySettings  iterates entry.settings  — the [[widget.setting]] block
+      #   mergePluginSettings iterates manifest.settings — the [[setting]] block,
+      #                       skipping any key seedEntrySettings already filled
+      #
+      # bongocat declares input_devices as a [[widget.setting]], so it is always
+      # seeded and only [widget.*] can reach it. obsidian declares vault_path as
+      # a top-level [[setting]] and its status widget declares only show_dirty —
+      # so vault_path is never seeded, and [plugin_settings.*] is what reaches
+      # it. Using [widget.*] here would silently do nothing.
+      #
+      # plugin_settings is keyed by PLUGIN id, with no ":entry" suffix. It also
+      # feeds the service entry (plugin_service_host.cpp does the same seed-then-
+      # merge), which is the half that actually polls git.
+      #
+      # The default is ~/Documents/Obsidian Vault, which does not exist here.
+      # The vault root is the directory holding .obsidian, so it is notes/ and
+      # not its parent. vault_name is left empty on purpose: empty means "use the
+      # folder name", and "notes" is what Obsidian itself registered the vault
+      # as, so obsidian:// URIs resolve.
+      plugin_settings."davemhammer/obsidian".vault_path = "${config.home.homeDirectory}/vault/notes";
+
+      # nix-monitor's action buttons. Same [plugin_settings.*] reasoning as
+      # above: both of these are top-level [[setting]] keys, not widget ones.
+      plugin_settings."avivbintangaringga/nix-monitor" = {
+        # update_command defaults to "" and panel.luau refuses to run an empty
+        # one ("update command is empty"), so the Update button is dead until
+        # this is set. The widget compares LOCAL vs REMOTE nixpkgs revision, so
+        # the matching action is update-then-switch rather than switch alone —
+        # this is the `nfu` alias from zsh_alias.nix spelled out, because the
+        # plugin runs the string in a terminal that never sources zsh aliases.
+        #
+        # nixpkgs AND home-manager, never nixpkgs alone. home-manager's input
+        # is `inputs.nixpkgs.follows = "nixpkgs"`, so bumping nixpkgs by itself
+        # drags a home-manager that was written against the OLD nixpkgs onto
+        # the new one. That is not theoretical: it broke eval outright on
+        # 2026-09-15, when nixpkgs changed neovim's userPluginViml from a list
+        # to `nullOr lines` and a seven-month-old home-manager still did
+        # `concatStringsSep "\n"` over it — "expected a list but found null",
+        # from a nvim.nix that sets four options and no plugins.
+        # nh needs no flake path: programs.nh.flake is set in modules/core/nh.nix.
+        update_command = "nix flake update --flake ${config.home.homeDirectory}/nixos-config nixpkgs home-manager && nh-notify nh os switch";
+
+        # NOT the plugin default of `nix-collect-garbage -d`, which deletes
+        # every old generation. modules/core/nh.nix deliberately keeps 5 and
+        # everything from the last week so the boot-menu rollback path always
+        # has something to roll back TO — one click of a -d button throws
+        # exactly that away. Same retention as nh.clean.extraArgs.
+        clean_command = "nh clean all --keep-since 7d --keep 5";
+      };
+
+      # was location.name. [location] is the single "where am I", feeding
+      # weather, night light and theme auto mode — geocoded because
+      # auto_locate is left off (no IP lookup).
+      location.address = "Menzel Bou Zelfa, Tunisia";
+
+      # Weather defaults to enabled = false, so the bar's "weather" widget
+      # renders nothing until this is set — having [location] is not enough,
+      # which is what made the widget look broken rather than off.
+      weather = {
+        enabled = true;
+        unit = "celsius";
+      };
+
+      wallpaper = {
+        enabled = true;
+        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+        fill_mode = "crop"; # was fillMode
+
+        # The wallpaper, pinned. Without this noctalia picks for itself — on the
+        # first 5.x start it set its own bundled asset out of the package's
+        # share/noctalia/assets.
+        #
+        # This is modules/home/wallpaper.nix's vendored file, reached through the
+        # stable ~/Pictures path rather than the store path it resolves to, so
+        # the value does not churn on every rebuild.
+        #
+        # CAVEAT worth knowing: runtime state OUTRANKS this. noctalia's own
+        # tests/config_wallpaper_precedence_test.cpp asserts "sidecar path did
+        # not win once set" — ~/.local/state/noctalia/settings.toml is read
+        # last. So this is the default for fresh state, and picking a different
+        # wallpaper in the UI still wins, which is the behaviour you want. To
+        # force this one back, delete the [wallpaper.*] tables from that file,
+        # or run: noctalia msg wallpaper-set <path>
+        default.path = "${config.home.homeDirectory}/Pictures/Wallpapers/wallpaper.jpg";
+
+        # Never rotate. The directory above holds more than one image, and the
+        # point of vendoring a wallpaper into the repo was that the desktop
+        # looks the same on both machines and after a reinstall.
+        automation.enabled = false;
+      };
+
+      # was brightness.enableDdcSupport. The tower drives external monitors over
+      # DDC/CI; machines/desktop/peripherals.nix provides ddcutil and the i2c
+      # group membership it needs.
+      brightness.enable_ddcutil = true;
+
+      # was colorSchemes.predefinedScheme = "Eldritch". Eldritch ships as a
+      # built-in scheme in 5.x, so this no longer needs a hand-written palette.
+      theme = {
+        mode = "dark";
+        source = "builtin";
+        builtin = "Eldritch";
       };
     };
   };
-
-  # ── Plugin code, pinned ─────────────────────────────────────────────────
-  # noctalia installs plugins by `git clone`-ing the registry repo at runtime
-  # (Services/Noctalia/PluginService.qml). That would make the bar's widgets
-  # whatever was on main the day they happened to be installed, recorded
-  # nowhere. These come from inputs.noctalia-plugins instead, so they are in
-  # flake.lock like everything else.
-  #
-  # `recursive = true` matters: it symlinks each FILE rather than the directory,
-  # leaving ~/.config/noctalia/plugins/<id>/ itself writable. The plugin dir is
-  # also where a plugin's own settings.json lives, and a read-only store symlink
-  # for the directory would make that unwritable — the same trap that bit
-  # ~/.ssh/config and ~/.tmux.conf.local in this config.
-  xdg.configFile = lib.mkIf (osConfig.machine.profile == "desktop") (
-    lib.genAttrs (map (id: "noctalia/plugins/${id}") enabledPlugins) (name: {
-      source = "${inputs.noctalia-plugins}/${lib.removePrefix "noctalia/plugins/" name}";
-      recursive = true;
-    })
-  );
-
-  # gpu-screen-recorder is what the screen-recorder plugin drives; without it the
-  # widget loads and every recording fails. wl-clipboard/grim etc. are already in
-  # modules/home/wayland-tools.nix.
-  home.packages = lib.mkIf (osConfig.machine.profile == "desktop") [
-    pkgs.gpu-screen-recorder
-  ];
 }

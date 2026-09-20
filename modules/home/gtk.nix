@@ -5,6 +5,7 @@
 }:
 {
   home.pointerCursor = {
+    enable = true;
     name = "Nordzy-catppuccin-macchiato-dark";
     package = pkgs.nordzy-cursor-theme;
     size = 24;
@@ -23,6 +24,12 @@
     fantasque-sans-mono
     maple-mono-custom
     jetbrains-mono
+    # For Edge's web-content font (modules/home/edge.nix profile fix,
+    # 2026-09-19) — the desktop's own font (below) is JetBrains Mono
+    # deliberately, but that inheriting into rendered WEB PAGES (Chromium
+    # reads GTK's font on Linux when nothing overrides it) is what made body
+    # text look wrong: proportional prose in a monospace font.
+    roboto
   ];
 
   gtk = {
