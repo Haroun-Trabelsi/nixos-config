@@ -1,87 +1,10 @@
 <h1 align="center">
    <img src="./.github/assets/logo/nixos-logo.png" width="100px" />
    <br>
-      One SSD, Two Machines
+      Haroun's Flakes 
    <br>
       <img src="./.github/assets/pallet/pallet-0.png" width="600px" /> <br>
-
-   <div align="center">
-      <p></p>
-      <div align="center">
-         <a href="https://github.com/Haroun-Trabelsi/nixos-config/stargazers">
-            <img src="https://img.shields.io/github/stars/Haroun-Trabelsi/nixos-config?color=FABD2F&labelColor=282828&style=for-the-badge&logo=starship&logoColor=FABD2F">
-         </a>
-         <a href="https://github.com/Haroun-Trabelsi/nixos-config/">
-            <img src="https://img.shields.io/github/repo-size/Haroun-Trabelsi/nixos-config?color=B16286&labelColor=282828&style=for-the-badge&logo=github&logoColor=B16286">
-         </a>
-         <a href="https://nixos.org">
-            <img src="https://img.shields.io/badge/NixOS-unstable-blue.svg?style=for-the-badge&labelColor=282828&logo=NixOS&logoColor=458588&color=458588">
-         </a>
-         <a href="https://github.com/Haroun-Trabelsi/nixos-config/blob/main/LICENSE">
-            <img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&colorA=282828&colorB=98971A&logo=unlicense&logoColor=98971A&"/>
-         </a>
-      </div>
-      <br>
-   </div>
 </h1>
-
-<p align="center">
-   A single NixOS configuration on one portable SSD that boots
-   <b>two different computers</b> — an Intel ASUS Vivobook running sway, and an
-   AMD tower with an RTX 5060 Ti running Hyprland. You pick the machine from the
-   boot menu, not by rebuilding. Secure Boot via Lanzaboote, secrets via
-   sops-nix.
-</p>
-
-### 🖼️ Gallery
-
-<p align="center">
-   <img src="./.github/assets/screenshots/1.png" style="margin-bottom: 15px;"/> <br>
-   <img src="./.github/assets/screenshots/2.png" style="margin-bottom: 15px;"/> <br>
-   <img src="./.github/assets/screenshots/3.png" style="margin-bottom: 15px;"/> <br>
-   <img src="./.github/assets/screenshots/4.png" style="margin-bottom: 15px;"/> <br>
-   Screenshots last updated <b>2025-12-25</b> — they show the Hyprland desktop
-   with Waybar and Hyprlock, both of which have since been replaced
-   (i3status-rust/noctalia and swaylock). The laptop's sway session is not
-   pictured.
-</p>
-
-<details>
-<summary>
-   Swaylock (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/swaylock.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
-   Power menu (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/power_menu.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
-   Launcher (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/launcher.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
-   Wallpapers picker (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/wallpaper_picker.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
-   Notification (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/notification.png" style="margin-bottom: 15px;" /> <br>
-</details>
-<details>
-<summary>
-   Notification center (EXPAND)
-</summary>
-   <img src="./.github/assets/screenshots/notification_center.png" style="margin-bottom: 15px;" /> <br>
-</details>
 
 # 🗃️ Overview
 

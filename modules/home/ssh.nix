@@ -17,9 +17,11 @@
   # avoids it fighting the copy and littering .hm-backup files on every switch.
   home.file.".ssh/config".target = ".ssh/config.hm";
 
-  home.activation.sshConfigRealFile = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    run install -m600 -T "$HOME/.ssh/config.hm" "$HOME/.ssh/config"
-  '';
+  home.activation.sshConfigRealFile =
+    lib.hm.dag.entryAfter [ "linkGeneration" ]
+      ''
+        run install -m600 -T "$HOME/.ssh/config.hm" "$HOME/.ssh/config"
+      '';
 
   programs.ssh = {
     enable = true;
