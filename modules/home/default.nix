@@ -17,7 +17,6 @@
     ./git.nix # version control
     ./gnome.nix # gnome apps
     ./gtk.nix # gtk theme
-    ./herdr.nix # terminal agent multiplexer: prefix+alt+c pops a coder ssh terminal
     # BOTH compositors are imported; each gates itself on
     # osConfig.machine.profile, because module `imports` cannot depend on
     # config. Disabling a compositor makes its whole settings tree inert.
@@ -32,6 +31,7 @@
     ./imv.nix # image viewer desktop entry
     ./lazygit.nix
     ./linear-plan.nix # claude-plan:// handler for planning Linear issues
+    ./hindsight-sync.nix # Claude memory (Hindsight on Coder) -> work/personal git repos
     # ./nemo.nix # file manager (replaced by dolphin)
     ./dolphin.nix # file manager
     ./nvim.nix # neovim editor

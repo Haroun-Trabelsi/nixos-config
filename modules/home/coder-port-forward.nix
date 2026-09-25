@@ -16,7 +16,11 @@ let
   # Ten rungs each, well past the four copies that actually run, so a stray
   # server holding a port and pushing the rest up doesn't fall off the end.
   rungs = 10;
-  ports = lib.range 8000 (8000 + rungs - 1) ++ lib.range 5173 (5173 + rungs - 1);
+  #
+  # Plus 9077: the workspace's Hindsight daemon (Claude's memory), so local
+  # Claude sessions read and write the same memory as the workspace's — see
+  # hindsight-sync.nix.
+  ports = lib.range 8000 (8000 + rungs - 1) ++ lib.range 5173 (5173 + rungs - 1) ++ [ 9077 ];
 
   # Bound to 127.0.0.1, not all interfaces: these are someone's dev servers,
   # and a tunnel that is always up shouldn't publish them to the LAN.
@@ -49,10 +53,9 @@ let
   '';
 in
 {
-  # A standalone unit rather than LocalForward in ssh_config: the terminal
-  # session is `coder ssh haroun` (herdr's binding), which never reads
-  # ssh_config, and this way the ports don't depend on which client happens to
-  # be connected.
+  # A standalone unit rather than LocalForward in ssh_config, so the ports don't
+  # depend on which client happens to be connected — herdr --remote
+  # (toggle-herdr), a plain `coder ssh`, or none at all.
   systemd.user.services.coder-port-forward = {
     Unit = {
       Description = "Forward the Coder workspace's dev-server ports to localhost";

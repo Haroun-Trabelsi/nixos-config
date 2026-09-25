@@ -37,7 +37,9 @@ h() { herdr --machine "$MACHINE" "$@"; }
 
 # Bring the herdr window up without toggle-herdr's "already focused -> go back"
 # half. setsid so the kitty outlives this script.
-show() { wm running herdr-coder && wm focus herdr-coder || setsid -f toggle-herdr; }
+show() {
+    if wm running herdr-coder; then wm focus herdr-coder; else setsid -f toggle-herdr; fi
+}
 
 workspaces="$(h workspace list 2>&1)" ||
     die "Can't reach herdr on '$MACHINE': $workspaces"
