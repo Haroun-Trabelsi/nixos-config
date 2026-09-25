@@ -70,7 +70,14 @@ let
     } # widget avivbintangaringga/nix-monitor:nix-monitor
     {
       dir = "obsidian";
-      src = inputs.noctalia-community-plugins;
+      # Locally forked, not the pinned upstream input: the Recent tab can
+      # read a selected note's text in-panel and rename it, which upstream
+      # doesn't have. Mirrors upstream's own layout (a top-level "obsidian"
+      # dir) so this slots into the same `${src}/${dir}` shape as every other
+      # entry here.
+      # Re-diff against noctalia-dev/community-plugins's obsidian/ by hand to
+      # pick up upstream fixes — flake.lock no longer tracks this one.
+      src = ./noctalia-obsidian-fork;
     } # widget davemhammer/obsidian:status, panel :manager, "/ob" launcher
   ];
 in

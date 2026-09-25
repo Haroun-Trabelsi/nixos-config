@@ -7,6 +7,7 @@
     ./bitwarden.nix # password manager (desktop app)
     ./claude-notify-bridge.nix # desktop notifications for Claude Code in Coder
     ./claude-chrome-bridge.nix # claude-in-chrome TCP<->NMH bridge for Claude Code in Coder
+    ./coder-port-forward.nix # workspace dev-server ports (8000-8009, 5173-5182) on localhost
     ./btop.nix # resouces monitor
     ./discord.nix # discord
     ./discord-rpc.nix # static OS-wide Discord Rich Presence, via vesktop's arRPC
@@ -16,6 +17,7 @@
     ./git.nix # version control
     ./gnome.nix # gnome apps
     ./gtk.nix # gtk theme
+    ./herdr.nix # terminal agent multiplexer: prefix+alt+c pops a coder ssh terminal
     # BOTH compositors are imported; each gates itself on
     # osConfig.machine.profile, because module `imports` cannot depend on
     # config. Disabling a compositor makes its whole settings tree inert.

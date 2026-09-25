@@ -72,6 +72,8 @@
 
     ## Agent tooling
     agentsview # local session search + token/cost analytics for coding agents
+    herdr # terminal agent multiplexer
+    codex # OpenAI Codex CLI
 
     ## Pinned upstream release binaries (see pkgs/) — these replace what used to
     ## be an imperative installer plus a mutable directory on PATH.

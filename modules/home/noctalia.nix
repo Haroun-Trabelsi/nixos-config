@@ -206,6 +206,19 @@
         clean_command = "nh clean all --keep-since 7d --keep 5";
       };
 
+      # Forces software (libx264) encoding instead of the plugin's own default
+      # of GPU/NVENC. On this card (RTX 5060 Ti, driver 595.99.02) NVENC itself
+      # is broken for every codec right now, not just h264 — gpu-screen-recorder
+      # logs "your nvidia driver only supports nvenc api version 13.0, but the
+      # FFmpeg version that GPU Screen Recorder uses requires nvenc api version
+      # 13.1", so recordings ended instantly with no output file. Confirmed by
+      # hand: `gpu-screen-recorder -w portal -k hevc ...` hits the same 13.0
+      # vs 13.1 mismatch (falls back to h264, which then fails too); `-encoder
+      # cpu` produced a real file. Revisit once nixpkgs' gpu-screen-recorder or
+      # the nvidia driver closes that API gap — this is a version-skew bug, not
+      # a permanent hardware limitation.
+      plugin_settings."noctalia/screen_recorder".video_encoder = "cpu";
+
       # was location.name. [location] is the single "where am I", feeding
       # weather, night light and theme auto mode — geocoded because
       # auto_locate is left off (no IP lookup).
