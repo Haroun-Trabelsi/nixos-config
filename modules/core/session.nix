@@ -20,7 +20,17 @@ let
   # start-hyprland for exactly this reason; greetd was bypassing it.
   # A clean exit (logout) still exits cleanly, so greetd re-runs default_session
   # and the autologin loop below is unchanged.
-  compositor = if config.machine.profile == "desktop" then "start-hyprland" else "sway";
+  #
+  # systemd-cat sends the compositor's stdout/stderr to the journal (tag
+  # `hyprland`) instead of tty1, so a failed start survives the hard reset it
+  # usually ends in: `journalctl -b -1 -t hyprland`. Hyprland's own log file
+  # lives in /run and is gone by then. Pairs with debug.enable_stdout_logs in
+  # modules/home/hyprland/settings.nix.
+  compositor =
+    if config.machine.profile == "desktop" then
+      "${config.systemd.package}/bin/systemd-cat -t hyprland start-hyprland"
+    else
+      "sway";
 in
 {
   # services.xserver.enable is deliberately GONE. It was set with

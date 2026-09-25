@@ -15,7 +15,11 @@
     loader = {
       systemd-boot.enable = lib.mkForce false; # replaced by lanzaboote
       efi.canTouchEfiVariables = true;
-      systemd-boot.configurationLimit = 10;
+      # 5, not 10: the desktop specialisation's initrd carries the NVIDIA GSP
+      # firmware (~125 MiB vs 43 MiB, see machines/desktop/nvidia.nix), and on
+      # linuxPackages_latest most updates mint a new one. Ten of those overflow
+      # the 1 GiB ESP. Matches nh's `--keep 5` in nh.nix.
+      systemd-boot.configurationLimit = 5;
 
       # Fallback only. Under Lanzaboote this value is just the default feeding
       # boot.lanzaboote.settings.timeout, which is overridden to "menu-force"
@@ -32,7 +36,7 @@
       # displayManager autoLogin there is no password gate in front of it.
       systemd-boot.editor = false;
 
-      # The default 80x25 console fits ~20 lines. With configurationLimit = 10
+      # The default 80x25 console fits ~20 lines. With configurationLimit = 5
       # plus a `desktop` specialisation entry per generation the list would
       # scroll off; `max` picks the largest mode the firmware offers.
       systemd-boot.consoleMode = "max";
@@ -50,9 +54,15 @@
       settings.timeout = "menu-force";
     };
 
-    # keep boot output quiet and uncluttered (Plymouth splash removed).
-    # Drop "quiet" here if you ever want to watch the boot logs to diagnose a slow startup.
-    kernelParams = [ "quiet" "loglevel=3" "rd.systemd.show_status=false" "rd.udev.log_level=3" "udev.log_priority=3" ];
+    # Kernel chatter stays hidden (loglevel, consoleLogLevel below), but systemd's
+    # "[  OK  ] Started ..." lines are deliberately shown. "quiet" and
+    # rd.systemd.show_status=false used to hide them too, which left the tower on
+    # a black screen for 6-10 s between the NVIDIA driver taking the display and
+    # Hyprland drawing. It looked hung, and a Ctrl+Alt+F3 pressed in that gap
+    # (after greetd opened the session on tty1, before Hyprland took it) started
+    # Hyprland on a background VT: a black screen that no VT switch could
+    # recover, only a hard reset. Seen in the journal on 2026-09-24.
+    kernelParams = [ "loglevel=3" "rd.udev.log_level=3" "udev.log_priority=3" ];
     consoleLogLevel = 0;
     initrd.verbose = false;
 

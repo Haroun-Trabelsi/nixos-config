@@ -56,6 +56,14 @@
       disable_autoreload = false;
     };
 
+    # Mirror the log to stdout, which greetd routes into the journal via
+    # systemd-cat (modules/core/session.nix), so it outlives a hard reset.
+    # disable_logs stays at its default (true), which keeps this to the startup
+    # and backend (aquamarine/DRM) lines: a few hundred per session.
+    debug = {
+      enable_stdout_logs = true;
+    };
+
     dwindle = {
       force_split = 2;
       preserve_split = true;

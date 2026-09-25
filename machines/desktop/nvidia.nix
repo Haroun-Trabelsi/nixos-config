@@ -27,6 +27,18 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
+  # Early KMS: load the driver in the initrd so nvidia-drm owns the display
+  # from ~2 s instead of ~9 s. That shrinks the dark handover gap before
+  # Hyprland starts (see the kernelParams note in modules/core/bootloader.nix).
+  # Cost: the GSP firmware (~100 MiB raw) rides in this specialisation's
+  # initrd, so each new driver version puts a bigger initrd on the 1 GiB ESP.
+  boot.initrd.kernelModules = [
+    "nvidia"
+    "nvidia_modeset"
+    "nvidia_uvm"
+    "nvidia_drm"
+  ];
+
   # These were previously in modules/home/hyprland/variables.nix, which meant the
   # laptop's Iris Xe was being told to use an NVIDIA GBM backend and an NVIDIA
   # VA-API driver that were not present.
