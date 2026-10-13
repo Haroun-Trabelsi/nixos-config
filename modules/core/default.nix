@@ -21,5 +21,6 @@
     ./wayland.nix
     ./qmk.nix
     ./sops.nix
+    ./artcraft.nix
   ];
 }

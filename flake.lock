@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "artcraft": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791892729,
+        "narHash": "sha256-cNwlSbT6OZwHIooHe67KuAO1fhNH0AtFOa3/TTucfsE=",
+        "owner": "ipeglin",
+        "repo": "artcraft-nix",
+        "rev": "34ddb0c53cdc76698f32736542c765c85740ce4e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipeglin",
+        "repo": "artcraft-nix",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1783203018,
@@ -334,6 +354,7 @@
     },
     "root": {
       "inputs": {
+        "artcraft": "artcraft",
         "disko": "disko",
         "home-manager": "home-manager",
         "impermanence": "impermanence",

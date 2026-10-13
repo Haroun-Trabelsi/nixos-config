@@ -116,6 +116,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    # ArtCraft apps (storytold) — upstream ships no flake, this one wraps their
+    # verified release AppImages. Wired up in modules/core/artcraft.nix.
+    artcraft = {
+      url = "github:ipeglin/artcraft-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       # NOTE: do NOT make nixpkgs follow ours — nixpkgs 26.05 stdenv made
